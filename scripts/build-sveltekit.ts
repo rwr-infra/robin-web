@@ -27,7 +27,7 @@ function loadEnvFile(envPath = '.env') {
 // Load .env file at startup
 loadEnvFile();
 
-function buildSvelteKit() {
+async function buildSvelteKit() {
 	console.log('🚀 Starting SvelteKit build process...\n');
 
 	try {
@@ -75,6 +75,13 @@ function buildSvelteKit() {
 		}
 
 		console.log('🎉 SvelteKit build completed successfully!');
+
+		// Step 3: Inject environment variables into build output
+		console.log('\n🔧 Step 3: Injecting environment variables into build output...');
+		const { injectEnv } = await import('./inject-env.ts');
+		await injectEnv();
+		console.log('✅ Environment variables injected\n');
+
 	} catch (error) {
 		console.error('❌ Build failed:', error);
 		process.exit(1);
@@ -83,7 +90,10 @@ function buildSvelteKit() {
 
 // Run if executed directly
 if (import.meta.url === `file://${process.argv[1]}`) {
-	buildSvelteKit();
+	buildSvelteKit().catch((error) => {
+		console.error('❌ Build failed:', error);
+		process.exit(1);
+	});
 }
 
 export { buildSvelteKit };
