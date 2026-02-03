@@ -1,0 +1,8 @@
+{
+	"name": "robin-web",
+	"compatibility_date": "2025-02-03",
+	"assets": {
+		"directory": "./build",
+		"not_found_handling": "single-page-application"
+	}
+}
