@@ -17,9 +17,11 @@
 		"test": "npm run test:unit -- --run && npm run test:e2e",
 		"test:e2e": "playwright test",
 		"coverage": "vitest run --coverage",
-		"generate-icons": "tsx scripts/generate-icons.ts"
+		"generate-icons": "tsx scripts/generate-icons.ts",
+		"inject-env": "node --experimental-strip-types scripts/inject-env.ts"
 	},
 	"devDependencies": {
+		"@cloudflare/workers-types": "^4.20260203.0",
 		"@eslint/compat": "^1.4.1",
 		"@eslint/js": "^9.39.2",
 		"@fontsource/fira-mono": "^5.2.7",
