@@ -27,7 +27,7 @@ function loadEnvFile(envPath = '.env') {
 // Load .env file at startup
 loadEnvFile();
 
-function buildSvelteKit() {
+async function buildSvelteKit() {
 	console.log('🚀 Starting SvelteKit build process...\n');
 
 	try {
@@ -90,7 +90,10 @@ function buildSvelteKit() {
 
 // Run if executed directly
 if (import.meta.url === `file://${process.argv[1]}`) {
-	buildSvelteKit();
+	buildSvelteKit().catch((error) => {
+		console.error('❌ Build failed:', error);
+		process.exit(1);
+	});
 }
 
 export { buildSvelteKit };
