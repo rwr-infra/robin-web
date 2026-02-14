@@ -356,7 +356,7 @@
 					// Don't return null yet, try again
 					continue;
 
-				} catch (error: any) {
+				} catch (error: unknown) {
 					// Check if this is a retryable error
 					const isRetryable = isRetryableError(error);
 
@@ -376,7 +376,7 @@
 		}
 
 		// Helper function to determine if an error is retryable
-		function isRetryableError(error: any): boolean {
+		function isRetryableError(error: unknown): boolean {
 			// Network errors (TypeError with "Failed to fetch")
 			if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
 				return true;
@@ -388,8 +388,11 @@
 			}
 
 			// HTTP errors with status code
-			if (error?.status) {
-				const status = error.status;
+			if (typeof error === 'object' && error !== null && 'status' in error) {
+				const status = (error as { status?: unknown }).status;
+				if (typeof status !== 'number') {
+					return false;
+				}
 				// Retry on: 408 (Request Timeout), 429 (Rate Limited), 5xx (Server Errors)
 				return status === 408 || status === 429 || status >= 500;
 			}

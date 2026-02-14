@@ -3,6 +3,7 @@
 	import { m } from '$lib/paraglide/messages.js';
 	import { ArrowDown, Info, Share } from '@lucide/svelte';
 	import type { IPlayerItem, IPlayerColumn } from '$lib/models/player.model';
+	import { escapeHtml } from '$lib/utils/highlight';
 	import './table.css';
 
 	interface Props {
@@ -43,7 +44,8 @@
 			return column.getValue(item);
 		}
 
-		return (item as any)[column.key] ?? '-';
+		const itemRecord = item as unknown as Record<string, unknown>;
+		return escapeHtml(String(itemRecord[column.key] ?? '-'));
 	}
 
 	// Handle column sort

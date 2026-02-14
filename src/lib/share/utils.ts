@@ -1,4 +1,9 @@
-import type { IDisplayServerItem, OnlineStats, IRes } from '$lib/models/server.model';
+import type {
+	IDisplayServerItem,
+	IRes,
+	IResServerItem,
+	OnlineStats
+} from '$lib/models/server.model';
 import { XMLParser } from 'fast-xml-parser';
 
 const fixPlayerList = (raw: string | undefined | string[]): string[] => {
@@ -34,7 +39,7 @@ export const parseServerListFromString = (resString: string): IDisplayServerItem
 		return [];
 	}
 
-	const serverList: IDisplayServerItem[] = serverArray.map((server: any, index) => {
+	const serverList: IDisplayServerItem[] = serverArray.map((server: IResServerItem, index) => {
 		const block: IDisplayServerItem = {
 			id: index.toString(),
 			name: server.name?.toString() || '',

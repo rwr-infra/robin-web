@@ -40,12 +40,12 @@ export async function request<T>(
 		}
 
 		return response;
-	} catch (error: any) {
+	} catch (error: unknown) {
 		// Enhanced error logging
-		if (error.name === 'AbortError') {
+		if (error instanceof Error && error.name === 'AbortError') {
 			console.error(`Request to ${url} timed out after ${effectiveTimeout}ms`);
 			throw new Error(`Request timed out after ${effectiveTimeout}ms`);
-		} else if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+		} else if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
 			// Network errors like CORS, network disconnection
 			console.error(`Network error for ${url}: ${error.message}`);
 			throw new Error(`Network error: ${error.message}`);

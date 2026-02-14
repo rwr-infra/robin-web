@@ -74,18 +74,37 @@
 	});
 
 	// Load rankings when modal opens
-	$effect(async () => {
-		if (show && player && onFetchRankings) {
-			isLoadingRankings = true;
-			try {
-				rankings = await onFetchRankings();
-			} catch (error) {
-				console.error('Failed to load rankings:', error);
-				rankings = {};
-			} finally {
-				isLoadingRankings = false;
-			}
+	$effect(() => {
+		if (!(show && player && onFetchRankings)) {
+			return;
 		}
+
+		let isCancelled = false;
+		isLoadingRankings = true;
+
+		const loadRankings = async () => {
+			try {
+				const data = await onFetchRankings();
+				if (!isCancelled) {
+					rankings = data;
+				}
+			} catch (error) {
+				if (!isCancelled) {
+					console.error('Failed to load rankings:', error);
+					rankings = {};
+				}
+			} finally {
+				if (!isCancelled) {
+					isLoadingRankings = false;
+				}
+			}
+		};
+
+		void loadRankings();
+
+		return () => {
+			isCancelled = true;
+		};
 	});
 
 	// Set display timestamp when modal opens

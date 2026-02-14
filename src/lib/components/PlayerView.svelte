@@ -9,6 +9,7 @@
 	import { m } from '$lib/paraglide/messages.js';
 	import { ArrowDown, CircleX, Info, Share } from '@lucide/svelte';
 	import type { IPlayerItem, IPlayerColumn } from '$lib/models/player.model';
+	import { escapeHtml } from '$lib/utils/highlight';
 
 	interface Props {
 		loading: boolean;
@@ -78,7 +79,8 @@
 			return column.getValue(item);
 		}
 
-		return (item as any)[column.key] ?? '-';
+		const itemRecord = item as unknown as Record<string, unknown>;
+		return escapeHtml(String(itemRecord[column.key] ?? '-'));
 	}
 
 	// Toast state for load more success feedback
@@ -177,32 +179,36 @@
 				{/each}
 			</div>
 
-			{#each mobilePaginatedPlayers as item (item.id)}
-				<div class="collapse collapse-arrow bg-base-100 border-base-300 mb-3 border">
-					<input
-						type="checkbox"
-						checked={mobileExpandedCards[item.id]}
-						onchange={() => onToggleMobileCard(item.id)}
-						aria-label={m['app.ariaLabel.togglePlayerDetails']()}
-						aria-expanded={mobileExpandedCards[item.id] ? 'true' : 'false'}
-					/>
-					<div class="collapse-title font-semibold p-4">
-						<div class="flex items-center justify-between gap-2 mr-6">
-							<div class="text-base-content flex-1 truncate text-base font-medium">
-								{@html getDisplayValue(
+				{#each mobilePaginatedPlayers as item (item.id)}
+					<div class="collapse collapse-arrow bg-base-100 border-base-300 mb-3 border">
+						<input
+							id={`player-mobile-collapse-${item.id}`}
+							type="checkbox"
+							checked={mobileExpandedCards[item.id]}
+							onchange={() => onToggleMobileCard(item.id)}
+							aria-label={m['app.ariaLabel.togglePlayerDetails']()}
+							aria-expanded={mobileExpandedCards[item.id] ? 'true' : 'false'}
+						/>
+						<label
+							for={`player-mobile-collapse-${item.id}`}
+							class="collapse-title min-h-14 cursor-pointer px-4 py-5 font-semibold"
+						>
+							<div class="flex items-center justify-between gap-2 mr-6">
+								<div class="text-base-content flex-1 truncate text-base font-medium">
+									{@html getDisplayValue(
+										item,
+										playerColumns.find((col) => col.key === 'username')!,
+										searchQuery
+									)}
+								</div>
+								<span class="text-base-content/60 text-sm">
+								#{@html getDisplayValue(
 									item,
-									playerColumns.find((col) => col.key === 'username')!,
-									searchQuery
+									playerColumns.find((col) => col.key === 'rowNumber')!
 								)}
+								</span>
 							</div>
-							<span class="text-base-content/60 text-sm">
-							#{@html getDisplayValue(
-								item,
-								playerColumns.find((col) => col.key === 'rowNumber')!
-							)}
-							</span>
-						</div>
-					</div>
+						</label>
 					<div class="collapse-content">
 						<div class="border-base-200 border-t">
 							<div class="space-y-2 pt-3">

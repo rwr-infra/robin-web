@@ -16,6 +16,7 @@ export interface IResServerItem {
 	country: string;
 	current_players: number;
 	timeStamp: number;
+	timestamp?: number;
 	version: string;
 	dedicated: number;
 	mod: number;
@@ -50,15 +51,13 @@ export interface IDisplayServerItem {
 	timeStamp: Nullable<number>;
 	version: string;
 	dedicated: boolean;
-	// TODO: unknown value
-	mod: Nullable<any>;
+	mod: Nullable<boolean>;
 	playerList: string[];
 	comment: Nullable<string>;
 	url: Nullable<string>;
 	maxPlayers: number;
 	mode: string;
-	// TODO: unknown value
-	realm: Nullable<any>;
+	realm: Nullable<string>;
 }
 
 export interface OnlineStats {

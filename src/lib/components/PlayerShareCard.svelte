@@ -41,14 +41,14 @@
 	}
 
 	// Get display value with fallback
-	function getDisplayValue(value: any): string {
+	function getDisplayValue(value: unknown): string {
 		if (value === null || value === undefined) return '-';
 		return String(value);
 	}
 
 	// Get display value with ranking if available
-	function getDisplayValueWithRank(key: string): { value: string; rank?: number } {
-		const value = (player as any)[key];
+	function getDisplayValueWithRank(key: keyof IPlayerItem): { value: string; rank?: number } {
+		const value = player[key];
 		const baseValue = getDisplayValue(value);
 		const rank = rankings[key];
 
@@ -99,7 +99,7 @@
 	});
 
 	// All stats fields flattened - no groups, just direct layout
-	const allStatsFields = [
+	const allStatsFields: Array<{ key: keyof IPlayerItem; i18n: string }> = [
 		{ key: 'kills', i18n: 'app.player.column.kills' },
 		{ key: 'deaths', i18n: 'app.player.column.deaths' },
 		{ key: 'kd', i18n: 'app.player.column.kd' },

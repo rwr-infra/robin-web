@@ -8,7 +8,7 @@ export interface PlayerListResult {
 	hasPrevious: boolean;
 }
 
-function parseNumber(value: any): Nullable<number> {
+function parseNumber(value: unknown): Nullable<number> {
 	// Handle primitive numbers directly
 	if (typeof value === 'number') return value;
 	if (typeof value === 'string') {
@@ -22,18 +22,24 @@ function parseNumber(value: any): Nullable<number> {
 	return null;
 }
 
-function extractCellText(cell: any): string {
+function extractCellText(cell: unknown): string {
 	// Handle primitive values directly (number, string, boolean)
 	if (typeof cell === 'string') return cell.trim();
 	if (typeof cell === 'number') return String(cell);
 	if (cell && typeof cell === 'object') {
-		if (cell['#text']) return cell['#text'].trim();
-		if (cell.a) {
+		const cellRecord = cell as Record<string, unknown>;
+		const textNode = cellRecord['#text'];
+		if (typeof textNode === 'string') return textNode.trim();
+		if (cellRecord.a) {
 			// Handle <a href="...">text</a> structure
-			const linkText = cell.a['#text'] || cell.a;
+			const link = cellRecord.a;
+			const linkText =
+				typeof link === 'object' && link !== null
+					? ((link as Record<string, unknown>)['#text'] ?? link)
+					: link;
 			return typeof linkText === 'string' ? linkText.trim() : '';
 		}
-		if (cell.img) {
+		if (cellRecord.img) {
 			// Handle cell with <img> tag
 			return '';
 		}
@@ -41,13 +47,16 @@ function extractCellText(cell: any): string {
 	return '';
 }
 
-function extractImgSrc(cell: any): Nullable<string> {
+function extractImgSrc(cell: unknown): Nullable<string> {
 	if (!cell) return null;
 	// Handle primitive values
 	if (typeof cell !== 'object') return null;
-	const img = cell.img;
+	const img = (cell as Record<string, unknown>).img;
 	if (!img) return null;
-	return img['@_src'] || img.src || null;
+	if (typeof img !== 'object') return null;
+	const imgRecord = img as Record<string, unknown>;
+	const src = imgRecord['@_src'] ?? imgRecord.src;
+	return typeof src === 'string' ? src : null;
 }
 
 function generatePlayerId(username: string, db: PlayerDatabase): string {
@@ -55,12 +64,12 @@ function generatePlayerId(username: string, db: PlayerDatabase): string {
 }
 
 // Find pagination links in the HTML to determine if there are more pages
-function findPaginationLinks(parsed: any): { hasNext: boolean; hasPrevious: boolean } {
+function findPaginationLinks(parsed: unknown): { hasNext: boolean; hasPrevious: boolean } {
 	let hasNext = false;
 	let hasPrevious = false;
 
 	// Helper function to search for links with "Next" or "Previous" text
-	const findLinks = (obj: any): void => {
+	const findLinks = (obj: unknown): void => {
 		if (!obj || typeof obj !== 'object') return;
 		if (Array.isArray(obj)) {
 			for (const item of obj) {
@@ -69,11 +78,16 @@ function findPaginationLinks(parsed: any): { hasNext: boolean; hasPrevious: bool
 			return;
 		}
 
+		const record = obj as Record<string, unknown>;
+
 		// Check if this object is a link element with text content
-		if (obj.a && typeof obj.a === 'object') {
-			const links = Array.isArray(obj.a) ? obj.a : [obj.a];
+		if (record.a && typeof record.a === 'object') {
+			const links = Array.isArray(record.a) ? record.a : [record.a];
 			for (const link of links) {
-				const text = link['#text'] || link;
+				const text =
+					typeof link === 'object' && link !== null
+						? ((link as Record<string, unknown>)['#text'] ?? link)
+						: link;
 				if (typeof text === 'string') {
 					const upperText = text.toUpperCase().trim();
 					if (upperText === 'NEXT') {
@@ -85,9 +99,9 @@ function findPaginationLinks(parsed: any): { hasNext: boolean; hasPrevious: bool
 			}
 		}
 
-		for (const key in obj) {
+		for (const key in record) {
 			if (key === '#text' || key === '#comment') continue;
-			findLinks(obj[key]);
+			findLinks(record[key]);
 		}
 	};
 
@@ -121,20 +135,21 @@ export function parsePlayerListFromString(htmlString: string, db: PlayerDatabase
 		}
 		if (!table) {
 			// Try to find table anywhere in the parsed structure
-			const findTable = (obj: any): any => {
+			const findTable = (obj: unknown): Record<string, unknown> | null => {
 				if (!obj || typeof obj !== 'object') return null;
 				if (Array.isArray(obj)) {
 					for (const item of obj) {
 						const result = findTable(item);
-						if (result && result.tr) return result;
+						if (result && Array.isArray(result.tr)) return result;
 					}
 					return null;
 				}
-				if (obj.tr && Array.isArray(obj.tr)) return obj;
-				for (const key in obj) {
+				const record = obj as Record<string, unknown>;
+				if (record.tr && Array.isArray(record.tr)) return record;
+				for (const key in record) {
 					if (key === '#text' || key === '#comment') continue;
-					const result = findTable(obj[key]);
-					if (result && result.tr) return result;
+					const result = findTable(record[key]);
+					if (result && Array.isArray(result.tr)) return result;
 				}
 				return null;
 			};
@@ -155,10 +170,16 @@ export function parsePlayerListFromString(htmlString: string, db: PlayerDatabase
 		const rowArray = Array.isArray(rows) ? rows : [rows];
 
 		// Filter out header rows (rows with <th> elements)
-		const dataRows = rowArray.filter((row: any) => !row.th);
+		const dataRows = rowArray.filter((row: unknown) => {
+			if (!row || typeof row !== 'object') {
+				return false;
+			}
+			return !(row as Record<string, unknown>).th;
+		});
 
-		return dataRows.map((row: any) => {
-			const cells = row.td || [];
+		return dataRows.map((row: unknown) => {
+			const rowRecord = row as Record<string, unknown>;
+			const cells = rowRecord.td || [];
 			const cellArray = Array.isArray(cells) ? cells : [];
 
 			const rowNumber = Number(extractCellText(cellArray[0])) || 0;

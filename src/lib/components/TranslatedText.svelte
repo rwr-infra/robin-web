@@ -9,7 +9,7 @@
 		style = ''
 	} = $props<{
 		key: string;
-		params?: Record<string, any>;
+		params?: Record<string, unknown>;
 		tag?: keyof HTMLElementTagNameMap;
 		className?: string;
 		style?: string;
@@ -19,7 +19,9 @@
 
 	// Type-safe access to messages function
 	const getMessage = $derived(
-		hasKey ? (m as unknown as Record<string, (params?: Record<string, any>) => string>)[key] : () => key
+		hasKey
+			? (m as unknown as Record<string, (params?: Record<string, unknown>) => string>)[key]
+			: () => key
 	);
 </script>
 

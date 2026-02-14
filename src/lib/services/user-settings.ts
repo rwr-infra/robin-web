@@ -132,7 +132,9 @@ class UserSettingsService {
 				key !== 'visiblePlayerColumns' &&
 				key in stored
 			) {
-				(merged as any)[key] = stored[key];
+				const mergedRecord = merged as Record<string, unknown>;
+				const storedRecord = stored as Record<string, unknown>;
+				mergedRecord[key] = storedRecord[key];
 			}
 		});
 
@@ -163,7 +165,8 @@ class UserSettingsService {
 	): void {
 		const parent = this.settings[parentKey] as T;
 		if (parent && typeof parent === 'object') {
-			(parent as any)[nestedKey] = value;
+			const parentRecord = parent as Record<PropertyKey, unknown>;
+			parentRecord[nestedKey as PropertyKey] = value;
 			this.saveSettings();
 		}
 	}

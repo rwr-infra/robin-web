@@ -37,7 +37,7 @@
 		try {
 			// Try to get cache info to show last update time
 			// This is optional - the actual timestamp would be stored with cached data
-			const cachedData = await cacheStorage.get<any>('cache', 'server-list-timestamp');
+			const cachedData = await cacheStorage.get<number | string>('cache', 'server-list-timestamp');
 			if (cachedData) {
 				lastUpdate = new Date(cachedData);
 			}

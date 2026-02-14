@@ -5,6 +5,7 @@
 	import type { IDisplayServerItem } from '$lib/models/server.model';
 	import type { IColumn } from '$lib/models/server.model';
 	import type { MapData } from '$lib/services/maps';
+	import { escapeHtml } from '$lib/utils/highlight';
 	import './table.css';
 
 	interface Props {
@@ -47,7 +48,8 @@
 			return column.getValue(item, maps);
 		}
 
-		return (item as any)[column.key] ?? '-';
+		const itemRecord = item as unknown as Record<string, unknown>;
+		return escapeHtml(String(itemRecord[column.key] ?? '-'));
 	}
 
 	// Handle row action
@@ -175,12 +177,13 @@
 											{/if}
 										</div>
 									{:else if column.key === 'url' && item.url}
-										<a
-											href={item.url}
-											target="_blank"
-											class="link link-primary inline-flex min-h-6 items-center underline-offset-4 hover:underline"
-											title={item.url}
-										>
+									<a
+										href={item.url}
+										target="_blank"
+										rel="noopener noreferrer"
+										class="link link-primary inline-flex min-h-6 items-center underline-offset-4 hover:underline"
+										title={item.url}
+									>
 											{item.url.length > 50 ? item.url.substring(0, 47) + '...' : item.url}
 										</a>
 									{:else}
