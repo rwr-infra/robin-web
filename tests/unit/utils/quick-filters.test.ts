@@ -104,19 +104,25 @@ describe('Quick Filters', () => {
 
 	describe('castling filter', () => {
 		const castlingFilter = filters.find((f) => f.id === 'castling')!;
+		const realCastlingNames = [
+			'[Castling][Temp LV4]',
+			'[Castling][GFL-5 LV4]',
+			'[Castling][Normal LV3]',
+			'[Castling][FOV-4]',
+			'[Castling][OverDoze-1]',
+			'[Castling][FRENZY-2]',
+			'[Castling][NetherLand LV4]'
+		];
 
 		test('should match castling servers with correct name format', () => {
-			const server1 = createMockServer({
-				mode: 'Castling',
-				name: '[Castling][Temp LV4]'
-			});
-			const server2 = createMockServer({
-				mode: 'castling',
-				name: '[Castling][GFL-5 LV4]'
-			});
+			realCastlingNames.forEach((name) => {
+				const server = createMockServer({
+					mode: 'Castling',
+					name
+				});
 
-			expect(castlingFilter.filter(server1)).toBe(true);
-			expect(castlingFilter.filter(server2)).toBe(true);
+				expect(castlingFilter.filter(server)).toBe(true);
+			});
 		});
 
 		test('should not match servers with wrong mode', () => {
@@ -217,7 +223,7 @@ describe('Quick Filters', () => {
 	});
 
 	describe('regex patterns edge cases', () => {
-		test('should handle castling servers with basic patterns', () => {
+		test('should keep matching real castling server names when regex changes', () => {
 			const testCases = [
 				{
 					name: '[Castling][Temp LV4]',
@@ -226,6 +232,31 @@ describe('Quick Filters', () => {
 				},
 				{
 					name: '[Castling][GFL-5 LV4]',
+					mode: 'Castling',
+					expected: true
+				},
+				{
+					name: '[Castling][Normal LV3]',
+					mode: 'Castling',
+					expected: true
+				},
+				{
+					name: '[Castling][FOV-4]',
+					mode: 'Castling',
+					expected: true
+				},
+				{
+					name: '[Castling][OverDoze-1]',
+					mode: 'Castling',
+					expected: true
+				},
+				{
+					name: '[Castling][FRENZY-2]',
+					mode: 'Castling',
+					expected: true
+				},
+				{
+					name: '[Castling][NetherLand LV4]',
 					mode: 'Castling',
 					expected: true
 				},

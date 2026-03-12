@@ -1,6 +1,5 @@
 <script lang="ts">
 	import TranslatedText from '$lib/components/TranslatedText.svelte';
-	import { m } from '$lib/paraglide/messages.js';
 	import type { IPlayerItem } from '$lib/models/player.model';
 	import { User, Database } from '@lucide/svelte';
 
@@ -70,7 +69,6 @@
 		});
 
 		// Get timezone abbreviation
-		const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 		const timeZoneName = date.toLocaleString('en-US', { timeZoneName: 'short' }).split(', ').pop();
 
 		return `${formatted} (${timeZoneName})`;
