@@ -40,7 +40,7 @@
 	}
 
 	// Get display value with fallback
-	function getDisplayValue(value: any): string {
+	function getDisplayValue(value: unknown): string {
 		if (value === null || value === undefined) return '-';
 		return String(value);
 	}
@@ -90,7 +90,7 @@
 	});
 
 	// Server info fields for mobile (single column layout) - excluding Map and Mode
-	type FieldFormatter = (value: any) => string;
+	type FieldFormatter = (value: unknown) => string;
 
 	const serverInfoFields: Array<{
 		key: keyof IDisplayServerItem;
@@ -160,6 +160,7 @@
 				<a
 					href={server.url}
 					target="_blank"
+					rel="noopener noreferrer"
 					class="link link-primary text-[10px] truncate"
 					title={server.url}
 				>

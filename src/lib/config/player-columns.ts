@@ -1,6 +1,6 @@
 import type { IPlayerColumn } from '$lib/models/player.model';
 import type { Nullable } from '$lib/share/types';
-import { highlightMatch } from '$lib/utils/highlight';
+import { escapeHtml, highlightMatch } from '$lib/utils/highlight';
 
 function formatNumber(value: Nullable<number>): string {
 	if (value === null || value === undefined) return '-';
@@ -25,7 +25,7 @@ export const playerColumns: IPlayerColumn[] = [
 		key: 'username',
 		label: 'Username',
 		i18n: 'app.player.column.username',
-		getValue: (player) => player.username,
+		getValue: (player) => escapeHtml(player.username),
 		getValueWithHighlight: (player, query) => highlightMatch(player.username, query)
 	},
 	{
@@ -65,7 +65,7 @@ export const playerColumns: IPlayerColumn[] = [
 		label: 'Time',
 		i18n: 'app.player.column.timePlayed',
 		alignment: 'right',
-		getValue: (player) => player.timePlayed || '-'
+		getValue: (player) => escapeHtml(player.timePlayed || '-')
 	},
 	{
 		key: 'longestKillStreak',
@@ -112,7 +112,7 @@ export const playerColumns: IPlayerColumn[] = [
 		label: 'Distance',
 		i18n: 'app.player.column.distanceMoved',
 		alignment: 'right',
-		getValue: (player) => player.distanceMoved || '-'
+		getValue: (player) => escapeHtml(player.distanceMoved || '-')
 	},
 	{
 		key: 'shotsFired',
@@ -142,10 +142,10 @@ export const playerColumns: IPlayerColumn[] = [
 		key: 'rankName',
 		label: 'Rank',
 		i18n: 'app.player.column.rankName',
-		getValue: (player) => player.rankName || '-',
+		getValue: (player) => escapeHtml(player.rankName || '-'),
 		getValueWithHighlight: (player, query) => {
 			if (!player.rankName) return '-';
-			return query ? highlightMatch(player.rankName, query) : player.rankName;
+			return query ? highlightMatch(player.rankName, query) : escapeHtml(player.rankName);
 		}
 	},
 	{

@@ -11,6 +11,7 @@
 	import { ArrowDownUp, ArrowUp, ArrowDown, Eye, CircleX, Info, Share } from '@lucide/svelte';
 	import type { IDisplayServerItem, IColumn } from '$lib/models/server.model';
 	import type { MapData } from '$lib/services/maps';
+	import { escapeHtml } from '$lib/utils/highlight';
 
 	interface Props {
 		loading: boolean;
@@ -98,7 +99,8 @@
 			return column.getValue(item, maps);
 		}
 
-		return (item as any)[column.key] ?? '-';
+		const itemRecord = item as unknown as Record<string, unknown>;
+		return escapeHtml(String(itemRecord[column.key] ?? '-'));
 	}
 
 	// Toast state for refresh success feedback
@@ -205,23 +207,27 @@
 				{/each}
 			</div>
 
-			{#each mobilePaginatedServers as item (item.id)}
-				<div class="collapse collapse-arrow bg-base-100 border-base-300 mb-3 border">
-					<input
-						type="checkbox"
-						checked={mobileExpandedCards[item.id]}
-						onchange={() => onToggleMobileCard(item.id)}
-						aria-label={m['app.ariaLabel.toggleServerDetails']()}
-						aria-expanded={mobileExpandedCards[item.id] ? 'true' : 'false'}
-					/>
-					<div class="collapse-title font-semibold p-4">
-						<div class="flex items-center justify-between gap-2 mr-6">
-							<div class="text-base-content flex-1 truncate text-base font-medium">
-								{@html getDisplayValue(
-									item,
-									columns.find((col) => col.key === 'name')!,
-									searchQuery
-								)}
+				{#each mobilePaginatedServers as item (item.id)}
+					<div class="collapse collapse-arrow bg-base-100 border-base-300 mb-3 border">
+						<input
+							id={`server-mobile-collapse-${item.id}`}
+							type="checkbox"
+							checked={mobileExpandedCards[item.id]}
+							onchange={() => onToggleMobileCard(item.id)}
+							aria-label={m['app.ariaLabel.toggleServerDetails']()}
+							aria-expanded={mobileExpandedCards[item.id] ? 'true' : 'false'}
+						/>
+						<label
+							for={`server-mobile-collapse-${item.id}`}
+							class="collapse-title min-h-14 cursor-pointer px-4 py-5 font-semibold"
+						>
+							<div class="flex items-center justify-between gap-2 mr-6">
+								<div class="text-base-content flex-1 truncate text-base font-medium">
+									{@html getDisplayValue(
+										item,
+										columns.find((col) => col.key === 'name')!,
+										searchQuery
+									)}
 							</div>
 							<div class="min-w-0 flex-shrink-0">
 								<div class="flex max-w-24 flex-wrap justify-end gap-1 sm:max-w-32">
@@ -240,7 +246,7 @@
 								)}
 							</div>
 						</div>
-					</div>
+					</label>
 					<div class="collapse-content">
 						<div class="border-base-200 border-t">
 							<div class="space-y-2 pt-3">
@@ -253,13 +259,14 @@
 										</span>
 										<div class="text-base-content ml-3 flex-1 text-right text-sm">
 											{#if column.key === 'url' && item.url}
-												<a
-													href={item.url}
-													target="_blank"
-													class="link link-primary"
-													onclick={(e) => e.stopPropagation()}
-													title={item.url}
-												>
+											<a
+												href={item.url}
+												target="_blank"
+												rel="noopener noreferrer"
+												class="link link-primary"
+												onclick={(e) => e.stopPropagation()}
+												title={item.url}
+											>
 													{item.url.length > 30 ? item.url.substring(0, 27) + '...' : item.url}
 												</a>
 											{:else if column.key === 'comment' || column.key === 'playerList'}

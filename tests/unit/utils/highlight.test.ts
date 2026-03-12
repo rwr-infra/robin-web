@@ -92,6 +92,12 @@ describe('highlightMatch', () => {
 		const result = highlightMatch('café', 'é');
 		expect(result).toContain('<mark');
 	});
+
+	test('should escape html in source text', () => {
+		const result = highlightMatch('<img src=x onerror=alert(1)>', 'img');
+		expect(result).toContain('&lt;');
+		expect(result).not.toContain('<img');
+	});
 });
 
 describe('highlightInBadge', () => {
@@ -128,6 +134,12 @@ describe('highlightInBadge', () => {
 	test('should use inline styling approach suitable for badges', () => {
 		const result = highlightInBadge('Player1', 'Player');
 		expect(result).toContain('bg-yellow-300');
+	});
+
+	test('should escape html when query is empty', () => {
+		const result = highlightInBadge('<script>alert(1)</script>', '');
+		expect(result).toContain('&lt;script&gt;alert(1)&lt;/script&gt;');
+		expect(result).not.toContain('<script>');
 	});
 });
 
@@ -203,6 +215,12 @@ describe('renderPlayerListWithHighlight', () => {
 		expect(result).toContain('badge-neutral');
 	});
 
+	test('should escape player names without query', () => {
+		const result = renderPlayerListWithHighlight(['<b>bad</b>']);
+		expect(result).toContain('&lt;b&gt;bad&lt;/b&gt;');
+		expect(result).not.toContain('<b>bad</b>');
+	});
+
 	test('should wrap badges in flex container', () => {
 		const result = renderPlayerListWithHighlight(['Player1']);
 		expect(result).toMatch(/^<div class="flex flex-wrap gap-1 items-start w-full">/);
@@ -246,7 +264,9 @@ describe('Edge Cases and Integration', () => {
 
 	test('should handle player names with numbers', () => {
 		const result = renderPlayerListWithHighlight(['Player123', 'Player456'], '123');
-		expect(result).toContain('<div class="flex flex-wrap gap-1 items-start w-full"><span class="badge gap-0 badge-neutral text-xs whitespace-nowrap flex-shrink-0">Player<span class="bg-yellow-300 text-gray-900 dark:bg-yellow-400 dark:text-gray-900 rounded">123</span></span><span class="badge gap-0 badge-neutral text-xs whitespace-nowrap flex-shrink-0">Player456</span></div>');
+		expect(result).toContain(
+			'<div class="flex flex-wrap gap-1 items-start w-full"><span class="badge gap-0 badge-neutral text-xs whitespace-nowrap flex-shrink-0">Player<span class="bg-yellow-300 text-gray-900 dark:bg-yellow-400 dark:text-gray-900 rounded">123</span></span><span class="badge gap-0 badge-neutral text-xs whitespace-nowrap flex-shrink-0">Player456</span></div>'
+		);
 	});
 
 	test('should preserve original text structure when highlighting', () => {

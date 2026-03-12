@@ -6,7 +6,7 @@
 	import { analytics } from '$lib/utils/analytics';
 	import { m } from '$lib/paraglide/messages.js';
 	import type { IPlayerItem } from '$lib/models/player.model';
-	import { Download, Copy, Check, CircleAlert, LoaderCircle, Trophy } from '@lucide/svelte';
+	import { Download, Copy, Check, CircleAlert, LoaderCircle } from '@lucide/svelte';
 
 	interface Props {
 		player?: IPlayerItem;
@@ -16,9 +16,6 @@
 		queryTimestamp?: number;
 		// Callback to fetch rankings - returns field key to ranking position mapping
 		onFetchRankings?: () => Promise<Record<string, number>>;
-		// Extensibility hooks for future image editor
-		onEditStart?: () => void;
-		onEditComplete?: (editedImage: Blob) => void;
 		customTheme?: 'default' | 'dark' | 'light';
 		showWatermark?: boolean;
 		watermarkText?: string;
@@ -38,8 +35,6 @@
 		onClose,
 		queryTimestamp,
 		onFetchRankings,
-		onEditStart,
-		onEditComplete,
 		customTheme = 'default',
 		showWatermark = false,
 		watermarkText = '',
@@ -49,7 +44,6 @@
 
 	// State
 	let cardElement = $state<HTMLElement | undefined>(undefined);
-	let isGenerating = $state(false);
 	let isCopying = $state(false);
 	let isDownloading = $state(false);
 	let copySuccess = $state(false);
@@ -74,18 +68,37 @@
 	});
 
 	// Load rankings when modal opens
-	$effect(async () => {
-		if (show && player && onFetchRankings) {
-			isLoadingRankings = true;
-			try {
-				rankings = await onFetchRankings();
-			} catch (error) {
-				console.error('Failed to load rankings:', error);
-				rankings = {};
-			} finally {
-				isLoadingRankings = false;
-			}
+	$effect(() => {
+		if (!(show && player && onFetchRankings)) {
+			return;
 		}
+
+		let isCancelled = false;
+		isLoadingRankings = true;
+
+		const loadRankings = async () => {
+			try {
+				const data = await onFetchRankings();
+				if (!isCancelled) {
+					rankings = data;
+				}
+			} catch (error) {
+				if (!isCancelled) {
+					console.error('Failed to load rankings:', error);
+					rankings = {};
+				}
+			} finally {
+				if (!isCancelled) {
+					isLoadingRankings = false;
+				}
+			}
+		};
+
+		void loadRankings();
+
+		return () => {
+			isCancelled = true;
+		};
 	});
 
 	// Set display timestamp when modal opens
@@ -167,13 +180,6 @@
 			analytics.trackShareCopy(isMobile ? 'mobile' : 'desktop', false);
 		} finally {
 			isCopying = false;
-		}
-	}
-
-	function handleEditStart() {
-		// Extensibility hook for future image editor
-		if (onEditStart) {
-			onEditStart();
 		}
 	}
 

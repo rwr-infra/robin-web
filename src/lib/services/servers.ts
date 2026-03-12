@@ -38,14 +38,18 @@ export const ServerService: IServerService = {
 			const timestampedUrl = `${reqUrl}&_t=${Date.now()}`;
 			const data = await request<string>(timestampedUrl, requestOptions, 'text');
 			return parseServerListFromString(data);
-		} catch (error: any) {
-			console.error(`Error fetching server list: ${error.message}`);
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : String(error);
+			console.error(`Error fetching server list: ${message}`);
 			// Rethrow the error to allow proper handling in listAll
 			throw error;
 		}
 	},
 
 	async listAll(options = {}) {
+		const getErrorMessage = (error: unknown): string =>
+			error instanceof Error ? error.message : String(error);
+
 		let start = 0;
 		const size = 100;
 		const totalServerList: IDisplayServerItem[] = [];
@@ -55,7 +59,7 @@ export const ServerService: IServerService = {
 		// Maximum number of batches to try (to prevent infinite loops)
 		const MAX_BATCHES = 10;
 		let batchCount = 0;
-		let lastError: Error | null = null;
+		let lastError: unknown = null;
 
 		try {
 			while (hasMoreData && batchCount < MAX_BATCHES) {
@@ -82,9 +86,10 @@ export const ServerService: IServerService = {
 							hasMoreData = false;
 						}
 					}
-				} catch (error: any) {
+				} catch (error: unknown) {
 					lastError = error;
-					console.error(`Error in batch ${batchCount}: ${error.message}`);
+					const message = getErrorMessage(error);
+					console.error(`Error in batch ${batchCount}: ${message}`);
 					// Stop fetching more data on error
 					hasMoreData = false;
 				}
@@ -93,7 +98,7 @@ export const ServerService: IServerService = {
 			// If we have data but also encountered an error, log a warning but return the data we have
 			if (lastError && totalServerList.length > 0) {
 				console.warn(
-					`Returning ${totalServerList.length} servers despite error: ${lastError.message}`
+					`Returning ${totalServerList.length} servers despite error: ${getErrorMessage(lastError)}`
 				);
 			}
 
@@ -103,8 +108,9 @@ export const ServerService: IServerService = {
 			}
 
 			return totalServerList;
-		} catch (error: any) {
-			console.error(`Error in listAll: ${error.message}`);
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : String(error);
+			console.error(`Error in listAll: ${message}`);
 			// Return whatever data we managed to collect before the error
 			return totalServerList;
 		}

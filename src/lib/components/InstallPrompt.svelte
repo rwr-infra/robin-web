@@ -4,15 +4,21 @@
 	import { Download } from '@lucide/svelte';
 	import TranslatedText from './TranslatedText.svelte';
 
-	let deferredPrompt: Event | null = null;
+	interface BeforeInstallPromptEvent extends Event {
+		prompt: () => Promise<void> | void;
+		userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>;
+	}
+
+	let deferredPrompt: BeforeInstallPromptEvent | null = null;
 	let showInstallPrompt = $state(false);
 
 	onMount(() => {
 		if (!browser) return;
 
 		// Check if app is already installed
-		const isInstalled = window.matchMedia('(display-mode: standalone)').matches ||
-			(window.navigator as any).standalone === true;
+		const iosNavigator = window.navigator as Navigator & { standalone?: boolean };
+		const isInstalled =
+			window.matchMedia('(display-mode: standalone)').matches || iosNavigator.standalone === true;
 
 		if (isInstalled) {
 			return;
@@ -27,7 +33,7 @@
 		const handler = (e: Event) => {
 			// Prevent Chrome 67 and earlier from automatically showing the prompt
 			e.preventDefault();
-			deferredPrompt = e;
+			deferredPrompt = e as BeforeInstallPromptEvent;
 			showInstallPrompt = true;
 		};
 
@@ -42,8 +48,8 @@
 		if (!deferredPrompt) return;
 
 		// Show the install prompt
-		(deferredPrompt as any).prompt();
-		const { outcome } = await (deferredPrompt as any).userChoice;
+		deferredPrompt.prompt();
+		const { outcome } = await deferredPrompt.userChoice;
 
 		if (outcome === 'accepted') {
 			showInstallPrompt = false;

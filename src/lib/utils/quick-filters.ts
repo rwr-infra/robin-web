@@ -1,7 +1,8 @@
 import type { IDisplayServerItem } from '$lib/models/server.model';
 
 // Regex patterns for filtering
-const CASTLING_REGEX = /^\[Castling](\[Global])?\[[\w!\\?]+(-\d)?\s(LV\d|FOV)]/;
+const CASTLING_REGEX =
+	/^\[Castling](?:\[Global])?\[(?:[\w!\\?]+(?:-\d)?\s(?:LV\d|FOV)|FOV-\d|[\w!\\?]+-\d)]/;
 const HELDDIVERS_REGEX = /^\[地狱潜兵]/;
 
 export const filters = [
