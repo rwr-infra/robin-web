@@ -48,9 +48,6 @@
 			</div>
 
 <div class="flex items-center gap-1 sm:gap-2 md:gap-3">
-	<ThemeToggle />
-	<LanguageSwitcher />
-
 	<a
 		href="https://github.com/Kreedzt/rwrs-another-page-v2"
 		class="header-link btn-tactical inline-flex items-center justify-center px-1.5 py-1 sm:px-2 sm:py-1.5 md:px-3 md:py-2 text-xs sm:text-sm transition-all"
@@ -98,6 +95,11 @@
 		<BrandIcon name="steam" size={16} opacity={0.6} class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
 		<span class="hidden sm:inline ml-1 md:ml-2">RWR 2</span>
 	</a>
+
+	<div class="h-4 w-px bg-mil-primary/20 md:hidden"></div>
+
+	<ThemeToggle />
+	<LanguageSwitcher />
 </div>
 		</div>
 	</div>
