@@ -1,10 +1,9 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import '../app.css';
-	import TranslatedText from '$lib/components/TranslatedText.svelte';
-	import ChristmasSnowfall from '$lib/components/ChristmasSnowfall.svelte';
-	import Header from './Header.svelte';
-	import { getLayoutMode, syncLayoutMode } from '$lib/stores/layout-mode.svelte';
+import { onMount } from 'svelte';
+import '../app.css';
+import TranslatedText from '$lib/components/TranslatedText.svelte';
+import Header from './Header.svelte';
+import { getLayoutMode, syncLayoutMode } from '$lib/stores/layout-mode.svelte';
 
 	let { children } = $props();
 
@@ -99,8 +98,7 @@
 	}
 </script>
 
-<!-- Christmas snowfall background -->
-<ChristmasSnowfall />
+
 
 <!-- PC端: 固定高度布局; 移动端: 正常流式布局 -->
 <div
