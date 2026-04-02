@@ -11,15 +11,15 @@
 	}
 
 	function handleDiscordClick() {
-		analytics.trackEvent('github_link_click', { action: 'external_link', link: 'discord' });
+		analytics.trackDiscordClick();
 	}
 
 	function handleSteam1Click() {
-		analytics.trackEvent('github_link_click', { action: 'external_link', link: 'steam_rwr1' });
+		analytics.trackSteamRwr1Click();
 	}
 
 	function handleSteam2Click() {
-		analytics.trackEvent('github_link_click', { action: 'external_link', link: 'steam_rwr2' });
+		analytics.trackSteamRwr2Click();
 	}
 </script>
 
