@@ -28,6 +28,9 @@ const BAIDU_CATEGORIES = {
 	theme_change: 'navigation',
 	language_change: 'navigation',
 	github_link_click: 'navigation',
+	discord_link_click: 'navigation',
+	steam_rwr1_link_click: 'navigation',
+	steam_rwr2_link_click: 'navigation',
 	layout_mode_change: 'navigation',
 	search_triggered: 'search',
 	quick_filter_applied: 'search',
@@ -422,6 +425,33 @@ class Analytics {
 	 */
 	trackGitHubClick(): void {
 		this.trackEvent('github_link_click', {
+			action: 'external_link'
+		});
+	}
+
+	/**
+	 * Track Discord link click
+	 */
+	trackDiscordClick(): void {
+		this.trackEvent('discord_link_click', {
+			action: 'external_link'
+		});
+	}
+
+	/**
+	 * Track Steam RWR1 link click
+	 */
+	trackSteamRwr1Click(): void {
+		this.trackEvent('steam_rwr1_link_click', {
+			action: 'external_link'
+		});
+	}
+
+	/**
+	 * Track Steam RWR2 link click
+	 */
+	trackSteamRwr2Click(): void {
+		this.trackEvent('steam_rwr2_link_click', {
 			action: 'external_link'
 		});
 	}

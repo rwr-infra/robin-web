@@ -96,11 +96,15 @@ The application includes a comprehensive analytics system that tracks user inter
 | `server_join_click`        | Clicking server join button                 |
 | `map_preview_open`         | Opening map preview                         |
 | `share_modal_open`         | Opening player share modal                  |
-| `share_download`           | Downloading player share image             |
-| `share_copy`               | Copying player share image to clipboard    |
+| `share_download`           | Downloading player share image              |
+| `share_copy`               | Copying player share image to clipboard     |
 | `server_share_modal_open`  | Opening server share modal                  |
-| `server_share_download`    | Downloading server share image             |
-| `server_share_copy`        | Copying server share image to clipboard    |
+| `server_share_download`    | Downloading server share image              |
+| `server_share_copy`        | Copying server share image to clipboard     |
+| `github_link_click`        | Clicking GitHub link in header              |
+| `discord_link_click`       | Clicking Discord link in header             |
+| `steam_rwr1_link_click`    | Clicking RWR1 Steam link in header          |
+| `steam_rwr2_link_click`    | Clicking RWR2 Steam link in header          |
 
 ### Debug Mode
 
@@ -185,6 +189,7 @@ docker run -d --name robin-web -p 80:80 zhaozisong0/robin-web-community:latest
 ```
 
 **Features:**
+
 - Automatically uses `window.location.origin` for meta tags and SEO
 - No environment variables required for basic usage
 - Optionally override `VITE_SITE_URL` and `VITE_CDN_IMAGE_URL` at runtime

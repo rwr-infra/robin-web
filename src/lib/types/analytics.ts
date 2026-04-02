@@ -9,6 +9,9 @@ export type AnalyticsEventName =
 	| 'theme_change'
 	| 'language_change'
 	| 'github_link_click'
+	| 'discord_link_click'
+	| 'steam_rwr1_link_click'
+	| 'steam_rwr2_link_click'
 	| 'layout_mode_change'
 	// Search & Filter Events
 	| 'search_triggered'
