@@ -105,12 +105,10 @@ describe('Quick Filters', () => {
 	describe('castling filter', () => {
 		const castlingFilter = filters.find((f) => f.id === 'castling')!;
 		const realCastlingNames = [
-			'[Castling][Temp LV4]',
-			'[Castling][GFL-5 LV4]',
-			'[Castling][Normal LV3]',
-			'[Castling][FOV-4]',
-			'[Castling][OverDoze-1]',
-			'[Castling][FRENZY-2]',
+			'[Castling-3][EZ][230%]',
+			'[Castling-1][EZ][200%]',
+			'[Castling-2][Normal][200%]',
+			'[Castling-4][Normal][200%]',
 			'[Castling][NetherLand LV4]'
 		];
 
@@ -128,7 +126,7 @@ describe('Quick Filters', () => {
 		test('should not match servers with wrong mode', () => {
 			const server = createMockServer({
 				mode: 'COOP',
-				name: '[Castling][Temp LV4]'
+				name: '[Castling-1][EZ][200%]'
 			});
 
 			expect(castlingFilter.filter(server)).toBe(false);
@@ -146,7 +144,7 @@ describe('Quick Filters', () => {
 		test('should handle case insensitive mode matching', () => {
 			const server = createMockServer({
 				mode: 'CASTLING',
-				name: '[Castling][Temp LV4]'
+				name: '[Castling-1][EZ][200%]'
 			});
 
 			expect(castlingFilter.filter(server)).toBe(true);
@@ -197,7 +195,7 @@ describe('Quick Filters', () => {
 		test('should handle servers with multiple potential matches', () => {
 			const server = createMockServer({
 				mode: 'Castling',
-				name: '[Castling][Temp LV4]',
+				name: '[Castling-1][EZ][200%]',
 				realm: 'official_invasion'
 			});
 
@@ -226,32 +224,22 @@ describe('Quick Filters', () => {
 		test('should keep matching real castling server names when regex changes', () => {
 			const testCases = [
 				{
-					name: '[Castling][Temp LV4]',
+					name: '[Castling-3][EZ][230%]',
 					mode: 'Castling',
 					expected: true
 				},
 				{
-					name: '[Castling][GFL-5 LV4]',
+					name: '[Castling-1][EZ][200%]',
 					mode: 'Castling',
 					expected: true
 				},
 				{
-					name: '[Castling][Normal LV3]',
+					name: '[Castling-2][Normal][200%]',
 					mode: 'Castling',
 					expected: true
 				},
 				{
-					name: '[Castling][FOV-4]',
-					mode: 'Castling',
-					expected: true
-				},
-				{
-					name: '[Castling][OverDoze-1]',
-					mode: 'Castling',
-					expected: true
-				},
-				{
-					name: '[Castling][FRENZY-2]',
+					name: '[Castling-4][Normal][200%]',
 					mode: 'Castling',
 					expected: true
 				},
