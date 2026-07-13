@@ -77,7 +77,7 @@ export default defineConfig({
 		proxy: {
 			'/api': {
 				// Use mock server for E2E tests, production API for dev
-				target: process.env.E2E_TEST ? 'http://localhost:5800' : 'https://robin-test.kreedzt.com',
+				target: process.env.E2E_TEST ? 'http://localhost:5800' : 'https://robin.rwr-infra.uk',
 				changeOrigin: true
 			}
 		}
