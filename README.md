@@ -1,6 +1,5 @@
 # Robin Web(RWRS Another Page V2)
 
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=Kreedzt_rwrs-another-page-v2&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=Kreedzt_rwrs-another-page-v2)
 [![codecov](https://codecov.io/gh/Kreedzt/rwrs-another-page-v2/branch/master/graph/badge.svg?token=MWGXZH7GO9)](https://codecov.io/gh/Kreedzt/rwrs-another-page-v2)
 ![build status](https://github.com/Kreedzt/rwrs-another-page-v2/actions/workflows/ci.yml/badge.svg?branch=master)
 
