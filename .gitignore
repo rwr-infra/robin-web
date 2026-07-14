@@ -36,3 +36,8 @@ project.inlang/cache/
 /.claude
 /.specify
 /specs
+.agents/
+skills-lock.json
+docs/
+
+build_*.sh
