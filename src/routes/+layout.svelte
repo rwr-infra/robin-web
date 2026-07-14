@@ -3,6 +3,7 @@ import { onMount } from 'svelte';
 import '../app.css';
 import TranslatedText from '$lib/components/TranslatedText.svelte';
 import Header from './Header.svelte';
+import AnnouncementBar from './AnnouncementBar.svelte';
 import { getLayoutMode, syncLayoutMode } from '$lib/stores/layout-mode.svelte';
 
 	let { children } = $props();
@@ -105,6 +106,8 @@ import { getLayoutMode, syncLayoutMode } from '$lib/stores/layout-mode.svelte';
 	class={`flex min-h-screen flex-col ${layoutMode === 'tableOnly' ? tableOnlyRootClasses : ''}`}
 >
 	<Header />
+
+	<AnnouncementBar />
 
 	<main
 		class={`flex w-full flex-col flex-1 ${layoutMode === 'tableOnly' ? tableOnlyMainClasses : ''}`}

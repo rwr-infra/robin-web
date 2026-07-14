@@ -1,6 +1,9 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
 	"app": {
+		"announcement": {
+			"close": "关闭公告"
+		},
 		"loading": {
 			"text": "加载服务器数据...",
 			"title": "加载服务器",

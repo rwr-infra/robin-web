@@ -1,6 +1,9 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
 	"app": {
+		"announcement": {
+			"close": "Close announcement"
+		},
 		"loading": {
 			"text": "Loading server data...",
 			"title": "Loading Servers",
