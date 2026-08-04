@@ -206,6 +206,20 @@
 				"error": "生成图片失败",
 				"retry": "重试",
 				"help": "下载图片或复制到剪贴板进行分享"
+			},
+			"neighbors": {
+				"button": "相近账号",
+				"buttonTitle": "查看与该玩家注册相近的账号",
+				"label": "相近账号",
+				"bannerAnchored": "{username} 的相近账号",
+				"bannerSortOnly": "已按相近账号排序",
+				"range": "第 {start}–{end} 名",
+				"hint": "排序依据玩家 Steam ID，接口不会返回该值。",
+				"exit": "退出",
+				"notFound": "本数据库中未找到该玩家，已显示列表开头。",
+				"dismiss": "关闭",
+				"previousWindow": "上 {count} 名",
+				"nextWindow": "下 {count} 名"
 			}
 		},
 		"footer": {
@@ -277,7 +291,8 @@
 			"togglePlayerDetails": "切换玩家详情",
 			"clickToSort": "点击排序",
 			"previewMap": "预览地图",
-			"sharePlayer": "分享玩家统计图片"
+			"sharePlayer": "分享玩家统计图片",
+			"findNeighbors": "查看相近账号"
 		}
 	}
 }

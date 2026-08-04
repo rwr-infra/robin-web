@@ -26,6 +26,8 @@ export type AnalyticsEventName =
 	| 'load_more_click'
 	| 'auto_refresh_toggle'
 	| 'player_database_change'
+	| 'player_find_neighbors'
+	| 'player_neighbors_shift'
 	// Share Events
 	| 'share_modal_open'
 	| 'share_download'

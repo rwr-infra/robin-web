@@ -43,6 +43,8 @@ const BAIDU_CATEGORIES = {
 	load_more_click: 'data',
 	auto_refresh_toggle: 'data',
 	player_database_change: 'data',
+	player_find_neighbors: 'data',
+	player_neighbors_shift: 'data',
 	share_modal_open: 'share',
 	share_download: 'share',
 	share_copy: 'share',

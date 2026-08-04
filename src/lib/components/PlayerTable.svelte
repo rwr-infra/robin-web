@@ -1,7 +1,7 @@
 <script lang="ts">
 	import TranslatedText from '$lib/components/TranslatedText.svelte';
 	import { m } from '$lib/paraglide/messages.js';
-	import { ArrowDown, Info, Share } from '@lucide/svelte';
+	import { ArrowDown, Info, Share, Users } from '@lucide/svelte';
 	import type { IPlayerItem, IPlayerColumn } from '$lib/models/player.model';
 	import { escapeHtml } from '$lib/utils/highlight';
 	import './table.css';
@@ -15,6 +15,7 @@
 		sortColumn: string | null;
 		onSort?: (column: string) => void;
 		onShare?: (player: IPlayerItem) => void;
+		onFindNeighbors?: (player: IPlayerItem) => void;
 	}
 
 	let {
@@ -25,7 +26,8 @@
 		highlightedUsername,
 		sortColumn = null,
 		onSort = () => {},
-		onShare
+		onShare,
+		onFindNeighbors
 	}: Props = $props();
 
 	// Helper function to get the display value for a column
@@ -129,7 +131,7 @@
 											: 'align-middle'} {column.key === 'action' ? 'action-cell' : ''}"
 								>
 									{#if column.key === 'action'}
-										<div class="flex items-center justify-center text-center">
+										<div class="flex items-center justify-center gap-1 text-center">
 											<button
 												type="button"
 												class="btn btn-ghost btn-xs btn-circle"
@@ -138,6 +140,18 @@
 											>
 												<Share class="w-4 h-4" />
 											</button>
+											{#if onFindNeighbors}
+												<button
+													type="button"
+													class="btn btn-ghost btn-xs btn-circle"
+													data-testid="find-neighbors"
+													onclick={() => onFindNeighbors(item)}
+													title={m['app.player.neighbors.buttonTitle']()}
+													aria-label={m['app.ariaLabel.findNeighbors']()}
+												>
+													<Users class="w-4 h-4" />
+												</button>
+											{/if}
 										</div>
 									{:else}
 										{@html getDisplayValue(item, column, searchQuery)}
@@ -173,13 +187,13 @@
 	}
 
 	:global(.player-table-wrapper .action-cell) {
-		min-width: 5rem;
-		width: 5rem;
+		min-width: 6.5rem;
+		width: 6.5rem;
 	}
 
 	:global(.player-table-wrapper .action-header) {
-		min-width: 5rem;
-		width: 5rem;
+		min-width: 6.5rem;
+		width: 6.5rem;
 	}
 
 	/* Mobile responsive adjustments for PlayerTable */

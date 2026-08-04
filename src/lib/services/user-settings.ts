@@ -45,7 +45,9 @@ const DEFAULT_SETTINGS: UserSettings = {
 		kd: true,
 		timePlayed: true,
 		rankProgression: true,
-		rankName: true
+		rankName: true,
+		// Row actions (share, similar accounts) - matches the server table default
+		action: true
 	},
 	layoutMode: 'fullPage' as const
 };

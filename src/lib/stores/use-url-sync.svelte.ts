@@ -44,7 +44,8 @@ export function createUrlSync(options: UrlSyncOptions) {
 			);
 		}
 
-		// Initialize sort state - apply to both server and player states
+		// Initialize sort state - apply to both server and player states.
+		// playerState drops values its API cannot sort by (e.g. server column keys).
 		if (urlState.sortColumn && urlState.sortDirection) {
 			serverState.setSortState(urlState.sortColumn, urlState.sortDirection);
 			playerState.setSortState(urlState.sortColumn, urlState.sortDirection);
@@ -67,19 +68,26 @@ export function createUrlSync(options: UrlSyncOptions) {
 			onSearchChange(urlState.search);
 		}
 
-		// Quick filters change
-		if (urlState.quickFilters !== undefined) {
-			const validFilters = urlState.quickFilters.filter((filterId) =>
-				quickFilters.some((filter) => filter.id === filterId)
-			);
-			// Return for component to handle
-			return { quickFilters: validFilters };
-		}
+		// Quick filters change - returned at the end so the remaining state still syncs
+		// (the URL subscriber always sends a quickFilters array, so returning here would
+		// make every state change below unreachable)
+		const validFilters = urlState.quickFilters?.filter((filterId) =>
+			quickFilters.some((filter) => filter.id === filterId)
+		);
 
 		// Sort state change - sync to both states
 		if (urlState.sortColumn !== undefined) {
 			serverState.setSortState(urlState.sortColumn, urlState.sortDirection || null);
 			playerState.setSortState(urlState.sortColumn, urlState.sortDirection || null);
+		}
+
+		// Similar accounts anchor change (browser back/forward on a shared window)
+		if (urlState.sidAnchor) {
+			if (urlState.sidAnchor !== playerState.sidAnchor) {
+				playerState.enterSidNeighborMode(urlState.sidAnchor);
+			}
+		} else if (playerState.sidNeighborMode) {
+			playerState.exitSidNeighborMode();
 		}
 
 		// View mode change
@@ -96,7 +104,7 @@ export function createUrlSync(options: UrlSyncOptions) {
 			}
 		}
 
-		return {};
+		return validFilters !== undefined ? { quickFilters: validFilters } : {};
 	}
 
 	/**
