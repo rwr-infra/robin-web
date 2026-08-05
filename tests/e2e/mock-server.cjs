@@ -96,6 +96,25 @@ const mockPlayers = Array.from({ length: MOCK_PLAYER_COUNT }, (_, i) => ({
 	sid: ((i + 1) * 7) % MOCK_PLAYER_COUNT
 }));
 
+// API sort field -> comparable value of a mock player. Field names are snake_case while
+// the mock rows are camelCase, and some values carry units that have to be stripped.
+const SORT_VALUE_BY_FIELD = {
+	kills: (player) => player.kills,
+	deaths: (player) => player.deaths,
+	score: (player) => player.score,
+	kd: (player) => Number(player.kd),
+	time_played: (player) => parseInt(player.timePlayed, 10),
+	teamkills: (player) => player.teamkills,
+	longest_kill_streak: (player) => player.longestKillStreak,
+	targets_destroyed: (player) => player.targetsDestroyed,
+	vehicles_destroyed: (player) => player.vehiclesDestroyed,
+	soldiers_healed: (player) => player.soldiersHealed,
+	distance_moved: (player) => parseFloat(player.distanceMoved),
+	shots_fired: (player) => player.shotsFired,
+	throwables_thrown: (player) => player.throwablesThrown,
+	rank_progression: (player) => player.rankProgression
+};
+
 function orderMockPlayers(sort) {
 	const ordered = [...mockPlayers];
 	if (sort === 'sid') {
@@ -104,8 +123,9 @@ function orderMockPlayers(sort) {
 	if (sort === 'username') {
 		return ordered.sort((a, b) => a.username.localeCompare(b.username));
 	}
-	if (sort && sort !== 'rank_progression') {
-		return ordered.sort((a, b) => Number(b[sort] ?? 0) - Number(a[sort] ?? 0));
+	const getSortValue = sort ? SORT_VALUE_BY_FIELD[sort] : undefined;
+	if (getSortValue) {
+		return ordered.sort((a, b) => getSortValue(b) - getSortValue(a));
 	}
 	return ordered;
 }

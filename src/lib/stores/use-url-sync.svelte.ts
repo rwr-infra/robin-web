@@ -75,11 +75,10 @@ export function createUrlSync(options: UrlSyncOptions) {
 			quickFilters.some((filter) => filter.id === filterId)
 		);
 
-		// Sort state change - sync to both states
-		if (urlState.sortColumn !== undefined) {
-			serverState.setSortState(urlState.sortColumn, urlState.sortDirection || null);
-			playerState.setSortState(urlState.sortColumn, urlState.sortDirection || null);
-		}
+		// Sort state change - sync to both states. The URL is authoritative here, so a URL
+		// without `sort` (e.g. after browser Back) has to clear the previous sort as well.
+		serverState.setSortState(urlState.sortColumn ?? null, urlState.sortDirection || null);
+		playerState.setSortState(urlState.sortColumn ?? null, urlState.sortDirection || null);
 
 		// Similar accounts anchor change (browser back/forward on a shared window)
 		if (urlState.sidAnchor) {

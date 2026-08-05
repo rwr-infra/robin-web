@@ -151,16 +151,20 @@ describe('createPlayerState - SID neighbor mode', () => {
 		});
 
 		it('should clamp backward shifts to the top of the list', async () => {
-			mockResponse(createWindow(1, ['A']));
+			// A response for start=70 starts at row 71, so the next shift rebases from there
+			mockResponse(createWindow(71, ['A', 'B']));
 
 			playerState.shiftSidWindow(-1);
 			await playerState.loadPlayers();
 
-			expect(PlayerService.listWithPagination).toHaveBeenCalledWith(
+			expect(PlayerService.listWithPagination).toHaveBeenLastCalledWith(
 				expect.objectContaining({ start: 70 })
 			);
 
-			playerState.shiftSidWindow(-1);
+			// A page larger than the rows above the window must clamp instead of going negative
+			playerState.handlePlayerPageSizeChange(100);
+			mockResponse(createWindow(1, ['A']));
+
 			playerState.shiftSidWindow(-1);
 			await playerState.loadPlayers();
 
@@ -237,6 +241,66 @@ describe('createPlayerState - SID neighbor mode', () => {
 				expect.objectContaining({ search: undefined, sort: 'sid', start: 110 })
 			);
 			expect(playerState.players).toHaveLength(3);
+		});
+	});
+
+	describe('stale responses', () => {
+		it('should drop a response that a newer query superseded', async () => {
+			let resolveStale: (value: {
+				players: IPlayerItem[];
+				hasNext: boolean;
+				hasPrevious: boolean;
+			}) => void = () => {};
+			vi.mocked(PlayerService.listWithPagination).mockImplementationOnce(
+				() =>
+					new Promise((resolve) => {
+						resolveStale = resolve;
+					})
+			);
+
+			const stalePending = playerState.loadPlayers();
+
+			mockResponse(createWindow(1, ['Fresh']));
+			await playerState.loadPlayers();
+
+			resolveStale({ players: createWindow(500, ['Stale']), hasNext: true, hasPrevious: true });
+			await stalePending;
+
+			expect(playerState.players.map((player) => player.username)).toEqual(['Fresh']);
+			expect(playerState.loading).toBe(false);
+		});
+
+		it('should not let a stale anchored response leave neighbor mode', async () => {
+			let resolveStale: (value: {
+				players: IPlayerItem[];
+				hasNext: boolean;
+				hasPrevious: boolean;
+			}) => void = () => {};
+			vi.mocked(PlayerService.listWithPagination).mockImplementationOnce(
+				() =>
+					new Promise((resolve) => {
+						resolveStale = resolve;
+					})
+			);
+
+			playerState.enterSidNeighborMode('Gone');
+			const stalePending = playerState.loadPlayers();
+
+			// User picks another anchor before the first request comes back
+			mockResponse(createWindow(41, ['Target']));
+			playerState.enterSidNeighborMode('Target');
+			await playerState.loadPlayers();
+
+			resolveStale({
+				players: createWindow(1, ['Someone']),
+				hasNext: true,
+				hasPrevious: false
+			});
+			await stalePending;
+
+			expect(playerState.sidAnchor).toBe('Target');
+			expect(playerState.sidAnchorMissing).toBe(false);
+			expect(playerState.players.map((player) => player.username)).toEqual(['Target']);
 		});
 	});
 

@@ -177,6 +177,8 @@ class Analytics {
 		if (params.image_format) labelParts.push(`format:${params.image_format}`);
 		if (params.share_type) labelParts.push(`type:${params.share_type}`);
 		if (params.method) labelParts.push(`method:${params.method}`);
+		// Baidu reuses the event name as its action, so the param needs its own label part
+		if (params.action) labelParts.push(`action:${params.action}`);
 
 		return {
 			category,

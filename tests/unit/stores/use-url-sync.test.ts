@@ -286,6 +286,14 @@ describe('createUrlSync', () => {
 			expect(mockPlayerState.setSortState).toHaveBeenCalledWith('name', null);
 		});
 
+		it('should clear sort state when the URL has no sort parameter', () => {
+			// Browser Back to a URL without `sort` must not keep the previous sort
+			urlSync.handleUrlStateChange({ search: 'test' });
+
+			expect(mockServerState.setSortState).toHaveBeenCalledWith(null, null);
+			expect(mockPlayerState.setSortState).toHaveBeenCalledWith(null, null);
+		});
+
 		it('should call onViewChange when view changes', () => {
 			const urlState: UrlState = { view: 'players' };
 			urlSync.handleUrlStateChange(urlState);

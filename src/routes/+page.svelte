@@ -526,8 +526,19 @@
 	function handleViewChange(view: 'servers' | 'players') {
 		currentView = view;
 		searchQuery = '';
+		// Dropping the SID ordering in state must drop it from the URL too, otherwise a
+		// reload or a shared link restores a mode the user just left
+		const leavingSidMode = playerState.playerSortColumn === SID_SORT_FIELD;
 		playerState.exitSidNeighborMode();
-		updateUrlState({ view, search: undefined, sidAnchor: undefined }, true);
+		updateUrlState(
+			{
+				view,
+				search: undefined,
+				sidAnchor: undefined,
+				...(leavingSidMode ? { sortColumn: undefined, sortDirection: undefined } : {})
+			},
+			true
+		);
 		serverState.resetPagination();
 		playerState.resetPagination();
 		if (view === 'players') {

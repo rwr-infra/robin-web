@@ -74,12 +74,15 @@ test('player list API honours the sid sort and rejects unknown sort values', asy
 	const defaultResponse = await request.get(
 		`${MOCK_API_URL}/api/player_list?db=invasion&start=0&size=20`
 	);
+	expect(defaultResponse.ok()).toBeTruthy();
 	const defaultHtml = await defaultResponse.text();
 	expect(defaultHtml).toMatch(/<td>1<\/td>\s*<td>MockPlayer1<\/td>/);
 
 	const brokenResponse = await request.get(
 		`${MOCK_API_URL}/api/player_list?db=invasion&sort=garbage`
 	);
+	// An unrouted endpoint would also answer without "MockPlayer", so check the status first
+	expect(brokenResponse.ok()).toBeTruthy();
 	const brokenHtml = await brokenResponse.text();
 	expect(brokenHtml).not.toContain('MockPlayer');
 });
