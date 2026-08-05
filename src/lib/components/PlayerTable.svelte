@@ -31,11 +31,7 @@
 	}: Props = $props();
 
 	// Helper function to get the display value for a column
-	function getDisplayValue(
-		item: IPlayerItem,
-		column: IPlayerColumn,
-		searchQuery?: string
-	): string {
+	function getDisplayValue(item: IPlayerItem, column: IPlayerColumn, searchQuery?: string): string {
 		// If there's a search query and the column supports highlighting, use that
 		if (searchQuery && column.getValueWithHighlight) {
 			return column.getValueWithHighlight(item, searchQuery);
@@ -74,24 +70,24 @@
 		</span>
 	</div>
 {:else}
-	<div class="w-full player-table-wrapper">
-		<table class="table-pin-rows mb-0 table table-zebra border-0 bg-mil-primary">
+	<div class="player-table-wrapper w-full">
+		<table class="table-pin-rows table-zebra bg-mil-primary mb-0 table border-0">
 			<thead>
 				<tr class="bg-mil-secondary">
 					{#each playerColumns as column (column.key)}
 						{#if visibleColumns[column.key]}
 							<th
-								class="sticky top-0 z-10 h-12 border-mil px-1 py-1 align-middle text-mil-primary {getStickyClass(column.key)}"
+								class="border-mil text-mil-primary sticky top-0 z-10 h-12 px-1 py-1 align-middle {getStickyClass(
+									column.key
+								)}"
 								class:sticky-row-number-header={column.key === 'rowNumber'}
 								class:sticky-username-header={column.key === 'username'}
 								class:action-header={column.key === 'action'}
 							>
 								{#if column.key === 'action' || column.key === 'rowNumber' || column.key === 'rankName'}
 									<!-- No sort button for action, rowNumber and rankName -->
-									<div class="text-center px-2 py-1">
-										{#if column.i18n}<TranslatedText
-												key={column.i18n}
-											/>{:else}{column.label}{/if}
+									<div class="px-2 py-1 text-center">
+										{#if column.i18n}<TranslatedText key={column.i18n} />{:else}{column.label}{/if}
 									</div>
 								{:else}
 									<button
@@ -106,9 +102,9 @@
 												/>{:else}{column.label}{/if}
 										</span>
 										{#if sortColumn !== column.key}
-											<ArrowDown class="w-4 h-4 opacity-30" />
+											<ArrowDown class="h-4 w-4 opacity-30" />
 										{:else}
-											<ArrowDown class="w-4 h-4 text-primary" />
+											<ArrowDown class="text-primary h-4 w-4" />
 										{/if}
 									</button>
 								{/if}
@@ -119,18 +115,24 @@
 			</thead>
 			<tbody>
 				{#each data as item (item.id)}
-					{@const isHighlighted = highlightedUsername && item.username.toLowerCase() === highlightedUsername.toLowerCase()}
+					{@const isHighlighted =
+						highlightedUsername &&
+						item.username.toLowerCase() === highlightedUsername.toLowerCase()}
 					<tr
 						id={`player-row-${item.id}`}
-						class="min-h-12 border-b border-mil {isHighlighted ? 'highlighted-row bg-primary/20 font-semibold' : 'hover hover:bg-base-300'}"
+						class="border-mil min-h-12 border-b {isHighlighted
+							? 'highlighted-row bg-primary/20 font-semibold'
+							: 'hover hover:bg-base-300'}"
 					>
 						{#each playerColumns as column (column.key)}
 							{#if visibleColumns[column.key]}
 								<td
-									class="border-mil px-4 py-2 {getStickyClass(column.key)} text-mil-primary {column.alignment === 'center'
-										? 'align-middle text-center'
+									class="border-mil px-4 py-2 {getStickyClass(
+										column.key
+									)} text-mil-primary {column.alignment === 'center'
+										? 'text-center align-middle'
 										: column.alignment === 'right'
-											? 'align-middle text-right'
+											? 'text-right align-middle'
 											: 'align-middle'} {column.key === 'action' ? 'action-cell' : ''}"
 								>
 									{#if column.key === 'action'}
@@ -141,7 +143,7 @@
 												onclick={() => onShare?.(item)}
 												title={m['app.ariaLabel.sharePlayer']()}
 											>
-												<Share class="w-4 h-4" />
+												<Share class="h-4 w-4" />
 											</button>
 											{#if onFindNeighbors}
 												<button
@@ -152,7 +154,7 @@
 													title={m['app.player.neighbors.buttonTitle']()}
 													aria-label={m['app.ariaLabel.findNeighbors']()}
 												>
-													<Users class="w-4 h-4" />
+													<Users class="h-4 w-4" />
 												</button>
 											{/if}
 										</div>

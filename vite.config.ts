@@ -71,13 +71,15 @@ export default defineConfig({
 		}
 	},
 	resolve: {
-		alias: { '@': path.resolve(__dirname, './src') }
+		alias: { '@': path.resolve(import.meta.dirname, './src') }
 	},
 	server: {
 		proxy: {
 			'/api': {
+				// Override with API_PROXY_TARGET to point dev/e2e at another backend
+				target: process.env.API_PROXY_TARGET ?? 'http://localhost:5800',
 				// Use mock server for E2E tests, production API for dev
-				target: process.env.E2E_TEST ? 'http://localhost:5800' : 'https://robin.rwr-infra.uk',
+				// target: process.env.E2E_TEST ? 'http://localhost:5800' : 'https://robin.rwr-infra.uk',
 				changeOrigin: true
 			}
 		}

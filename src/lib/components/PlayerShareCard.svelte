@@ -115,17 +115,17 @@
 	];
 </script>
 
-<div
-	class="share-card-wrapper w-full max-w-[600px] rounded-xl p-4 shadow-2xl {themeClasses()}"
->
+<div class="share-card-wrapper w-full max-w-[600px] rounded-xl p-4 shadow-2xl {themeClasses()}">
 	<!-- Header Section with database badge -->
-	<div class="mb-3 flex items-center justify-between border-b border-base-content/15 pb-3">
+	<div class="border-base-content/15 mb-3 flex items-center justify-between border-b pb-3">
 		<div class="flex items-center gap-2">
 			<User class="h-4 w-4 opacity-70" />
 			<h2 class="text-lg font-bold">{player.username}</h2>
 		</div>
 		{#if isFieldVisible('db')}
-			<span class="badge badge-ghost badge-sm rounded-md px-2 py-0.5 text-xs font-medium flex items-center gap-1">
+			<span
+				class="badge badge-ghost badge-sm flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium"
+			>
 				<Database class="h-3 w-3" />
 				{formatDbName(player.db)}
 			</span>
@@ -133,7 +133,7 @@
 	</div>
 
 	<!-- Stats Grid - Simple 2-column layout without responsive switching -->
-<div class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
+	<div class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
 		{#each allStatsFields as field}
 			{#if isFieldVisible(field.key as keyof IPlayerItem)}
 				{@const display = getDisplayValueWithRank(field.key)}
@@ -142,11 +142,11 @@
 						<TranslatedText key={field.i18n} />
 					</span>
 					<div class="flex items-center justify-end gap-1">
-						<span class="font-semibold text-xs text-right">
+						<span class="text-right text-xs font-semibold">
 							{display.value}
 						</span>
 						{#if display.rank}
-							<span class="text-primary text-[10px] shrink-0">#{display.rank}</span>
+							<span class="text-primary shrink-0 text-[10px]">#{display.rank}</span>
 						{/if}
 					</div>
 				</div>
@@ -155,14 +155,14 @@
 	</div>
 
 	<!-- Footer with timestamp -->
-	<div class="mt-3 border-t border-base-content/15 pt-2">
+	<div class="border-base-content/15 mt-3 border-t pt-2">
 		{#if queryTimestamp}
-			<div class="text-center text-[10px] text-base-content/40">
+			<div class="text-base-content/40 text-center text-[10px]">
 				<TranslatedText key="app.player.shareCard.queryTime" />: {formatTimestamp(queryTimestamp)}
 			</div>
 		{/if}
 		{#if showWatermark && watermarkText}
-			<div class="mt-1 text-center text-[10px] text-base-content/30">{watermarkText}</div>
+			<div class="text-base-content/30 mt-1 text-center text-[10px]">{watermarkText}</div>
 		{/if}
 	</div>
 
@@ -177,8 +177,8 @@
 <style>
 	.share-card-wrapper {
 		background: linear-gradient(135deg, hsl(var(--b1)), hsl(var(--b2)));
-		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
-			sans-serif;
+		font-family:
+			-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 	}
 
 	/* Ensure consistent rendering across browsers */

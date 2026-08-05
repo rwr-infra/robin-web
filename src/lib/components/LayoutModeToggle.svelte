@@ -22,9 +22,9 @@
 	title={m['app.layoutMode.tooltip']()}
 >
 	{#if layoutMode === 'fullPage'}
-		<Maximize2 class="w-4 h-4" />
+		<Maximize2 class="h-4 w-4" />
 	{:else}
-		<Minimize2 class="w-4 h-4" />
+		<Minimize2 class="h-4 w-4" />
 	{/if}
 	<span class="hidden sm:inline">
 		{m['app.layoutMode.button']()}

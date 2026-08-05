@@ -86,7 +86,10 @@ describe('PlayerService', () => {
 				expect.objectContaining({}),
 				'text'
 			);
-			expect(mockParsePlayerListFromString).toHaveBeenCalledWith(mockHtmlResponse, PlayerDatabase.INVASION);
+			expect(mockParsePlayerListFromString).toHaveBeenCalledWith(
+				mockHtmlResponse,
+				PlayerDatabase.INVASION
+			);
 			expect(result).toEqual(mockPlayers);
 		});
 
@@ -110,7 +113,10 @@ describe('PlayerService', () => {
 				expect.objectContaining({}),
 				'text'
 			);
-			expect(mockParsePlayerListFromString).toHaveBeenCalledWith(mockHtmlResponse, PlayerDatabase.PACIFIC);
+			expect(mockParsePlayerListFromString).toHaveBeenCalledWith(
+				mockHtmlResponse,
+				PlayerDatabase.PACIFIC
+			);
 			expect(result).toEqual(mockPlayers);
 		});
 
@@ -192,7 +198,11 @@ describe('PlayerService', () => {
 			mockRequest.mockResolvedValue(mockHtmlResponse);
 			mockParsePlayerListFromString.mockReturnValue([]);
 
-			const databases: PlayerDatabase[] = [PlayerDatabase.INVASION, PlayerDatabase.PACIFIC, PlayerDatabase.PRERESET_INVASION];
+			const databases: PlayerDatabase[] = [
+				PlayerDatabase.INVASION,
+				PlayerDatabase.PACIFIC,
+				PlayerDatabase.PRERESET_INVASION
+			];
 
 			for (const db of databases) {
 				await PlayerService.list({ db });
@@ -223,7 +233,10 @@ describe('PlayerService', () => {
 				expect.objectContaining({}),
 				'text'
 			);
-			expect(mockParsePlayerListWithPagination).toHaveBeenCalledWith(mockHtmlResponse, PlayerDatabase.INVASION);
+			expect(mockParsePlayerListWithPagination).toHaveBeenCalledWith(
+				mockHtmlResponse,
+				PlayerDatabase.INVASION
+			);
 			expect(result).toEqual(mockPaginationResult);
 		});
 
@@ -251,7 +264,10 @@ describe('PlayerService', () => {
 				expect.objectContaining({}),
 				'text'
 			);
-			expect(mockParsePlayerListWithPagination).toHaveBeenCalledWith(mockHtmlResponse, PlayerDatabase.PACIFIC);
+			expect(mockParsePlayerListWithPagination).toHaveBeenCalledWith(
+				mockHtmlResponse,
+				PlayerDatabase.PACIFIC
+			);
 			expect(result).toEqual(mockPaginationResult);
 		});
 

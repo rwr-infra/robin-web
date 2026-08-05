@@ -63,12 +63,15 @@
 
 {#if visible && data}
 	<div
-		class="announcement-bar flex w-full justify-center border-b border-mil bg-mil-secondary"
+		class="announcement-bar border-mil bg-mil-secondary flex w-full justify-center border-b"
 		role="region"
 		aria-label="Site announcement"
 	>
 		<div class="container flex items-center justify-between gap-3 px-4 py-2">
-			<div bind:this={contentEl} class="announcement-content min-w-0 flex-1 text-sm text-mil-primary">
+			<div
+				bind:this={contentEl}
+				class="announcement-content text-mil-primary min-w-0 flex-1 text-sm"
+			>
 				<!-- Rich text from backend, rendered directly (trusted source) -->
 				{@html data.html}
 			</div>

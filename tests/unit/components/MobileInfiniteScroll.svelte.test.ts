@@ -18,6 +18,7 @@ vi.mock('$lib/components/TranslatedText.svelte', () => ({
 class MockIntersectionObserver implements IntersectionObserver {
 	readonly root: Element | null = null;
 	readonly rootMargin: string = '';
+	readonly scrollMargin: string = '';
 	readonly thresholds: ReadonlyArray<number>;
 	private callback: IntersectionObserverCallback;
 	private elements: Set<Element> = new Set();

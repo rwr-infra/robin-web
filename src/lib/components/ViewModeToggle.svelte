@@ -13,11 +13,7 @@
 	}
 </script>
 
-<button
-	class="btn btn-neutral btn-outline"
-	onclick={handleViewToggle}
-	type="button"
->
+<button class="btn btn-neutral btn-outline" onclick={handleViewToggle} type="button">
 	{#if currentView === 'servers'}
 		<TranslatedText key="app.viewMode.players" />
 	{:else}

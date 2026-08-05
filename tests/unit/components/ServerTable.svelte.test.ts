@@ -7,15 +7,18 @@ import { createMockDisplayServers } from '../../fixtures/mock-data-generator';
 
 // Mock messages
 vi.mock('$lib/paraglide/messages.js', () => ({
-	m: new Proxy({
-		'app.server.noDataFound': () => 'No data found',
-		'app.server.matchingSearch': () => 'matching your search',
-		'app.button.join': () => 'Join',
-		'app.ariaLabel.clickToSort': () => 'Click to sort',
-		'app.ariaLabel.previewMap': () => 'Preview map'
-	}, {
-		get: (target: any, prop: string) => target[prop] || (() => prop)
-	})
+	m: new Proxy(
+		{
+			'app.server.noDataFound': () => 'No data found',
+			'app.server.matchingSearch': () => 'matching your search',
+			'app.button.join': () => 'Join',
+			'app.ariaLabel.clickToSort': () => 'Click to sort',
+			'app.ariaLabel.previewMap': () => 'Preview map'
+		},
+		{
+			get: (target: any, prop: string) => target[prop] || (() => prop)
+		}
+	)
 }));
 
 // Mock the TranslatedText component
@@ -144,13 +147,14 @@ describe('ServerTable', () => {
 				}
 			});
 
-			            // Should render empty state alert instead of table
-			            const table = document.querySelector('table');
-			            expect(table).not.toBeInTheDocument();
-			
-			            const alert = document.querySelector('.alert-info');
-			            expect(alert).toBeInTheDocument();
-			        });	});
+			// Should render empty state alert instead of table
+			const table = document.querySelector('table');
+			expect(table).not.toBeInTheDocument();
+
+			const alert = document.querySelector('.alert-info');
+			expect(alert).toBeInTheDocument();
+		});
+	});
 
 	describe('Column visibility', () => {
 		it('should respect visibleColumns configuration', () => {
@@ -347,7 +351,9 @@ describe('ServerTable', () => {
 			const urlLinks = document.querySelectorAll('a[href]');
 			// Only count external links, not anchor-less links
 			const externalLinks = Array.from(urlLinks).filter(
-				(link) => (link as HTMLAnchorElement).href && (link as HTMLAnchorElement).href !== window.location.href
+				(link) =>
+					(link as HTMLAnchorElement).href &&
+					(link as HTMLAnchorElement).href !== window.location.href
 			);
 			expect(externalLinks.length).toBe(0);
 		});

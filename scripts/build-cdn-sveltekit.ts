@@ -79,10 +79,7 @@ function buildCDNForSvelteKit() {
 		// Update canonical/alternate/OG/Twitter/JSON-LD URLs to absolute site domain for CDN build
 		const replaceLink = (rel: string, hreflang?: string) => {
 			const langAttr = hreflang ? `\\s+hreflang="${hreflang}"` : '';
-			const pattern = new RegExp(
-				`<link\\s+rel="${rel}"${langAttr}\\s+href="[^"]*"\\s*\\/?>`,
-				'i'
-			);
+			const pattern = new RegExp(`<link\\s+rel="${rel}"${langAttr}\\s+href="[^"]*"\\s*\\/?>`, 'i');
 			const replacement = `<link rel="${rel}"${hreflang ? ` hreflang="${hreflang}"` : ''} href="${canonicalUrl}" />`;
 			appHtmlContent = appHtmlContent.replace(pattern, replacement);
 		};
@@ -100,10 +97,7 @@ function buildCDNForSvelteKit() {
 			/<meta\s+name="twitter:url"\s+content="[^"]*"\s*\/?>/i,
 			`<meta name="twitter:url" content="${canonicalUrl}" />`
 		);
-		appHtmlContent = appHtmlContent.replace(
-			/"url":\s*"[^"]*"/,
-			`"url": "${canonicalUrl}"`
-		);
+		appHtmlContent = appHtmlContent.replace(/"url":\s*"[^"]*"/, `"url": "${canonicalUrl}"`);
 
 		writeFileSync(appHtmlPath, appHtmlContent);
 		console.log(`  ✓ Replaced __VITE_SITE_URL__ with ${siteUrl}`);
@@ -391,7 +385,9 @@ function processManifestFile(buildDir: string, manifest: CDNManifest): void {
 
 			// Find matching asset in manifest
 			const assetInfo = Object.values(manifest.assets).find(
-				(asset) => asset.originalPath === originalSrc.replace(/^\//, '') || asset.originalName === basename(originalSrc)
+				(asset) =>
+					asset.originalPath === originalSrc.replace(/^\//, '') ||
+					asset.originalName === basename(originalSrc)
 			);
 
 			if (assetInfo) {
@@ -474,9 +470,7 @@ function processHTMLContent(htmlPath: string, manifest: CDNManifest): string {
 	content = content.replace(
 		/(__sveltekit_[\w$]+\s*=\s*{\s*base:[^}]*)(};)/,
 		(match, prefix: string, suffix: string) =>
-			prefix.includes('assets:')
-				? match
-				: `${prefix}, assets: "${baseUrl}" ${suffix}`
+			prefix.includes('assets:') ? match : `${prefix}, assets: "${baseUrl}" ${suffix}`
 	);
 
 	// Replace import("./_app/...") or import("/_app/...")
@@ -492,8 +486,7 @@ function processHTMLContent(htmlPath: string, manifest: CDNManifest): string {
 
 	// Add CDN preconnect links (optimized to avoid duplicates)
 	const imageCdnUrl = process.env.CDN_IMAGE_URL || manifest.cdnBaseUrl;
-	const needsPreconnect =
-		manifest.cdnBaseUrl && manifest.cdnBaseUrl.startsWith('http');
+	const needsPreconnect = manifest.cdnBaseUrl && manifest.cdnBaseUrl.startsWith('http');
 
 	if (needsPreconnect) {
 		// Remove existing preconnect placeholders (matches comments containing link tags)

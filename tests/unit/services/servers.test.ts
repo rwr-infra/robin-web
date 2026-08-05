@@ -27,10 +27,12 @@ describe('ServerService', () => {
 		test('should parse XML response and return server list', async () => {
 			// Mock successful API response
 			const mockXmlResponse = createMockXmlResponse(5);
-			vi.mocked(fetch).mockResolvedValueOnce(new Response(mockXmlResponse, {
-				status: 200,
-				headers: { 'Content-Type': 'application/xml' }
-			}));
+			vi.mocked(fetch).mockResolvedValueOnce(
+				new Response(mockXmlResponse, {
+					status: 200,
+					headers: { 'Content-Type': 'application/xml' }
+				})
+			);
 
 			const result = await ServerService.listAll();
 
@@ -56,10 +58,12 @@ describe('ServerService', () => {
 </server_list>
 </result>`;
 
-			vi.mocked(fetch).mockResolvedValueOnce(new Response(emptyXmlResponse, {
-				status: 200,
-				headers: { 'Content-Type': 'application/xml' }
-			}));
+			vi.mocked(fetch).mockResolvedValueOnce(
+				new Response(emptyXmlResponse, {
+					status: 200,
+					headers: { 'Content-Type': 'application/xml' }
+				})
+			);
 
 			const result = await ServerService.listAll();
 
@@ -86,10 +90,12 @@ ${mockServers
 	.join('\n')}
 </result>`;
 
-			vi.mocked(fetch).mockResolvedValueOnce(new Response(xmlResponse, {
-				status: 200,
-				headers: { 'Content-Type': 'application/xml' }
-			}));
+			vi.mocked(fetch).mockResolvedValueOnce(
+				new Response(xmlResponse, {
+					status: 200,
+					headers: { 'Content-Type': 'application/xml' }
+				})
+			);
 
 			const result = await ServerService.listAll();
 
@@ -120,10 +126,12 @@ ${mockServers
 	.join('\n')}
 </result>`;
 
-			vi.mocked(fetch).mockResolvedValueOnce(new Response(xmlResponse, {
-				status: 200,
-				headers: { 'Content-Type': 'application/xml' }
-			}));
+			vi.mocked(fetch).mockResolvedValueOnce(
+				new Response(xmlResponse, {
+					status: 200,
+					headers: { 'Content-Type': 'application/xml' }
+				})
+			);
 
 			const result = await ServerService.listAll();
 
@@ -149,10 +157,12 @@ ${mockServers
 </server>
 </result>`;
 
-			vi.mocked(fetch).mockResolvedValueOnce(new Response(xmlResponse, {
-				status: 200,
-				headers: { 'Content-Type': 'application/xml' }
-			}));
+			vi.mocked(fetch).mockResolvedValueOnce(
+				new Response(xmlResponse, {
+					status: 200,
+					headers: { 'Content-Type': 'application/xml' }
+				})
+			);
 
 			const result = await ServerService.listAll();
 
@@ -182,10 +192,12 @@ ${mockServers
 </server>
 </result>`;
 
-			vi.mocked(fetch).mockResolvedValueOnce(new Response(xmlResponse, {
-				status: 200,
-				headers: { 'Content-Type': 'application/xml' }
-			}));
+			vi.mocked(fetch).mockResolvedValueOnce(
+				new Response(xmlResponse, {
+					status: 200,
+					headers: { 'Content-Type': 'application/xml' }
+				})
+			);
 
 			const result = await ServerService.listAll();
 
@@ -204,21 +216,25 @@ ${mockServers
 		});
 
 		test('should handle HTTP error responses', async () => {
-			vi.mocked(fetch).mockResolvedValueOnce(new Response('Server error', {
-				status: 500,
-				statusText: 'Internal Server Error',
-				headers: { 'Content-Type': 'text/plain' }
-			}));
+			vi.mocked(fetch).mockResolvedValueOnce(
+				new Response('Server error', {
+					status: 500,
+					statusText: 'Internal Server Error',
+					headers: { 'Content-Type': 'text/plain' }
+				})
+			);
 
 			const result = await ServerService.listAll();
 			expect(result).toEqual([]); // Should return empty array on error
 		});
 
 		test('should handle malformed XML gracefully', async () => {
-			vi.mocked(fetch).mockResolvedValueOnce(new Response('Invalid XML', {
-				status: 200,
-				headers: { 'Content-Type': 'application/xml' }
-			}));
+			vi.mocked(fetch).mockResolvedValueOnce(
+				new Response('Invalid XML', {
+					status: 200,
+					headers: { 'Content-Type': 'application/xml' }
+				})
+			);
 
 			const result = await ServerService.listAll();
 			expect(result).toEqual([]); // Should return empty array on error
@@ -228,10 +244,12 @@ ${mockServers
 			// Simply test that timeout option is accepted
 			// Real timeout testing requires complex mocking and may be flaky in test environment
 			const mockXmlResponse = createMockXmlResponse(1);
-			vi.mocked(fetch).mockResolvedValueOnce(new Response(mockXmlResponse, {
-				status: 200,
-				headers: { 'Content-Type': 'application/xml' }
-			}));
+			vi.mocked(fetch).mockResolvedValueOnce(
+				new Response(mockXmlResponse, {
+					status: 200,
+					headers: { 'Content-Type': 'application/xml' }
+				})
+			);
 
 			const result = await ServerService.listAll({ timeout: 1000 });
 			expect(result).toHaveLength(1); // Should work normally with valid timeout
@@ -263,10 +281,12 @@ ${fullServers
 </server_list>
 </result>`;
 
-			vi.mocked(fetch).mockResolvedValueOnce(new Response(xmlResponse, {
-				status: 200,
-				headers: { 'Content-Type': 'application/xml' }
-			}));
+			vi.mocked(fetch).mockResolvedValueOnce(
+				new Response(xmlResponse, {
+					status: 200,
+					headers: { 'Content-Type': 'application/xml' }
+				})
+			);
 
 			const result = await ServerService.listAll();
 
@@ -303,10 +323,12 @@ ${fullServers
 </server_list>
 </result>`;
 
-			vi.mocked(fetch).mockResolvedValueOnce(new Response(xmlResponse, {
-				status: 200,
-				headers: { 'Content-Type': 'application/xml' }
-			}));
+			vi.mocked(fetch).mockResolvedValueOnce(
+				new Response(xmlResponse, {
+					status: 200,
+					headers: { 'Content-Type': 'application/xml' }
+				})
+			);
 
 			const result = await ServerService.listAll();
 
@@ -345,10 +367,12 @@ ${fullServers
 </server>
 </result>`;
 
-			vi.mocked(fetch).mockResolvedValueOnce(new Response(xmlResponse, {
-				status: 200,
-				headers: { 'Content-Type': 'application/xml' }
-			}));
+			vi.mocked(fetch).mockResolvedValueOnce(
+				new Response(xmlResponse, {
+					status: 200,
+					headers: { 'Content-Type': 'application/xml' }
+				})
+			);
 
 			const result = await ServerService.listAll();
 

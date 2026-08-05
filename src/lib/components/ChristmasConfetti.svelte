@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { confetti } from '@neoconfetti/svelte';
-	
+
 	// Interactive Christmas confetti effect component
 	// Uses @neoconfetti/svelte (already installed)
-	
+
 	let showConfetti = $state(false);
-	
+
 	export function trigger() {
 		showConfetti = true;
 		setTimeout(() => {
@@ -16,7 +16,7 @@
 
 {#if showConfetti}
 	<div
-		class="confetti-container pointer-events-none fixed left-1/2 top-20 z-[60]"
+		class="confetti-container pointer-events-none fixed top-20 left-1/2 z-[60]"
 		use:confetti={{
 			particleCount: 50,
 			force: 0.5,
@@ -34,4 +34,3 @@
 		transform: translateX(-50%);
 	}
 </style>
-

@@ -346,7 +346,6 @@ describe('URL State Management', () => {
 		});
 	});
 
-
 	describe('URL_PARAMS constants', () => {
 		test('should have correct parameter names', () => {
 			expect(URL_PARAMS.SEARCH).toBe('search');

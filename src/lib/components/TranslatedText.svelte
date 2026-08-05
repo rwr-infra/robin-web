@@ -26,7 +26,7 @@
 </script>
 
 {#if hasKey}
-	<svelte:element this={tag} class={className} style={style}>
+	<svelte:element this={tag} class={className} {style}>
 		{@html getMessage(params)}
 	</svelte:element>
 {:else}

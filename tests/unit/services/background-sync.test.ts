@@ -123,7 +123,6 @@ describe('background-sync', () => {
 
 			consoleWarnSpy.mockRestore();
 		});
-
 	});
 
 	describe('queueServerRefresh', () => {
@@ -135,14 +134,14 @@ describe('background-sync', () => {
 			expect(mockSyncManager.register).toHaveBeenCalledWith('server-refresh');
 		});
 
-	test('should use registerSync internally', async () => {
-		queueServerRefresh();
+		test('should use registerSync internally', async () => {
+			queueServerRefresh();
 
-		await new Promise((resolve) => setTimeout(resolve, 10));
+			await new Promise((resolve) => setTimeout(resolve, 10));
 
-		// Just verify queueServerRefresh can be called without errors
-		expect(mockSyncManager.register).toHaveBeenCalled();
-	});
+			// Just verify queueServerRefresh can be called without errors
+			expect(mockSyncManager.register).toHaveBeenCalled();
+		});
 	});
 
 	describe('registerPeriodicSync', () => {
@@ -299,23 +298,23 @@ describe('background-sync', () => {
 			consoleWarnSpy.mockRestore();
 		});
 
-	test('should handle undefined periodic sync manager', async () => {
-		// Set periodicSync to undefined after setup
-		Object.defineProperty(global, 'ServiceWorkerRegistration', {
-			writable: true,
-			value: {
-				prototype: {}
-			}
+		test('should handle undefined periodic sync manager', async () => {
+			// Set periodicSync to undefined after setup
+			Object.defineProperty(global, 'ServiceWorkerRegistration', {
+				writable: true,
+				value: {
+					prototype: {}
+				}
+			});
+
+			const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+			registerPeriodicSync('test-sync', 60000);
+
+			expect(consoleWarnSpy).toHaveBeenCalledWith('Periodic Background Sync API not supported');
+
+			consoleWarnSpy.mockRestore();
 		});
-
-		const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-
-		registerPeriodicSync('test-sync', 60000);
-
-		expect(consoleWarnSpy).toHaveBeenCalledWith('Periodic Background Sync API not supported');
-
-		consoleWarnSpy.mockRestore();
-	});
 
 		test('should handle multiple concurrent registerSync calls', async () => {
 			registerSync('sync-1');
@@ -375,4 +374,3 @@ describe('background-sync', () => {
 		});
 	});
 });
-

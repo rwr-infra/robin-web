@@ -104,15 +104,19 @@
 	];
 </script>
 
-<div class="share-card-wrapper w-full max-w-[360px] rounded-xl p-3 shadow-2xl border border-base-content/10 {themeClasses()}">
+<div
+	class="share-card-wrapper border-base-content/10 w-full max-w-[360px] rounded-xl border p-3 shadow-2xl {themeClasses()}"
+>
 	<!-- Header -->
-	<div class="mb-2 flex items-center justify-between border-b border-base-content/15 pb-2">
+	<div class="border-base-content/15 mb-2 flex items-center justify-between border-b pb-2">
 		<div class="flex items-center gap-2">
 			<User class="h-3 w-3 opacity-70" />
 			<h2 class="text-sm font-bold">{player.username}</h2>
 		</div>
 		{#if isFieldVisible('db')}
-			<span class="badge badge-ghost badge-sm rounded-md px-1.5 py-0.5 text-[10px] font-medium flex items-center gap-1">
+			<span
+				class="badge badge-ghost badge-sm flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-medium"
+			>
 				<Database class="h-3 w-3" />
 				{formatDbName(player.db)}
 			</span>
@@ -129,7 +133,7 @@
 						<TranslatedText key={field.i18n} />
 					</span>
 					<div class="flex items-center gap-1">
-						<span class="font-semibold text-[10px]">
+						<span class="text-[10px] font-semibold">
 							{display.value}
 						</span>
 						{#if display.rank}
@@ -142,14 +146,14 @@
 	</div>
 
 	<!-- Footer -->
-	<div class="mt-2 border-t border-base-content/15 pt-1.5">
+	<div class="border-base-content/15 mt-2 border-t pt-1.5">
 		{#if queryTimestamp}
-			<div class="text-center text-[9px] text-base-content/40">
+			<div class="text-base-content/40 text-center text-[9px]">
 				<TranslatedText key="app.player.shareCard.queryTime" />: {formatTimestamp(queryTimestamp)}
 			</div>
 		{/if}
 		{#if showWatermark && watermarkText}
-			<div class="mt-0.5 text-center text-[9px] text-base-content/30">{watermarkText}</div>
+			<div class="text-base-content/30 mt-0.5 text-center text-[9px]">{watermarkText}</div>
 		{/if}
 	</div>
 
@@ -164,8 +168,8 @@
 <style>
 	.share-card-wrapper {
 		background: linear-gradient(135deg, hsl(var(--b1)), hsl(var(--b2)));
-		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
-			sans-serif;
+		font-family:
+			-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 	}
 
 	.share-card-wrapper * {

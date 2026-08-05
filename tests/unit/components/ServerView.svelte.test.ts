@@ -6,9 +6,12 @@ import type { MapData } from '$lib/services/maps';
 
 // Mock messages
 vi.mock('$lib/paraglide/messages.js', () => ({
-	m: new Proxy({}, {
-		get: (target, prop) => () => prop
-	})
+	m: new Proxy(
+		{},
+		{
+			get: (target, prop) => () => prop
+		}
+	)
 }));
 
 // Mock child components
@@ -27,7 +30,6 @@ vi.mock('$lib/components/TranslatedText.svelte', () => ({
 		return props.fallback || keyToText[key] || key;
 	}
 }));
-
 
 // Mock QuickFilterButtons - return simple div
 vi.mock('$lib/components/QuickFilterButtons.svelte', () => ({
@@ -59,7 +61,7 @@ describe('ServerView Component', () => {
 			mapId: 'maps/mp_d Day',
 			region: 'EU',
 			mode: 'TDM'
-		} as unknown as IDisplayServerItem,
+		} as unknown as IDisplayServerItem
 	];
 
 	const mockMaps: MapData[] = [
@@ -684,7 +686,7 @@ describe('ServerView Component', () => {
 					mapId: 'maps/nonexistent',
 					region: 'US',
 					mode: 'CTF'
-				} as unknown as IDisplayServerItem,
+				} as unknown as IDisplayServerItem
 			];
 
 			const { container } = render(ServerView, {

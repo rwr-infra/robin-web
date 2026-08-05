@@ -25,10 +25,14 @@ export default {
 		// This will be handled by the assets configuration in wrangler.jsonc
 		// But we need to return a pass-through response for assets to work
 		return fetch(request);
-	},
+	}
 };
 
-async function handleApiRequest(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+async function handleApiRequest(
+	request: Request,
+	env: Env,
+	ctx: ExecutionContext
+): Promise<Response> {
 	const url = new URL(request.url);
 
 	console.log(`Proxying API request via Service Binding: ${request.method} ${url.pathname}`);
@@ -42,7 +46,7 @@ async function handleApiRequest(request: Request, env: Env, ctx: ExecutionContex
 		const modifiedResponse = new Response(response.body, {
 			status: response.status,
 			statusText: response.statusText,
-			headers: response.headers,
+			headers: response.headers
 		});
 
 		// Add CORS headers
@@ -59,8 +63,8 @@ async function handleApiRequest(request: Request, env: Env, ctx: ExecutionContex
 				status: 502,
 				headers: {
 					'Content-Type': 'application/json',
-					'Access-Control-Allow-Origin': '*',
-				},
+					'Access-Control-Allow-Origin': '*'
+				}
 			}
 		);
 	}

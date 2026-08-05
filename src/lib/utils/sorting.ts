@@ -60,9 +60,17 @@ export function sortServers(
 		}
 
 		if (direction === 'desc') {
-			return (aValue as string | number) > (bValue as string | number) ? -1 : (aValue as string | number) < (bValue as string | number) ? 1 : 0;
+			return (aValue as string | number) > (bValue as string | number)
+				? -1
+				: (aValue as string | number) < (bValue as string | number)
+					? 1
+					: 0;
 		} else {
-			return (aValue as string | number) < (bValue as string | number) ? -1 : (aValue as string | number) > (bValue as string | number) ? 1 : 0;
+			return (aValue as string | number) < (bValue as string | number)
+				? -1
+				: (aValue as string | number) > (bValue as string | number)
+					? 1
+					: 0;
 		}
 	});
 }
@@ -105,9 +113,17 @@ export function sortPlayers(
 		}
 
 		if (direction === 'desc') {
-			return (aValue as string | number) > (bValue as string | number) ? -1 : (aValue as string | number) < (bValue as string | number) ? 1 : 0;
+			return (aValue as string | number) > (bValue as string | number)
+				? -1
+				: (aValue as string | number) < (bValue as string | number)
+					? 1
+					: 0;
 		} else {
-			return (aValue as string | number) < (bValue as string | number) ? -1 : (aValue as string | number) > (bValue as string | number) ? 1 : 0;
+			return (aValue as string | number) < (bValue as string | number)
+				? -1
+				: (aValue as string | number) > (bValue as string | number)
+					? 1
+					: 0;
 		}
 	});
 }

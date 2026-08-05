@@ -201,9 +201,9 @@
 				}}
 			>
 				<!-- Header -->
-				<div class="flex items-center justify-between border-b border-base-300 p-4">
+				<div class="border-base-300 flex items-center justify-between border-b p-4">
 					<div>
-						<h3 class="font-semibold text-lg">
+						<h3 class="text-lg font-semibold">
 							<TranslatedText key="app.player.shareModal.title" />
 						</h3>
 						<p class="text-base-content/60 text-sm">{player.username}</p>
@@ -219,22 +219,18 @@
 				</div>
 
 				<!-- Content -->
-				<div class="flex items-center justify-center bg-base-200/30 p-6">
+				<div class="bg-base-200/30 flex items-center justify-center p-6">
 					<!-- Error state -->
 					{#if errorMessage}
 						<div class="flex flex-col items-center gap-4">
 							<CircleAlert class="text-error h-16 w-16" />
 							<div class="text-center">
-								<p class="text-base-content/70 text-sm mb-2">
+								<p class="text-base-content/70 mb-2 text-sm">
 									<TranslatedText key="app.player.shareModal.error" />
 								</p>
 								<p class="text-error text-sm">{errorMessage}</p>
 							</div>
-							<button
-								class="btn btn-outline btn-sm"
-								onclick={handleDownload}
-								type="button"
-							>
+							<button class="btn btn-outline btn-sm" onclick={handleDownload} type="button">
 								<TranslatedText key="app.player.shareModal.retry" />
 							</button>
 						</div>
@@ -249,7 +245,7 @@
 					{:else}
 						<!-- Share Card Preview -->
 						<div class="flex w-full justify-center overflow-auto">
-							<div bind:this={cardElement} class="inline-block p-3 bg-base-200 rounded-xl">
+							<div bind:this={cardElement} class="bg-base-200 inline-block rounded-xl p-3">
 								{#if isMobile}
 									<PlayerShareCardMobile
 										{player}
@@ -279,11 +275,11 @@
 				</div>
 
 				<!-- Footer with action buttons -->
-				<div class="border-t border-base-300 p-4">
+				<div class="border-base-300 border-t p-4">
 					<div class="flex flex-wrap items-center justify-center gap-3">
 						<!-- Download button -->
 						<button
-							class="btn btn-primary flex-1 min-w-[140px]"
+							class="btn btn-primary min-w-[140px] flex-1"
 							onclick={handleDownload}
 							disabled={isDownloading || isCopying || isLoadingRankings}
 							type="button"
@@ -300,7 +296,7 @@
 						<!-- Copy button (only if supported) -->
 						{#if canCopy}
 							<button
-								class="btn btn-secondary flex-1 min-w-[140px]"
+								class="btn btn-secondary min-w-[140px] flex-1"
 								onclick={handleCopy}
 								disabled={isCopying || isDownloading || isLoadingRankings}
 								type="button"

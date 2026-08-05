@@ -21,5 +21,7 @@ test('server list API returns data', async ({ page, request }) => {
 	await page.goto('http://localhost:5173/');
 
 	// Wait for the server data to load - wait for the actual server name to appear
-	await expect(page.locator('table').getByText('Test Server 1', { exact: false })).toBeVisible({ timeout: 10000 });
+	await expect(page.locator('table').getByText('Test Server 1', { exact: false })).toBeVisible({
+		timeout: 10000
+	});
 });

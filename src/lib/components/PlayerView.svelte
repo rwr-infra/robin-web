@@ -86,11 +86,7 @@
 	const canShiftBackward = $derived(windowRangeStart > 1);
 
 	// Helper function to get the display value for a column
-	function getDisplayValue(
-		item: IPlayerItem,
-		column: IPlayerColumn,
-		searchQuery?: string
-	): string {
+	function getDisplayValue(item: IPlayerItem, column: IPlayerColumn, searchQuery?: string): string {
 		// If there's a search query and the column supports highlighting, use that
 		if (searchQuery && column.getValueWithHighlight) {
 			return column.getValueWithHighlight(item, searchQuery);
@@ -211,7 +207,7 @@
 	<!-- SID ordering has no table column, so its state is surfaced here -->
 	{#if sidSortActive}
 		<div
-			class="mb-3 flex flex-wrap items-center justify-between gap-2 rounded border border-mil bg-mil-secondary px-3 py-2 text-sm"
+			class="border-mil bg-mil-secondary mb-3 flex flex-wrap items-center justify-between gap-2 rounded border px-3 py-2 text-sm"
 			data-testid="sid-mode-banner"
 		>
 			<div class="flex flex-wrap items-center gap-2">
@@ -221,7 +217,9 @@
 						{m['app.player.neighbors.bannerAnchored']({ username: sidAnchor })}
 					</span>
 				{:else}
-					<span class="font-medium"><TranslatedText key="app.player.neighbors.bannerSortOnly" /></span>
+					<span class="font-medium"
+						><TranslatedText key="app.player.neighbors.bannerSortOnly" /></span
+					>
 				{/if}
 				{#if windowRangeStart > 0}
 					<span class="opacity-70">
@@ -241,9 +239,13 @@
 	{/if}
 
 	<!-- Desktop scrollable table container -->
-	<div class={`hidden md:flex md:flex-col ${layoutMode === 'tableOnly' ? tableOnlyContainerClasses : ''}`}>
+	<div
+		class={`hidden md:flex md:flex-col ${layoutMode === 'tableOnly' ? tableOnlyContainerClasses : ''}`}
+	>
 		<!-- Desktop table with scroll -->
-		<div class={`w-full ${layoutMode === 'tableOnly' ? tableOnlyScrollClasses : fullPageScrollClasses}`}>
+		<div
+			class={`w-full ${layoutMode === 'tableOnly' ? tableOnlyScrollClasses : fullPageScrollClasses}`}
+		>
 			<PlayerTable
 				data={paginatedPlayers}
 				{playerColumns}
@@ -251,16 +253,16 @@
 				{searchQuery}
 				{highlightedUsername}
 				{sortColumn}
-				onSort={onSort}
-				onShare={onShare}
-				onFindNeighbors={onFindNeighbors}
+				{onSort}
+				{onShare}
+				{onFindNeighbors}
 			/>
 		</div>
 
 		{#if sidAnchor}
 			<!-- Anchored requests cannot be paginated upstream: browse by absolute row offset -->
 			<div
-				class="flex items-center justify-between border-t border-mil bg-mil-secondary px-3 py-2"
+				class="border-mil bg-mil-secondary flex items-center justify-between border-t px-3 py-2"
 				data-testid="sid-window-nav"
 			>
 				<div class="join">
@@ -286,13 +288,11 @@
 			</div>
 		{:else}
 			<!-- Desktop pagination - fixed at bottom, hidden when no pagination needed -->
-			<div class="flex items-center justify-between border-t border-mil bg-mil-secondary px-3 py-2" class:hidden={!hasNext && !hasPrevious}>
-				<PaginationPrevNext
-					{currentPage}
-					{hasNext}
-					{hasPrevious}
-					onPageChange={onPageChange}
-				/>
+			<div
+				class="border-mil bg-mil-secondary flex items-center justify-between border-t px-3 py-2"
+				class:hidden={!hasNext && !hasPrevious}
+			>
+				<PaginationPrevNext {currentPage} {hasNext} {hasPrevious} {onPageChange} />
 				<PageSizeSelector currentSize={pageSize} onSizeChange={onPageSizeChange} />
 			</div>
 		{/if}
@@ -318,63 +318,62 @@
 					>
 						{#if column.i18n}<TranslatedText key={column.i18n} />{:else}{column.label}{/if}
 						{#if sortColumn !== column.key}
-							<ArrowDown class="w-4 h-4 opacity-30" />
+							<ArrowDown class="h-4 w-4 opacity-30" />
 						{:else}
-							<ArrowDown class="w-4 h-4 text-primary" />
+							<ArrowDown class="text-primary h-4 w-4" />
 						{/if}
 					</button>
 				{/each}
 			</div>
 
-				{#if sidAnchor && canShiftBackward}
-					<!-- Mobile browses forward with infinite scroll, backward needs an explicit step -->
-					<button
-						type="button"
-						class="btn btn-sm btn-outline mb-4 w-full"
-						onclick={() => onShiftSidWindow?.(-1)}
-					>
-						‹ {m['app.player.neighbors.previousWindow']({ count: pageSize })}
-					</button>
-				{/if}
+			{#if sidAnchor && canShiftBackward}
+				<!-- Mobile browses forward with infinite scroll, backward needs an explicit step -->
+				<button
+					type="button"
+					class="btn btn-sm btn-outline mb-4 w-full"
+					onclick={() => onShiftSidWindow?.(-1)}
+				>
+					‹ {m['app.player.neighbors.previousWindow']({ count: pageSize })}
+				</button>
+			{/if}
 
-				{#each mobilePaginatedPlayers as item (item.id)}
-					{@const isHighlighted =
-						highlightedUsername &&
-						item.username.toLowerCase() === highlightedUsername.toLowerCase()}
-					<div
-						id={`player-mobile-card-${item.id}`}
-						class="collapse collapse-arrow mb-3 border {isHighlighted
-							? 'highlighted-card border-primary bg-primary/20 font-semibold'
-							: 'bg-base-100 border-base-300'}"
+			{#each mobilePaginatedPlayers as item (item.id)}
+				{@const isHighlighted =
+					highlightedUsername && item.username.toLowerCase() === highlightedUsername.toLowerCase()}
+				<div
+					id={`player-mobile-card-${item.id}`}
+					class="collapse-arrow collapse mb-3 border {isHighlighted
+						? 'highlighted-card border-primary bg-primary/20 font-semibold'
+						: 'bg-base-100 border-base-300'}"
+				>
+					<input
+						id={`player-mobile-collapse-${item.id}`}
+						type="checkbox"
+						checked={mobileExpandedCards[item.id]}
+						onchange={() => onToggleMobileCard(item.id)}
+						aria-label={m['app.ariaLabel.togglePlayerDetails']()}
+						aria-expanded={mobileExpandedCards[item.id] ? 'true' : 'false'}
+					/>
+					<label
+						for={`player-mobile-collapse-${item.id}`}
+						class="collapse-title min-h-14 cursor-pointer px-4 py-5 font-semibold"
 					>
-						<input
-							id={`player-mobile-collapse-${item.id}`}
-							type="checkbox"
-							checked={mobileExpandedCards[item.id]}
-							onchange={() => onToggleMobileCard(item.id)}
-							aria-label={m['app.ariaLabel.togglePlayerDetails']()}
-							aria-expanded={mobileExpandedCards[item.id] ? 'true' : 'false'}
-						/>
-						<label
-							for={`player-mobile-collapse-${item.id}`}
-							class="collapse-title min-h-14 cursor-pointer px-4 py-5 font-semibold"
-						>
-							<div class="flex items-center justify-between gap-2 mr-6">
-								<div class="text-base-content flex-1 truncate text-base font-medium">
-									{@html getDisplayValue(
-										item,
-										playerColumns.find((col) => col.key === 'username')!,
-										searchQuery
-									)}
-								</div>
-								<span class="text-base-content/60 text-sm">
+						<div class="mr-6 flex items-center justify-between gap-2">
+							<div class="text-base-content flex-1 truncate text-base font-medium">
+								{@html getDisplayValue(
+									item,
+									playerColumns.find((col) => col.key === 'username')!,
+									searchQuery
+								)}
+							</div>
+							<span class="text-base-content/60 text-sm">
 								#{@html getDisplayValue(
 									item,
 									playerColumns.find((col) => col.key === 'rowNumber')!
 								)}
-								</span>
-							</div>
-						</label>
+							</span>
+						</div>
+					</label>
 					<div class="collapse-content">
 						<div class="border-base-200 border-t">
 							<div class="space-y-2 pt-3">
@@ -393,7 +392,7 @@
 							</div>
 
 							<!-- Share button section (similar to ServerView Preview Map) -->
-							<div class="border-base-200 mt-4 pt-3 border-t">
+							<div class="border-base-200 mt-4 border-t pt-3">
 								<div class="flex items-center justify-between">
 									<span class="text-base-content/70 min-w-20 flex-shrink-0 text-sm">
 										<TranslatedText key="app.player.share" />:
@@ -406,7 +405,7 @@
 										}}
 										type="button"
 									>
-										<Share class="w-3 h-3 mr-1" />
+										<Share class="mr-1 h-3 w-3" />
 										<TranslatedText key="app.player.buttonShare" />
 									</button>
 								</div>
@@ -414,7 +413,7 @@
 
 							{#if onFindNeighbors}
 								<!-- Similar accounts entry point (mobile equivalent of the table action) -->
-								<div class="border-base-200 mt-3 pt-3 border-t">
+								<div class="border-base-200 mt-3 border-t pt-3">
 									<div class="flex items-center justify-between">
 										<span class="text-base-content/70 min-w-20 flex-shrink-0 text-sm">
 											<TranslatedText key="app.player.neighbors.label" />:
@@ -427,7 +426,7 @@
 											}}
 											type="button"
 										>
-											<Users class="w-3 h-3 mr-1" />
+											<Users class="mr-1 h-3 w-3" />
 											<TranslatedText key="app.player.neighbors.button" />
 										</button>
 									</div>
@@ -455,7 +454,7 @@
 		<MobileInfiniteScroll
 			hasMore={mobileHasMore}
 			isLoading={mobileLoadingMore}
-			onLoadMore={onLoadMore}
+			{onLoadMore}
 			loadingTextKey="app.player.loading.text"
 		/>
 	</div>

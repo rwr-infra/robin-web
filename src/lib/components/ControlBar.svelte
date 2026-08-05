@@ -63,13 +63,13 @@
 
 	// Use appropriate columns based on current view
 	const currentColumns = $derived(currentView === 'players' ? playerColumns : columns);
-	const currentVisibleColumns = $derived(currentView === 'players' ? visiblePlayerColumns : visibleColumns);
+	const currentVisibleColumns = $derived(
+		currentView === 'players' ? visiblePlayerColumns : visibleColumns
+	);
 
 	// Dynamic search placeholder based on view
 	const dynamicPlaceholder = $derived(
-		currentView === 'players'
-			? m['app.search.placeholderPlayers']()
-			: searchPlaceholder
+		currentView === 'players' ? m['app.search.placeholderPlayers']() : searchPlaceholder
 	);
 
 	function handleRefresh() {
@@ -78,7 +78,9 @@
 	}
 </script>
 
-<div class="mb-4 md:mb-2 flex flex-col items-stretch gap-4 rounded-lg border border-mil bg-mil-secondary p-4 sm:flex-row sm:items-center">
+<div
+	class="border-mil bg-mil-secondary mb-4 flex flex-col items-stretch gap-4 rounded-lg border p-4 sm:flex-row sm:items-center md:mb-2"
+>
 	<!-- Left side: Player DB selector (only in players view) + Search input -->
 	<div class="flex flex-1 flex-col gap-2 sm:flex-row sm:items-center">
 		{#if currentView === 'players'}
@@ -105,20 +107,24 @@
 			onclick={handleRefresh}
 		>
 			{#if isRefreshing}
-				<span class="h-4 w-4 animate-spin" style="border: 2px solid currentColor; border-top-color: transparent; border-radius: 50%;"></span>
+				<span
+					class="h-4 w-4 animate-spin"
+					style="border: 2px solid currentColor; border-top-color: transparent; border-radius: 50%;"
+				></span>
 			{/if}
 			<TranslatedText key="app.button.refresh" />
 		</button>
 
 		<div class="hidden md:block">
-			<ColumnsToggle columns={currentColumns} visibleColumns={currentVisibleColumns} onColumnToggle={onColumnToggle} />
+			<ColumnsToggle
+				columns={currentColumns}
+				visibleColumns={currentVisibleColumns}
+				{onColumnToggle}
+			/>
 		</div>
 
 		<div class="hidden md:block">
-			<LayoutModeToggle
-				layoutMode={layoutMode}
-				onToggleChange={onLayoutModeChange}
-			/>
+			<LayoutModeToggle {layoutMode} onToggleChange={onLayoutModeChange} />
 		</div>
 
 		{#if showAutoRefresh}

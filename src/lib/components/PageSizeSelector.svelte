@@ -30,7 +30,7 @@
 </script>
 
 <select
-	class="select select-sm select-bordered py-0 w-full min-w-32 sm:w-auto"
+	class="select select-sm select-bordered w-full min-w-32 py-0 sm:w-auto"
 	value={currentSize}
 	onchange={handleChange}
 	aria-label={selectAriaLabel}

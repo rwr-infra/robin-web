@@ -49,11 +49,15 @@
 	let mapPreviewPosition = $state({ x: 0, y: 0 });
 
 	// Player share modal state
-	let playerShareData = $state<import('$lib/models/player.model').IPlayerItem | undefined>(undefined);
+	let playerShareData = $state<import('$lib/models/player.model').IPlayerItem | undefined>(
+		undefined
+	);
 	let playerShareShow = $state(false);
 
 	// Server share modal state
-	let serverShareData = $state<import('$lib/models/server.model').IDisplayServerItem | undefined>(undefined);
+	let serverShareData = $state<import('$lib/models/server.model').IDisplayServerItem | undefined>(
+		undefined
+	);
 	let serverShareShow = $state(false);
 	let serverShareTimestamp = $state<number | undefined>(undefined);
 
@@ -99,7 +103,9 @@
 	let visibleColumns = $state<Record<string, boolean>>({ ...userSettings.visibleColumns });
 
 	// Visible player columns - load from user settings with defaults fallback
-	let visiblePlayerColumns = $state<Record<string, boolean>>({ ...userSettings.visiblePlayerColumns });
+	let visiblePlayerColumns = $state<Record<string, boolean>>({
+		...userSettings.visiblePlayerColumns
+	});
 
 	// URL sync setup
 	const urlSync = createUrlSync({
@@ -119,9 +125,7 @@
 	});
 
 	// Derived server data - uses store's getDerivedData method
-	const derivedServerData = $derived(
-		serverState.getDerivedData(searchQuery, activeQuickFilters)
-	);
+	const derivedServerData = $derived(serverState.getDerivedData(searchQuery, activeQuickFilters));
 
 	// Derived player data - uses store's getDerivedData method
 	const derivedPlayerData = $derived(playerState.getDerivedData());
@@ -190,7 +194,8 @@
 			playerState.handlePageChange(page);
 			playerState.loadPlayers({ searchQuery });
 		}
-		const totalPages = currentView === 'servers' ? derivedServerData.totalPages : derivedPlayerData.totalPages;
+		const totalPages =
+			currentView === 'servers' ? derivedServerData.totalPages : derivedPlayerData.totalPages;
 		analytics.trackPagination(page, totalPages);
 	}
 
@@ -430,7 +435,6 @@
 					// Player not found in results - retry immediately if attempts remain
 					// Don't return null yet, try again
 					continue;
-
 				} catch (error: unknown) {
 					// Check if this is a retryable error
 					const isRetryable = isRetryableError(error);
@@ -639,10 +643,15 @@
 	});
 </script>
 
-<section aria-label="Server List" class={`flex flex-col items-center ${layoutMode === 'tableOnly' ? 'md:flex-1 md:min-h-0' : ''}`}>
-	<div class={`container flex flex-col px-4 py-2 md:py-3 ${layoutMode === 'tableOnly' ? tableOnlyLayoutClasses : ''}`}>
+<section
+	aria-label="Server List"
+	class={`flex flex-col items-center ${layoutMode === 'tableOnly' ? 'md:min-h-0 md:flex-1' : ''}`}
+>
+	<div
+		class={`container flex flex-col px-4 py-2 md:py-3 ${layoutMode === 'tableOnly' ? tableOnlyLayoutClasses : ''}`}
+	>
 		<!-- View Tabs -->
-		<div role="tablist" class="tabs tabs-border mb-2 md:mb-3 border-mil">
+		<div role="tablist" class="tabs tabs-border border-mil mb-2 md:mb-3">
 			<button
 				role="tab"
 				class="tab md:tabs-sm text-mil-secondary"
@@ -681,7 +690,7 @@
 			onLayoutModeChange={handleLayoutModeChange}
 			onSearchInput={handleSearchInput}
 			onSearchEnter={handleSearchEnter}
-			onColumnToggle={onColumnToggle}
+			{onColumnToggle}
 			onSearchRef={(input) => (searchInputRef = input)}
 			onSearchClear={handleSearchClear}
 		/>
@@ -725,8 +734,8 @@
 				onSort={handleSort}
 				onPageChange={handlePageChange}
 				onLoadMore={handleLoadMore}
-				onRowAction={onRowAction}
-				onColumnToggle={onColumnToggle}
+				{onRowAction}
+				{onColumnToggle}
 				onToggleMobileCard={toggleMobileCard}
 				onMapView={handleMapView}
 				onMapPreviewClose={handleMapPreviewClose}
@@ -786,13 +795,14 @@
 		show={playerShareShow}
 		onClose={handlePlayerShareClose}
 		queryTimestamp={playerState.lastQueryTimestamp}
-		onFetchRankings={() => playerShareData ? fetchPlayerRankings(playerShareData) : Promise.resolve({})}
+		onFetchRankings={() =>
+			playerShareData ? fetchPlayerRankings(playerShareData) : Promise.resolve({})}
 	/>
 
 	<!-- Server share modal -->
 	<ServerShareModal
 		server={serverShareData}
-		maps={maps}
+		{maps}
 		show={serverShareShow}
 		onClose={handleServerShareClose}
 		queryTimestamp={serverShareTimestamp}

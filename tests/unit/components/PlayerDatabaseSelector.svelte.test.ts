@@ -224,7 +224,11 @@ describe('PlayerDatabaseSelector Component', () => {
 		});
 
 		it('should render correctly with all valid database values', async () => {
-			const databases: PlayerDatabase[] = [PlayerDatabase.INVASION, PlayerDatabase.PACIFIC, PlayerDatabase.PRERESET_INVASION];
+			const databases: PlayerDatabase[] = [
+				PlayerDatabase.INVASION,
+				PlayerDatabase.PACIFIC,
+				PlayerDatabase.PRERESET_INVASION
+			];
 
 			for (const db of databases) {
 				const { container } = render(PlayerDatabaseSelector, {
@@ -242,7 +246,11 @@ describe('PlayerDatabaseSelector Component', () => {
 
 	describe('Type Safety', () => {
 		it('should only accept valid PlayerDatabase values as currentDb', async () => {
-			const validDatabases: PlayerDatabase[] = [PlayerDatabase.INVASION, PlayerDatabase.PACIFIC, PlayerDatabase.PRERESET_INVASION];
+			const validDatabases: PlayerDatabase[] = [
+				PlayerDatabase.INVASION,
+				PlayerDatabase.PACIFIC,
+				PlayerDatabase.PRERESET_INVASION
+			];
 
 			// This test documents the expected valid values
 			expect(validDatabases).toContain(PlayerDatabase.INVASION);
@@ -265,7 +273,11 @@ describe('PlayerDatabaseSelector Component', () => {
 			expect(mockOnDbChange).toHaveBeenCalledWith(PlayerDatabase.PACIFIC);
 			const callArg = mockOnDbChange.mock.calls[0][0];
 			// This should be a valid PlayerDatabase value
-			expect([PlayerDatabase.INVASION, PlayerDatabase.PACIFIC, PlayerDatabase.PRERESET_INVASION]).toContain(callArg);
+			expect([
+				PlayerDatabase.INVASION,
+				PlayerDatabase.PACIFIC,
+				PlayerDatabase.PRERESET_INVASION
+			]).toContain(callArg);
 		});
 	});
 });

@@ -5,14 +5,16 @@
 	// Desktop: 50 snowflakes, Mobile: 10 snowflakes
 
 	let snowflakeCount = $state(10); // Default mobile count
-	let snowflakes = $state<Array<{
-		id: number;
-		left: number;
-		animationDelay: number;
-		animationDuration: number;
-		size: number;
-		opacity: number;
-	}>>([]);
+	let snowflakes = $state<
+		Array<{
+			id: number;
+			left: number;
+			animationDelay: number;
+			animationDuration: number;
+			size: number;
+			opacity: number;
+		}>
+	>([]);
 
 	function generateSnowflakes(count: number) {
 		return Array.from({ length: count }, (_, i) => ({
@@ -50,10 +52,7 @@
 	});
 </script>
 
-<div
-	class="christmas-snowfall pointer-events-none fixed inset-0 z-50"
-	aria-hidden="true"
->
+<div class="christmas-snowfall pointer-events-none fixed inset-0 z-50" aria-hidden="true">
 	{#each snowflakes as flake (flake.id)}
 		<div
 			class="snowflake absolute"
@@ -104,4 +103,3 @@
 		}
 	}
 </style>
-

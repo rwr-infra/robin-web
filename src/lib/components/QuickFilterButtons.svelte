@@ -28,7 +28,7 @@
 	}
 </script>
 
-<div class="mt-2 mb-3 md:mb-2 flex flex-wrap items-center gap-3">
+<div class="mt-2 mb-3 flex flex-wrap items-center gap-3 md:mb-2">
 	<label class="flex cursor-pointer items-center gap-2">
 		<input
 			type="checkbox"

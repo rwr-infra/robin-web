@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Search, X } from "@lucide/svelte";
+	import { Search, X } from '@lucide/svelte';
 	import { m } from '$lib/paraglide/messages.js';
 
 	interface Props {
@@ -11,7 +11,14 @@
 		onClear?: () => void;
 	}
 
-	let { placeholder = 'Search...', value = $bindable(''), oninput, onEnter, onRef, onClear }: Props = $props();
+	let {
+		placeholder = 'Search...',
+		value = $bindable(''),
+		oninput,
+		onEnter,
+		onRef,
+		onClear
+	}: Props = $props();
 
 	let inputElement: HTMLInputElement;
 
@@ -46,13 +53,13 @@
 </script>
 
 <div class="form-control flex-1">
-	<label class="input input-bordered w-full focus-within:outline-none relative">
+	<label class="input input-bordered relative w-full focus-within:outline-none">
 		<Search class="h-[1em] opacity-50" />
 		<input
 			bind:this={inputElement}
 			type="search"
 			{placeholder}
-			class="grow focus:outline-none pr-8"
+			class="grow pr-8 focus:outline-none"
 			bind:value
 			oninput={handleInput}
 			onkeydown={handleKeydown}
@@ -64,7 +71,7 @@
 			type="button"
 			aria-label={m['app.search.clearAria']()}
 		>
-			<X class="w-4 h-4" />
+			<X class="h-4 w-4" />
 		</button>
 	</label>
 </div>

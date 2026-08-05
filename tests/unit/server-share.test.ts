@@ -42,9 +42,7 @@ describe('ServerShareService', () => {
 	describe('generateFilename', () => {
 		beforeEach(() => {
 			// Mock date to fixed timestamp
-			vi.spyOn(Date.prototype, 'toISOString').mockReturnValue(
-				'2025-01-15T10:30:00.000Z'
-			);
+			vi.spyOn(Date.prototype, 'toISOString').mockReturnValue('2025-01-15T10:30:00.000Z');
 		});
 
 		it('should generate filename with server name and timestamp', () => {
@@ -88,9 +86,7 @@ describe('ServerShareService', () => {
 	describe('formatTimestamp', () => {
 		beforeEach(() => {
 			// Mock date to fixed timestamp
-			vi.spyOn(Date.prototype, 'toLocaleString').mockReturnValue(
-				'Jan 15, 2025, 2:30 PM'
-			);
+			vi.spyOn(Date.prototype, 'toLocaleString').mockReturnValue('Jan 15, 2025, 2:30 PM');
 		});
 
 		it('should format timestamp in English by default', () => {
@@ -139,9 +135,7 @@ describe('ServerShareService', () => {
 
 	describe('Edge Cases and Error Handling', () => {
 		it('should handle empty server name in generateFilename', () => {
-			vi.spyOn(Date.prototype, 'toISOString').mockReturnValue(
-				'2025-01-15T10:30:00.000Z'
-			);
+			vi.spyOn(Date.prototype, 'toISOString').mockReturnValue('2025-01-15T10:30:00.000Z');
 
 			const filename = serverShareService.generateFilename('');
 
@@ -149,9 +143,7 @@ describe('ServerShareService', () => {
 		});
 
 		it('should handle server name with spaces only', () => {
-			vi.spyOn(Date.prototype, 'toISOString').mockReturnValue(
-				'2025-01-15T10:30:00.000Z'
-			);
+			vi.spyOn(Date.prototype, 'toISOString').mockReturnValue('2025-01-15T10:30:00.000Z');
 
 			const filename = serverShareService.generateFilename('   ');
 
@@ -172,9 +164,7 @@ describe('ServerShareService', () => {
 		});
 
 		it('should handle unicode characters in server name', () => {
-			vi.spyOn(Date.prototype, 'toISOString').mockReturnValue(
-				'2025-01-15T10:30:00.000Z'
-			);
+			vi.spyOn(Date.prototype, 'toISOString').mockReturnValue('2025-01-15T10:30:00.000Z');
 
 			const filename = serverShareService.generateFilename('服务器🎮');
 
