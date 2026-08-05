@@ -49,9 +49,12 @@ vi.mock('$lib/components/AutoRefresh.svelte', () => ({
 
 // Mock messages
 vi.mock('$lib/paraglide/messages.js', () => ({
-	m: new Proxy({}, {
-		get: (target, prop) => () => prop
-	})
+	m: new Proxy(
+		{},
+		{
+			get: (target, prop) => () => prop
+		}
+	)
 }));
 
 describe('ControlBar Component', () => {
@@ -62,7 +65,9 @@ describe('ControlBar Component', () => {
 	let mockOnLayoutModeChange: ReturnType<typeof vi.fn<(mode: 'fullPage' | 'tableOnly') => void>>;
 	let mockOnSearchInput: ReturnType<typeof vi.fn<(value: string) => void>>;
 	let mockOnSearchEnter: ReturnType<typeof vi.fn<(value: string) => void>>;
-	let mockOnColumnToggle: ReturnType<typeof vi.fn<(column: IColumn | IPlayerColumn, visible: boolean) => void>>;
+	let mockOnColumnToggle: ReturnType<
+		typeof vi.fn<(column: IColumn | IPlayerColumn, visible: boolean) => void>
+	>;
 
 	const mockColumns: IColumn[] = [
 		{ key: 'name', label: 'Name' },
@@ -112,7 +117,7 @@ describe('ControlBar Component', () => {
 					visiblePlayerColumns: mockVisiblePlayerColumns,
 					onPlayerDbChange: mockOnPlayerDbChange,
 					onRefresh: mockOnRefresh,
-								onAutoRefresh: mockOnAutoRefresh,
+					onAutoRefresh: mockOnAutoRefresh,
 					onAutoRefreshToggle: mockOnAutoRefreshToggle,
 					onLayoutModeChange: mockOnLayoutModeChange,
 					onSearchInput: mockOnSearchInput,
@@ -139,7 +144,7 @@ describe('ControlBar Component', () => {
 					visiblePlayerColumns: mockVisiblePlayerColumns,
 					onPlayerDbChange: mockOnPlayerDbChange,
 					onRefresh: mockOnRefresh,
-								onAutoRefresh: mockOnAutoRefresh,
+					onAutoRefresh: mockOnAutoRefresh,
 					onAutoRefreshToggle: mockOnAutoRefreshToggle,
 					onLayoutModeChange: mockOnLayoutModeChange,
 					onSearchInput: mockOnSearchInput,
@@ -166,7 +171,7 @@ describe('ControlBar Component', () => {
 					visiblePlayerColumns: mockVisiblePlayerColumns,
 					onPlayerDbChange: mockOnPlayerDbChange,
 					onRefresh: mockOnRefresh,
-								onAutoRefresh: mockOnAutoRefresh,
+					onAutoRefresh: mockOnAutoRefresh,
 					onAutoRefreshToggle: mockOnAutoRefreshToggle,
 					onLayoutModeChange: mockOnLayoutModeChange,
 					onSearchInput: mockOnSearchInput,
@@ -193,7 +198,7 @@ describe('ControlBar Component', () => {
 					visiblePlayerColumns: mockVisiblePlayerColumns,
 					onPlayerDbChange: mockOnPlayerDbChange,
 					onRefresh: mockOnRefresh,
-								onAutoRefresh: mockOnAutoRefresh,
+					onAutoRefresh: mockOnAutoRefresh,
 					onAutoRefreshToggle: mockOnAutoRefreshToggle,
 					onLayoutModeChange: mockOnLayoutModeChange,
 					onSearchInput: mockOnSearchInput,
@@ -222,7 +227,7 @@ describe('ControlBar Component', () => {
 					visiblePlayerColumns: mockVisiblePlayerColumns,
 					onPlayerDbChange: mockOnPlayerDbChange,
 					onRefresh: mockOnRefresh,
-								onAutoRefresh: mockOnAutoRefresh,
+					onAutoRefresh: mockOnAutoRefresh,
 					onAutoRefreshToggle: mockOnAutoRefreshToggle,
 					onLayoutModeChange: mockOnLayoutModeChange,
 					onSearchInput: mockOnSearchInput,
@@ -255,7 +260,7 @@ describe('ControlBar Component', () => {
 					visiblePlayerColumns: mockVisiblePlayerColumns,
 					onPlayerDbChange: mockOnPlayerDbChange,
 					onRefresh: mockOnRefresh,
-								onAutoRefresh: mockOnAutoRefresh,
+					onAutoRefresh: mockOnAutoRefresh,
 					onAutoRefreshToggle: mockOnAutoRefreshToggle,
 					onLayoutModeChange: mockOnLayoutModeChange,
 					onSearchInput: mockOnSearchInput,
@@ -282,7 +287,7 @@ describe('ControlBar Component', () => {
 					visiblePlayerColumns: mockVisiblePlayerColumns,
 					onPlayerDbChange: mockOnPlayerDbChange,
 					onRefresh: mockOnRefresh,
-								onAutoRefresh: mockOnAutoRefresh,
+					onAutoRefresh: mockOnAutoRefresh,
 					onAutoRefreshToggle: mockOnAutoRefreshToggle,
 					onLayoutModeChange: mockOnLayoutModeChange,
 					onSearchInput: mockOnSearchInput,
@@ -311,7 +316,7 @@ describe('ControlBar Component', () => {
 					visiblePlayerColumns: {},
 					onPlayerDbChange: mockOnPlayerDbChange,
 					onRefresh: mockOnRefresh,
-								onAutoRefresh: mockOnAutoRefresh,
+					onAutoRefresh: mockOnAutoRefresh,
 					onAutoRefreshToggle: mockOnAutoRefreshToggle,
 					onLayoutModeChange: mockOnLayoutModeChange,
 					onSearchInput: mockOnSearchInput,

@@ -50,7 +50,10 @@ export class ServerShareService {
 
 			return blob;
 		} catch (error) {
-			throw new Error(`Image generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+			throw new Error(
+				`Image generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+				{ cause: error }
+			);
 		}
 	}
 
@@ -65,7 +68,12 @@ export class ServerShareService {
 			document.body.removeChild(link);
 			URL.revokeObjectURL(url);
 		} catch (error) {
-			throw new Error(`Download failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+			throw new Error(
+				`Download failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+				{
+					cause: error
+				}
+			);
 		}
 	}
 
@@ -78,15 +86,16 @@ export class ServerShareService {
 			const item = new ClipboardItem({ 'image/png': blob });
 			await navigator.clipboard.write([item]);
 		} catch (error) {
-			throw new Error(`Copy to clipboard failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+			throw new Error(
+				`Copy to clipboard failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+				{ cause: error }
+			);
 		}
 	}
 
 	canCopyToClipboard(): boolean {
 		return (
-			'clipboard' in navigator &&
-			navigator.clipboard != null &&
-			'write' in navigator.clipboard
+			'clipboard' in navigator && navigator.clipboard != null && 'write' in navigator.clipboard
 		);
 	}
 

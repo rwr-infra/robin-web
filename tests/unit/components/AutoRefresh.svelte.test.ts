@@ -196,4 +196,3 @@ describe('AutoRefresh', () => {
 		expect(pulseIndicator).not.toBeInTheDocument();
 	});
 });
-

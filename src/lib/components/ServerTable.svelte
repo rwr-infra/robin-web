@@ -87,19 +87,23 @@
 {#if data.length === 0}
 	<div class="alert alert-info">
 		<Info class="h-6 w-6 shrink-0 stroke-current" />
-		<span><TranslatedText key="app.server.noDataFound" />{#if searchQuery} <TranslatedText key="app.server.matchingSearch" />{/if}.</span>
+		<span
+			><TranslatedText key="app.server.noDataFound" />{#if searchQuery}
+				<TranslatedText key="app.server.matchingSearch" />{/if}.</span
+		>
 	</div>
 {:else}
 	<!-- Desktop table view (hidden on mobile) -->
-	<div class="w-full server-table-wrapper">
-		<table class="table-pin-rows mb-0 table table-zebra border-0 bg-mil-primary">
+	<div class="server-table-wrapper w-full">
+		<table class="table-pin-rows table-zebra bg-mil-primary mb-0 table border-0">
 			<thead>
 				<tr class="bg-mil-secondary">
 					{#each columns as column (column.key)}
 						{#if visibleColumns[column.key]}
 							<th
-								class="sticky top-0 z-10 h-10 border-mil px-1 py-1 align-middle text-mil-primary {getStickyClass(column.key)} {column.headerClass ||
-									''}"
+								class="border-mil text-mil-primary sticky top-0 z-10 h-10 px-1 py-1 align-middle {getStickyClass(
+									column.key
+								)} {column.headerClass || ''}"
 								class:action-header={column.key === 'action'}
 								class:sticky-name-header={column.key === 'name'}
 							>
@@ -116,15 +120,15 @@
 									>
 										<span class="flex-1">
 											{#if column.i18n}<TranslatedText
-												key={column.i18n}
-											/>{:else}{column.label}{/if}
+													key={column.i18n}
+												/>{:else}{column.label}{/if}
 										</span>
 										{#if sortColumn !== column.key || !sortDirection}
-											<ArrowDownUp class="w-4 h-4 opacity-30" />
+											<ArrowDownUp class="h-4 w-4 opacity-30" />
 										{:else if sortDirection === 'desc'}
-											<ArrowDown class="w-4 h-4 text-primary" />
+											<ArrowDown class="text-primary h-4 w-4" />
 										{:else if sortDirection === 'asc'}
-											<ArrowUp class="w-4 h-4 text-primary" />
+											<ArrowUp class="text-primary h-4 w-4" />
 										{/if}
 									</button>
 								{/if}
@@ -135,12 +139,16 @@
 			</thead>
 			<tbody>
 				{#each data as item (item.id)}
-					<tr class="hover hover:bg-base-300 min-h-12 border-b border-mil">
+					<tr class="hover hover:bg-base-300 border-mil min-h-12 border-b">
 						{#each columns as column (column.key)}
 							{#if visibleColumns[column.key]}
 								<td
-									class="border-mil px-4 py-1 text-mil-primary {getStickyClass(column.key)} {getAlignmentClass(column)} {column.cellClass ||
-										''} {column.key === 'playerList' ? 'align-top' : ''}"
+									class="border-mil text-mil-primary px-4 py-1 {getStickyClass(
+										column.key
+									)} {getAlignmentClass(column)} {column.cellClass || ''} {column.key ===
+									'playerList'
+										? 'align-top'
+										: ''}"
 									class:action-cell={column.key === 'action'}
 								>
 									{#if column.key === 'action'}
@@ -158,32 +166,32 @@
 													class="btn btn-sm btn-secondary flex-1"
 													onclick={() => onShare(item)}
 												>
-													<Share class="w-3 h-3" />
+													<Share class="h-3 w-3" />
 												</button>
 											{/if}
 										</div>
 									{:else if column.key === 'mapId'}
 										<div class="flex items-center gap-2">
 											<span class="truncate">{@html getDisplayValue(item, column)}</span>
-											{#if maps && maps.find(m => m.path === item.mapId) && onMapView}
+											{#if maps && maps.find((m) => m.path === item.mapId) && onMapView}
 												<button
 													type="button"
 													class="btn btn-ghost btn-xs btn-circle"
-													onclick={() => onMapView(maps.find(m => m.path === item.mapId)!)}
+													onclick={() => onMapView(maps.find((m) => m.path === item.mapId)!)}
 													title={m['app.ariaLabel.previewMap']()}
 												>
-													<Eye class="w-4 h-4" />
+													<Eye class="h-4 w-4" />
 												</button>
 											{/if}
 										</div>
 									{:else if column.key === 'url' && item.url}
-									<a
-										href={item.url}
-										target="_blank"
-										rel="noopener noreferrer"
-										class="link link-primary inline-flex min-h-6 items-center underline-offset-4 hover:underline"
-										title={item.url}
-									>
+										<a
+											href={item.url}
+											target="_blank"
+											rel="noopener noreferrer"
+											class="link link-primary inline-flex min-h-6 items-center underline-offset-4 hover:underline"
+											title={item.url}
+										>
 											{item.url.length > 50 ? item.url.substring(0, 47) + '...' : item.url}
 										</a>
 									{:else}

@@ -44,11 +44,11 @@ export async function request<T>(
 		// Enhanced error logging
 		if (error instanceof Error && error.name === 'AbortError') {
 			console.error(`Request to ${url} timed out after ${effectiveTimeout}ms`);
-			throw new Error(`Request timed out after ${effectiveTimeout}ms`);
+			throw new Error(`Request timed out after ${effectiveTimeout}ms`, { cause: error });
 		} else if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
 			// Network errors like CORS, network disconnection
 			console.error(`Network error for ${url}: ${error.message}`);
-			throw new Error(`Network error: ${error.message}`);
+			throw new Error(`Network error: ${error.message}`, { cause: error });
 		} else {
 			console.error(`Error fetching ${url}:`, error);
 			throw error;

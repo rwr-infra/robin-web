@@ -117,10 +117,9 @@ describe('SearchInput Component', () => {
 
 			await rerender({
 				value: 'updated',
-												oninput: mockOnInput as any,
-												onEnter: mockOnEnter as any,
-												onRef: mockOnRef as any
-				
+				oninput: mockOnInput as any,
+				onEnter: mockOnEnter as any,
+				onRef: mockOnRef as any
 			});
 
 			expect(input.value).toBe('updated');

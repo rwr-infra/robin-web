@@ -209,9 +209,7 @@ export function createUrlStateSubscriber(callback: (state: UrlState) => void) {
 				: undefined,
 			sortColumn: $page.url.searchParams.get(URL_PARAMS.SORT_COLUMN) || undefined,
 			sortDirection: $page.url.searchParams.get(URL_PARAMS.SORT_DIRECTION) as
-				| 'asc'
-				| 'desc'
-				| undefined,
+				'asc' | 'desc' | undefined,
 			view:
 				($page.url.searchParams.get(URL_PARAMS.VIEW) as 'servers' | 'players' | null) || undefined,
 			playerDb:

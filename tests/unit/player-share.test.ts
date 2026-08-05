@@ -42,9 +42,7 @@ describe('PlayerShareService', () => {
 	describe('generateFilename', () => {
 		beforeEach(() => {
 			// Mock date to fixed timestamp
-			vi.spyOn(Date.prototype, 'toISOString').mockReturnValue(
-				'2025-01-15T10:30:00.000Z'
-			);
+			vi.spyOn(Date.prototype, 'toISOString').mockReturnValue('2025-01-15T10:30:00.000Z');
 		});
 
 		it('should generate filename with username and timestamp', () => {
@@ -79,9 +77,7 @@ describe('PlayerShareService', () => {
 	describe('formatTimestamp', () => {
 		beforeEach(() => {
 			// Mock date to fixed timestamp
-			vi.spyOn(Date.prototype, 'toLocaleString').mockReturnValue(
-				'Jan 15, 2025, 2:30 PM'
-			);
+			vi.spyOn(Date.prototype, 'toLocaleString').mockReturnValue('Jan 15, 2025, 2:30 PM');
 		});
 
 		it('should format timestamp in English by default', () => {
@@ -140,9 +136,7 @@ describe('PlayerShareService', () => {
 
 	describe('Edge Cases and Error Handling', () => {
 		it('should handle empty username in generateFilename', () => {
-			vi.spyOn(Date.prototype, 'toISOString').mockReturnValue(
-				'2025-01-15T10:30:00.000Z'
-			);
+			vi.spyOn(Date.prototype, 'toISOString').mockReturnValue('2025-01-15T10:30:00.000Z');
 
 			const filename = playerShareService.generateFilename('');
 
@@ -150,9 +144,7 @@ describe('PlayerShareService', () => {
 		});
 
 		it('should handle very long username in generateFilename', () => {
-			vi.spyOn(Date.prototype, 'toISOString').mockReturnValue(
-				'2025-01-15T10:30:00.000Z'
-			);
+			vi.spyOn(Date.prototype, 'toISOString').mockReturnValue('2025-01-15T10:30:00.000Z');
 
 			const longUsername = 'a'.repeat(100);
 			const filename = playerShareService.generateFilename(longUsername);

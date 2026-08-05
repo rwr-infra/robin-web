@@ -81,7 +81,6 @@ async function buildSvelteKit() {
 		const { injectEnv } = await import('./inject-env.ts');
 		await injectEnv();
 		console.log('✅ Environment variables injected\n');
-
 	} catch (error) {
 		console.error('❌ Build failed:', error);
 		process.exit(1);

@@ -32,12 +32,16 @@
 
 	const showFilterIndicator = $derived(
 		searchQuery &&
-		((currentView === 'servers' && serverFilteredStats.totalServers < serverTotalStats.totalServers) ||
-			(currentView === 'players' && playerFilteredStats.totalPlayers < playerTotalStats.totalPlayers))
+			((currentView === 'servers' &&
+				serverFilteredStats.totalServers < serverTotalStats.totalServers) ||
+				(currentView === 'players' &&
+					playerFilteredStats.totalPlayers < playerTotalStats.totalPlayers))
 	);
 </script>
 
-<div class="stats-container mb-4 md:mb-2 px-4 py-4 md:py-2 flex items-center justify-between text-sm">
+<div
+	class="stats-container mb-4 flex items-center justify-between px-4 py-4 text-sm md:mb-2 md:py-2"
+>
 	<div class="flex items-center gap-4">
 		{#if currentView === 'servers'}
 			<span class="font-medium">

@@ -711,8 +711,8 @@ describe('player-utils', () => {
 			expect(result.hasPrevious).toBe(false);
 		});
 
-	test('should handle malformed HTML gracefully in pagination parsing', () => {
-		const html = `
+		test('should handle malformed HTML gracefully in pagination parsing', () => {
+			const html = `
 <!DOCTYPE html>
 <html>
 <body>
@@ -724,17 +724,15 @@ describe('player-utils', () => {
 </html>
 		`;
 
-		// Should not throw
-		expect(() =>
-			parsePlayerListWithPagination(html, PlayerDatabase.INVASION)
-		).not.toThrow();
+			// Should not throw
+			expect(() => parsePlayerListWithPagination(html, PlayerDatabase.INVASION)).not.toThrow();
 
-		const result = parsePlayerListWithPagination(html, PlayerDatabase.INVASION);
-		// Parser may extract incomplete data, just check it doesn't throw
-		expect(Array.isArray(result.players)).toBe(true);
-		expect(typeof result.hasNext).toBe('boolean');
-		expect(typeof result.hasPrevious).toBe('boolean');
-	});
+			const result = parsePlayerListWithPagination(html, PlayerDatabase.INVASION);
+			// Parser may extract incomplete data, just check it doesn't throw
+			expect(Array.isArray(result.players)).toBe(true);
+			expect(typeof result.hasNext).toBe('boolean');
+			expect(typeof result.hasPrevious).toBe('boolean');
+		});
 
 		test('should handle array of links', () => {
 			const html = `
@@ -1000,4 +998,3 @@ describe('player-utils', () => {
 		});
 	});
 });
-

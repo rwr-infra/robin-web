@@ -122,4 +122,3 @@ describe('LanguageSwitcher', () => {
 		expect(dropdown?.classList.contains('dropdown-end')).toBe(true);
 	});
 });
-

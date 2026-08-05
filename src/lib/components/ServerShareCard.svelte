@@ -50,9 +50,9 @@
 	function getMapName(mapId: string): string {
 		// Extract the last part of the path (actual map name)
 		const mapName = mapId.split('/').pop() || mapId;
-		
+
 		// Optionally, look up in maps data for display name
-		const map = maps.find(m => m.path === mapId);
+		const map = maps.find((m) => m.path === mapId);
 		return map?.name || mapName;
 	}
 
@@ -107,34 +107,38 @@
 	];
 </script>
 
-<div
-	class="share-card-wrapper w-full max-w-[600px] rounded-xl p-4 shadow-2xl {themeClasses()}"
->
+<div class="share-card-wrapper w-full max-w-[600px] rounded-xl p-4 shadow-2xl {themeClasses()}">
 	<!-- Header Section -->
 	<div class="mb-3">
 		<div class="mb-2">
-			<div class="flex items-center gap-2 mb-2">
-				<Server class="h-4 w-4 opacity-70 shrink-0" />
-				<h2 class="text-lg font-bold truncate flex-1">{server.name}</h2>
+			<div class="mb-2 flex items-center gap-2">
+				<Server class="h-4 w-4 shrink-0 opacity-70" />
+				<h2 class="flex-1 truncate text-lg font-bold">{server.name}</h2>
 			</div>
 			<!-- Badges: Map, Mode, Capacity -->
 			<div class="flex flex-wrap gap-2">
 				<!-- Map Badge -->
-				<span class="badge badge-outline bg-cyan-50 text-cyan-700 border-cyan-200 font-medium text-xs px-2 py-1 rounded-md shadow-sm">
+				<span
+					class="badge badge-outline rounded-md border-cyan-200 bg-cyan-50 px-2 py-1 text-xs font-medium text-cyan-700 shadow-sm"
+				>
 					{server.mapId.split('/').pop() || server.mapId}
 				</span>
 				<!-- Mode Badge -->
-				<span class="badge badge-outline bg-blue-50 text-blue-700 border-blue-200 font-medium text-xs px-2 py-1 rounded-md shadow-sm">
+				<span
+					class="badge badge-outline rounded-md border-blue-200 bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 shadow-sm"
+				>
 					{server.mode || 'Unknown'}
 				</span>
 				<!-- Capacity Badge -->
-				<span class="badge badge-success text-white font-medium text-xs px-2 py-1 rounded-md shadow-sm">
+				<span
+					class="badge badge-success rounded-md px-2 py-1 text-xs font-medium text-white shadow-sm"
+				>
 					{formatPlayerCount(server.currentPlayers, server.maxPlayers)}
 				</span>
 			</div>
 		</div>
 		<!-- Divider -->
-		<div class="border-b border-base-content/15"></div>
+		<div class="border-base-content/15 border-b"></div>
 	</div>
 
 	<!-- Server Info Grid -->
@@ -145,13 +149,15 @@
 					<span class="text-base-content/60 text-xs whitespace-nowrap">
 						<TranslatedText key={field.i18n} />
 					</span>
-					<span class="font-semibold text-xs text-right {field.isMono ? 'font-mono' : ''}">
-						{field.format ? field.format(getDisplayValue(server[field.key])) : getDisplayValue(server[field.key])}
+					<span class="text-right text-xs font-semibold {field.isMono ? 'font-mono' : ''}">
+						{field.format
+							? field.format(getDisplayValue(server[field.key]))
+							: getDisplayValue(server[field.key])}
 					</span>
 				</div>
 			{/if}
 		{/each}
-		
+
 		<!-- URL field - conditional rendering -->
 		{#if server.url && isFieldVisible('url')}
 			<div class="flex items-center justify-between gap-1">
@@ -162,7 +168,7 @@
 					href={server.url}
 					target="_blank"
 					rel="noopener noreferrer"
-					class="link link-primary text-xs truncate"
+					class="link link-primary truncate text-xs"
 					title={server.url}
 				>
 					{server.url.length > 30 ? server.url.substring(0, 27) + '...' : server.url}
@@ -173,13 +179,13 @@
 
 	<!-- Player List Section -->
 	{#if server.playerList && server.playerList.length > 0 && isFieldVisible('playerList')}
-		<div class="mt-3 border-t border-base-content/15 pt-2">
+		<div class="border-base-content/15 mt-3 border-t pt-2">
 			<div class="text-base-content/60 mb-2 text-xs">
 				<TranslatedText key="app.server.column.playerList" /> ({server.playerList.length})
 			</div>
 			<div class="flex flex-wrap gap-1">
 				{#each server.playerList as player}
-					<span class="badge badge-neutral text-xs whitespace-nowrap flex-shrink-0">{player}</span>
+					<span class="badge badge-neutral flex-shrink-0 text-xs whitespace-nowrap">{player}</span>
 				{/each}
 			</div>
 		</div>
@@ -187,7 +193,7 @@
 
 	<!-- Comment -->
 	{#if server.comment && isFieldVisible('comment')}
-		<div class="mt-3 border-t border-base-content/15 pt-2">
+		<div class="border-base-content/15 mt-3 border-t pt-2">
 			<div class="text-base-content/60 mb-1 text-xs">
 				<TranslatedText key="app.server.column.comment" />
 			</div>
@@ -196,14 +202,14 @@
 	{/if}
 
 	<!-- Footer with timestamp -->
-	<div class="mt-3 border-t border-base-content/15 pt-2">
+	<div class="border-base-content/15 mt-3 border-t pt-2">
 		{#if queryTimestamp}
-			<div class="text-center text-[10px] text-base-content/40">
+			<div class="text-base-content/40 text-center text-[10px]">
 				<TranslatedText key="app.server.shareCard.queryTime" />: {formatTimestamp(queryTimestamp)}
 			</div>
 		{/if}
 		{#if showWatermark && watermarkText}
-			<div class="mt-1 text-center text-[10px] text-base-content/30">{watermarkText}</div>
+			<div class="text-base-content/30 mt-1 text-center text-[10px]">{watermarkText}</div>
 		{/if}
 	</div>
 
@@ -218,8 +224,8 @@
 <style>
 	.share-card-wrapper {
 		background: linear-gradient(135deg, hsl(var(--b1)), hsl(var(--b2)));
-		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
-			sans-serif;
+		font-family:
+			-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 	}
 
 	.share-card-wrapper * {

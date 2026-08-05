@@ -34,6 +34,15 @@ Command notes:
 - `build:cdn` runs `scripts/build-cdn-sveltekit.ts`
 - CDN vars: `CDN_URL`, optional `CDN_IMAGE_URL`
 - `test` runs unit (`--run`) and then e2e
+- `check` type-checks with TypeScript 7 (`tsgo`) via `svelte-check --tsgo`
+
+TypeScript setup:
+
+- `typescript` is pinned to 6.x because `svelte-check`, `@sveltejs/kit` and
+  `typescript-eslint` peer-require a 5.x/6.x API
+- TypeScript 7 is installed alongside as the alias `@typescript/native`
+  (`npm:typescript@^7`), which is what `svelte-check --tsgo` drives
+- drop `--tsgo` to fall back to the classic 6.x checker (slower, same results)
 
 ## Single-Test Commands (Use These)
 

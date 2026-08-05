@@ -65,15 +65,21 @@
 </script>
 
 {#if showInstallPrompt}
-	<div class="alert alert-success fixed bottom-4 right-4 z-50 flex max-w-sm items-center gap-4 shadow-lg transition-all">
+	<div
+		class="alert alert-success fixed right-4 bottom-4 z-50 flex max-w-sm items-center gap-4 shadow-lg transition-all"
+	>
 		<Download class="h-8 w-8 shrink-0" />
 		<div class="flex-1">
 			<p class="font-bold"><TranslatedText key="app.pwa.install.title" /></p>
 			<p class="text-sm opacity-90"><TranslatedText key="app.pwa.install.description" /></p>
 		</div>
 		<div class="flex gap-2">
-			<button class="btn btn-sm btn-ghost" onclick={dismiss}><TranslatedText key="app.pwa.install.later" /></button>
-			<button class="btn btn-sm btn-primary" onclick={installApp}><TranslatedText key="app.pwa.install.button" /></button>
+			<button class="btn btn-sm btn-ghost" onclick={dismiss}
+				><TranslatedText key="app.pwa.install.later" /></button
+			>
+			<button class="btn btn-sm btn-primary" onclick={installApp}
+				><TranslatedText key="app.pwa.install.button" /></button
+			>
 		</div>
 	</div>
 {/if}

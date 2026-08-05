@@ -147,33 +147,37 @@
 	<!-- Quick filter buttons -->
 	<QuickFilterButtons
 		isLoading={loading}
-		onQuickFilter={onQuickFilter}
-		activeFilters={activeFilters}
-		isMultiSelect={isMultiSelect}
-		onMultiSelectChange={onMultiSelectChange}
+		{onQuickFilter}
+		{activeFilters}
+		{isMultiSelect}
+		{onMultiSelectChange}
 	/>
 
 	<!-- Desktop scrollable table container -->
-	<div class={`hidden md:flex md:flex-col ${layoutMode === 'tableOnly' ? tableOnlyContainerClasses : ''}`}>
+	<div
+		class={`hidden md:flex md:flex-col ${layoutMode === 'tableOnly' ? tableOnlyContainerClasses : ''}`}
+	>
 		<!-- Desktop table with scroll -->
-		<div class={`w-full ${layoutMode === 'tableOnly' ? tableOnlyScrollClasses : fullPageScrollClasses}`}>
+		<div
+			class={`w-full ${layoutMode === 'tableOnly' ? tableOnlyScrollClasses : fullPageScrollClasses}`}
+		>
 			<ServerTable
 				data={paginatedServers}
 				{columns}
 				{searchQuery}
 				{maps}
-				onRowAction={onRowAction}
+				{onRowAction}
 				{visibleColumns}
-				onSort={onSort}
+				{onSort}
 				{sortColumn}
 				{sortDirection}
 				{onMapView}
-				onShare={onShare}
+				{onShare}
 			/>
 		</div>
 
 		<!-- Desktop pagination - fixed at bottom, hidden when totalPages <= 1 -->
-		<div class="border-t border-mil bg-mil-secondary px-3 py-2" class:hidden={totalPages <= 1}>
+		<div class="border-mil bg-mil-secondary border-t px-3 py-2" class:hidden={totalPages <= 1}>
 			<Pagination
 				{currentPage}
 				{totalPages}
@@ -197,37 +201,37 @@
 					>
 						{#if column.i18n}<TranslatedText key={column.i18n} />{:else}{column.label}{/if}
 						{#if sortColumn !== column.key || !sortDirection}
-							<ArrowDownUp class="w-4 h-4 opacity-30" />
+							<ArrowDownUp class="h-4 w-4 opacity-30" />
 						{:else if sortDirection === 'asc'}
-							<ArrowUp class="w-4 h-4 text-primary" />
+							<ArrowUp class="text-primary h-4 w-4" />
 						{:else if sortDirection === 'desc'}
-							<ArrowDown class="w-4 h-4 text-primary" />
+							<ArrowDown class="text-primary h-4 w-4" />
 						{/if}
 					</button>
 				{/each}
 			</div>
 
-				{#each mobilePaginatedServers as item (item.id)}
-					<div class="collapse collapse-arrow bg-base-100 border-base-300 mb-3 border">
-						<input
-							id={`server-mobile-collapse-${item.id}`}
-							type="checkbox"
-							checked={mobileExpandedCards[item.id]}
-							onchange={() => onToggleMobileCard(item.id)}
-							aria-label={m['app.ariaLabel.toggleServerDetails']()}
-							aria-expanded={mobileExpandedCards[item.id] ? 'true' : 'false'}
-						/>
-						<label
-							for={`server-mobile-collapse-${item.id}`}
-							class="collapse-title min-h-14 cursor-pointer px-4 py-5 font-semibold"
-						>
-							<div class="flex items-center justify-between gap-2 mr-6">
-								<div class="text-base-content flex-1 truncate text-base font-medium">
-									{@html getDisplayValue(
-										item,
-										columns.find((col) => col.key === 'name')!,
-										searchQuery
-									)}
+			{#each mobilePaginatedServers as item (item.id)}
+				<div class="collapse-arrow bg-base-100 border-base-300 collapse mb-3 border">
+					<input
+						id={`server-mobile-collapse-${item.id}`}
+						type="checkbox"
+						checked={mobileExpandedCards[item.id]}
+						onchange={() => onToggleMobileCard(item.id)}
+						aria-label={m['app.ariaLabel.toggleServerDetails']()}
+						aria-expanded={mobileExpandedCards[item.id] ? 'true' : 'false'}
+					/>
+					<label
+						for={`server-mobile-collapse-${item.id}`}
+						class="collapse-title min-h-14 cursor-pointer px-4 py-5 font-semibold"
+					>
+						<div class="mr-6 flex items-center justify-between gap-2">
+							<div class="text-base-content flex-1 truncate text-base font-medium">
+								{@html getDisplayValue(
+									item,
+									columns.find((col) => col.key === 'name')!,
+									searchQuery
+								)}
 							</div>
 							<div class="min-w-0 flex-shrink-0">
 								<div class="flex max-w-24 flex-wrap justify-end gap-1 sm:max-w-32">
@@ -259,14 +263,14 @@
 										</span>
 										<div class="text-base-content ml-3 flex-1 text-right text-sm">
 											{#if column.key === 'url' && item.url}
-											<a
-												href={item.url}
-												target="_blank"
-												rel="noopener noreferrer"
-												class="link link-primary"
-												onclick={(e) => e.stopPropagation()}
-												title={item.url}
-											>
+												<a
+													href={item.url}
+													target="_blank"
+													rel="noopener noreferrer"
+													class="link link-primary"
+													onclick={(e) => e.stopPropagation()}
+													title={item.url}
+												>
 													{item.url.length > 30 ? item.url.substring(0, 27) + '...' : item.url}
 												</a>
 											{:else if column.key === 'comment' || column.key === 'playerList'}
@@ -281,9 +285,9 @@
 										</div>
 									</div>
 								{/each}
-								{#if maps.find(m => m.path === item.mapId)}
-									{@const mapData = maps.find(m => m.path === item.mapId)}
-									<div class="border-base-200 mt-4 pt-3 border-t">
+								{#if maps.find((m) => m.path === item.mapId)}
+									{@const mapData = maps.find((m) => m.path === item.mapId)}
+									<div class="border-base-200 mt-4 border-t pt-3">
 										<div class="flex items-center justify-between">
 											<span class="text-base-content/70 min-w-20 flex-shrink-0 text-sm">
 												<TranslatedText key="app.map.preview" />:
@@ -296,7 +300,7 @@
 												}}
 												type="button"
 											>
-												<Eye class="w-3 h-3 mr-1" />
+												<Eye class="mr-1 h-3 w-3" />
 												<TranslatedText key="app.map.buttonPreviewMap" />
 											</button>
 										</div>
@@ -304,7 +308,7 @@
 								{/if}
 
 								<!-- Share button section -->
-								<div class="border-base-200 mt-4 pt-3 border-t">
+								<div class="border-base-200 mt-4 border-t pt-3">
 									<div class="flex items-center justify-between">
 										<span class="text-base-content/70 min-w-20 flex-shrink-0 text-sm">
 											<TranslatedText key="app.server.share" />:
@@ -317,7 +321,7 @@
 											}}
 											type="button"
 										>
-											<Share class="w-3 h-3 mr-1" />
+											<Share class="mr-1 h-3 w-3" />
 											<TranslatedText key="app.server.buttonShare" />
 										</button>
 									</div>
@@ -331,16 +335,15 @@
 			{#if mobilePaginatedServers.length === 0}
 				<div class="alert alert-info">
 					<Info class="h-6 w-6 shrink-0 stroke-current" />
-					<span><TranslatedText key="app.server.noDataFound" />{#if searchQuery} <TranslatedText key="app.server.matchingSearch" />{/if}.</span>
+					<span
+						><TranslatedText key="app.server.noDataFound" />{#if searchQuery}
+							<TranslatedText key="app.server.matchingSearch" />{/if}.</span
+					>
 				</div>
 			{/if}
 		</div>
 
 		<!-- Mobile infinite scroll -->
-		<MobileInfiniteScroll
-			hasMore={mobileHasMore}
-			isLoading={mobileLoadingMore}
-			onLoadMore={onLoadMore}
-		/>
+		<MobileInfiniteScroll hasMore={mobileHasMore} isLoading={mobileLoadingMore} {onLoadMore} />
 	</div>
 {/if}

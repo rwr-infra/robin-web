@@ -114,4 +114,3 @@ describe('ThemeToggle', () => {
 		expect(button).toHaveAttribute('type', 'button');
 	});
 });
-

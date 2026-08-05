@@ -59,6 +59,8 @@
 		</span>
 	</div>
 	{#if lastUpdate && !isOnline}
-		<span class="text-mil-muted"><TranslatedText key="app.pwa.status.updated" /> {lastUpdate.toLocaleTimeString()}</span>
+		<span class="text-mil-muted"
+			><TranslatedText key="app.pwa.status.updated" /> {lastUpdate.toLocaleTimeString()}</span
+		>
 	{/if}
 </div>

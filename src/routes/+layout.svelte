@@ -1,10 +1,10 @@
 <script lang="ts">
-import { onMount } from 'svelte';
-import '../app.css';
-import TranslatedText from '$lib/components/TranslatedText.svelte';
-import Header from './Header.svelte';
-import AnnouncementBar from './AnnouncementBar.svelte';
-import { getLayoutMode, syncLayoutMode } from '$lib/stores/layout-mode.svelte';
+	import { onMount } from 'svelte';
+	import '../app.css';
+	import TranslatedText from '$lib/components/TranslatedText.svelte';
+	import Header from './Header.svelte';
+	import AnnouncementBar from './AnnouncementBar.svelte';
+	import { getLayoutMode, syncLayoutMode } from '$lib/stores/layout-mode.svelte';
 
 	let { children } = $props();
 
@@ -14,7 +14,9 @@ import { getLayoutMode, syncLayoutMode } from '$lib/stores/layout-mode.svelte';
 	// Copyright year range - project launched in 2025, dynamic end year
 	const launchYear = 2025;
 	const currentYear = $derived(new Date().getFullYear());
-	const copyrightYear = $derived(currentYear > launchYear ? `${launchYear}-${currentYear}` : `${launchYear}`);
+	const copyrightYear = $derived(
+		currentYear > launchYear ? `${launchYear}-${currentYear}` : `${launchYear}`
+	);
 
 	const tableOnlyRootClasses = 'md:h-screen md:overflow-hidden';
 	const tableOnlyMainClasses = 'md:flex-1 md:overflow-hidden md:min-h-0';
@@ -87,53 +89,64 @@ import { getLayoutMode, syncLayoutMode } from '$lib/stores/layout-mode.svelte';
 					}
 				});
 
-			document
-				.querySelectorAll('meta[name="twitter:image"]')
-				.forEach((el) => {
-					const src = el.getAttribute('content');
-					if (src && src.includes('__VITE_CDN_IMAGE_URL__')) {
-						el.setAttribute('content', src.replace(/__VITE_CDN_IMAGE_URL__/g, cdnImageUrl));
-					}
-				});
+			document.querySelectorAll('meta[name="twitter:image"]').forEach((el) => {
+				const src = el.getAttribute('content');
+				if (src && src.includes('__VITE_CDN_IMAGE_URL__')) {
+					el.setAttribute('content', src.replace(/__VITE_CDN_IMAGE_URL__/g, cdnImageUrl));
+				}
+			});
 		}
 	}
 </script>
 
-
-
 <!-- PC端: 固定高度布局; 移动端: 正常流式布局 -->
-<div
-	class={`flex min-h-screen flex-col ${layoutMode === 'tableOnly' ? tableOnlyRootClasses : ''}`}
->
+<div class={`flex min-h-screen flex-col ${layoutMode === 'tableOnly' ? tableOnlyRootClasses : ''}`}>
 	<Header />
 
 	<AnnouncementBar />
 
 	<main
-		class={`flex w-full flex-col flex-1 ${layoutMode === 'tableOnly' ? tableOnlyMainClasses : ''}`}
+		class={`flex w-full flex-1 flex-col ${layoutMode === 'tableOnly' ? tableOnlyMainClasses : ''}`}
 	>
 		{@render children()}
 	</main>
 
-	<footer class="footer sm:footer-horizontal footer-center border-t border-mil bg-mil-secondary px-4 py-4 md:py-3">
+	<footer
+		class="footer sm:footer-horizontal footer-center border-mil bg-mil-secondary border-t px-4 py-4 md:py-3"
+	>
 		<aside class="flex flex-col items-center gap-2 md:gap-1">
-			<p class="text-sm md:text-xs text-mil-primary">
+			<p class="text-mil-primary text-sm md:text-xs">
 				<TranslatedText key="app.footer.developedBy" />
-				<a href="https://www.kreedzt.com" target="_blank" rel="noopener noreferrer" class="link link-hover font-bold hover:underline text-mil-primary">
+				<a
+					href="https://www.kreedzt.com"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="link link-hover text-mil-primary font-bold hover:underline"
+				>
 					Kreedzt
 				</a>
 			</p>
-			<p class="text-xs text-mil-secondary">
+			<p class="text-mil-secondary text-xs">
 				<TranslatedText key="app.footer.dataSourced" />
-				<a href="http://rwr.runningwithrifles.com/rwr_stats/view_players.php" target="_blank" rel="noopener noreferrer" class="link link-hover underline-offset-4 text-mil-secondary">
+				<a
+					href="http://rwr.runningwithrifles.com/rwr_stats/view_players.php"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="link link-hover text-mil-secondary underline-offset-4"
+				>
 					<TranslatedText key="app.footer.rwrStatsApi" />
 				</a>
 				&bull;
-				<a href="http://rwr.runningwithrifles.com/rwr_server_list/view_servers.php" target="_blank" rel="noopener noreferrer" class="link link-hover underline-offset-4 text-mil-secondary">
+				<a
+					href="http://rwr.runningwithrifles.com/rwr_server_list/view_servers.php"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="link link-hover text-mil-secondary underline-offset-4"
+				>
 					<TranslatedText key="app.footer.serverList" />
 				</a>
 			</p>
-			<p class="text-xs text-mil-secondary">
+			<p class="text-mil-secondary text-xs">
 				<TranslatedText key="app.footer.robinWeb" />
 				&bull;
 				<TranslatedText key="app.footer.copyright" params={{ year: copyrightYear }} />

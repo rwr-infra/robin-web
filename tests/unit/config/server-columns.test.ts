@@ -56,25 +56,25 @@ describe('server-columns', () => {
 			expect(value).toBe('TestServer123');
 		});
 
-	test('should highlight server name with query', () => {
-		const column = columns.find((col) => col.key === 'name');
-		const server = createMockServer({ name: 'TestServer' });
-		const highlighted = column!.getValueWithHighlight!(server, 'Test');
+		test('should highlight server name with query', () => {
+			const column = columns.find((col) => col.key === 'name');
+			const server = createMockServer({ name: 'TestServer' });
+			const highlighted = column!.getValueWithHighlight!(server, 'Test');
 
-		expect(highlighted).toContain('Server');
-		expect(highlighted).toContain('<mark');
-	});
+			expect(highlighted).toContain('Server');
+			expect(highlighted).toContain('<mark');
+		});
 	});
 
 	describe('ipAddress column', () => {
-	test('should highlight IP address with query', () => {
-		const column = columns.find((col) => col.key === 'ipAddress');
-		const server = createMockServer({ ipAddress: '192.168.1.1' });
-		const highlighted = column!.getValueWithHighlight!(server, '192');
+		test('should highlight IP address with query', () => {
+			const column = columns.find((col) => col.key === 'ipAddress');
+			const server = createMockServer({ ipAddress: '192.168.1.1' });
+			const highlighted = column!.getValueWithHighlight!(server, '192');
 
-		expect(highlighted).toContain('.168.1.1');
-		expect(highlighted).toContain('<mark');
-	});
+			expect(highlighted).toContain('.168.1.1');
+			expect(highlighted).toContain('<mark');
+		});
 	});
 
 	describe('port column', () => {
@@ -103,14 +103,14 @@ describe('server-columns', () => {
 	});
 
 	describe('country column', () => {
-	test('should highlight country with query', () => {
-		const column = columns.find((col) => col.key === 'country');
-		const server = createMockServer({ country: 'Germany' });
-		const highlighted = column!.getValueWithHighlight!(server, 'Ger');
+		test('should highlight country with query', () => {
+			const column = columns.find((col) => col.key === 'country');
+			const server = createMockServer({ country: 'Germany' });
+			const highlighted = column!.getValueWithHighlight!(server, 'Ger');
 
-		expect(highlighted).toContain('many');
-		expect(highlighted).toContain('<mark');
-	});
+			expect(highlighted).toContain('many');
+			expect(highlighted).toContain('<mark');
+		});
 	});
 
 	describe('mode column', () => {
@@ -132,15 +132,15 @@ describe('server-columns', () => {
 			expect(value).toContain('Unknown');
 		});
 
-	test('should highlight mode with query', () => {
-		const column = columns.find((col) => col.key === 'mode');
-		const server = createMockServer({ mode: 'Dominance' });
-		const highlighted = column!.getValueWithHighlight!(server, 'Dom');
+		test('should highlight mode with query', () => {
+			const column = columns.find((col) => col.key === 'mode');
+			const server = createMockServer({ mode: 'Dominance' });
+			const highlighted = column!.getValueWithHighlight!(server, 'Dom');
 
-		expect(highlighted).toContain('badge');
-		expect(highlighted).toContain('inance');
-		expect(highlighted).toContain('<mark');
-	});
+			expect(highlighted).toContain('badge');
+			expect(highlighted).toContain('inance');
+			expect(highlighted).toContain('<mark');
+		});
 	});
 
 	describe('mapId column', () => {
@@ -153,15 +153,15 @@ describe('server-columns', () => {
 			expect(value).toContain('map5');
 		});
 
-	test('should highlight map name with query', () => {
-		const column = columns.find((col) => col.key === 'mapId');
-		const server = createMockServer({ mapId: 'media/packages/vanilla/maps/island1' });
-		const highlighted = column!.getValueWithHighlight!(server, 'island');
+		test('should highlight map name with query', () => {
+			const column = columns.find((col) => col.key === 'mapId');
+			const server = createMockServer({ mapId: 'media/packages/vanilla/maps/island1' });
+			const highlighted = column!.getValueWithHighlight!(server, 'island');
 
-		expect(highlighted).toContain('badge');
-		expect(highlighted).toContain('1');
-		expect(highlighted).toContain('<mark');
-	});
+			expect(highlighted).toContain('badge');
+			expect(highlighted).toContain('1');
+			expect(highlighted).toContain('<mark');
+		});
 
 		test('should extract map name from path', () => {
 			const column = columns.find((col) => col.key === 'mapId');
@@ -212,16 +212,16 @@ describe('server-columns', () => {
 			expect(value).toContain('81% full');
 		});
 
-	test('should render 60-79% occupied server with yellow badge', () => {
-		const column = columns.find((col) => col.key === 'playerCount');
-		const server = createMockServer({ currentPlayers: 20, maxPlayers: 32 }); // 62.5%
-		const value = column!.getValue!(server);
+		test('should render 60-79% occupied server with yellow badge', () => {
+			const column = columns.find((col) => col.key === 'playerCount');
+			const server = createMockServer({ currentPlayers: 20, maxPlayers: 32 }); // 62.5%
+			const value = column!.getValue!(server);
 
-		expect(value).toContain('badge');
-		expect(value).toContain('20/32');
-		expect(value).toContain('amber');
-		expect(value).toContain('63% full'); // Math.round(62.5) = 63
-	});
+			expect(value).toContain('badge');
+			expect(value).toContain('20/32');
+			expect(value).toContain('amber');
+			expect(value).toContain('63% full'); // Math.round(62.5) = 63
+		});
 
 		test('should render less than 60% occupied server with green badge', () => {
 			const column = columns.find((col) => col.key === 'playerCount');
@@ -269,14 +269,14 @@ describe('server-columns', () => {
 			expect(value).toContain('Full server');
 		});
 
-	test('should highlight player count with query', () => {
-		const column = columns.find((col) => col.key === 'playerCount');
-		const server = createMockServer({ currentPlayers: 15, maxPlayers: 32 });
-		const highlighted = column!.getValueWithHighlight!(server, '15');
+		test('should highlight player count with query', () => {
+			const column = columns.find((col) => col.key === 'playerCount');
+			const server = createMockServer({ currentPlayers: 15, maxPlayers: 32 });
+			const highlighted = column!.getValueWithHighlight!(server, '15');
 
-		expect(highlighted).toContain('/32');
-		expect(highlighted).toContain('<mark');
-	});
+			expect(highlighted).toContain('/32');
+			expect(highlighted).toContain('<mark');
+		});
 	});
 
 	describe('playerList column', () => {
@@ -454,4 +454,3 @@ describe('server-columns', () => {
 		});
 	});
 });
-

@@ -97,10 +97,7 @@
 
 		<!-- Page info -->
 		<span class="text-base-content/70 text-sm">
-			<TranslatedText
-				key="app.pagination.info"
-				params={{ currentPage, totalPages, totalItems }}
-			/>
+			<TranslatedText key="app.pagination.info" params={{ currentPage, totalPages, totalItems }} />
 		</span>
 	</div>
 {/if}

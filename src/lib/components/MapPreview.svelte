@@ -12,11 +12,7 @@
 		onClose?: () => void;
 	}
 
-	let {
-		mapData,
-		show,
-		onClose
-	}: Props = $props();
+	let { mapData, show, onClose }: Props = $props();
 
 	let imageLoading = $state(true);
 	let imageError = $state(false);
@@ -89,12 +85,9 @@
 {#if mapData}
 	<!-- Use conditional rendering for modal visibility -->
 	{#if show}
-		<dialog
-			class="modal modal-open"
-			onclose={closeModal}
-		>
+		<dialog class="modal modal-open" onclose={closeModal}>
 			<div
-				class="modal-box p-0 max-w-6xl flex flex-col"
+				class="modal-box flex max-w-6xl flex-col p-0"
 				role="dialog"
 				aria-modal="true"
 				tabindex="-1"
@@ -104,13 +97,16 @@
 				}}
 			>
 				<!-- Header - always visible, fixed height -->
-				<div class="flex-shrink-0 p-4 border-b border-base-300">
-					<h3 class="font-semibold text-lg truncate">{mapData.name}</h3>
-					<p class="text-sm text-base-content/60 truncate">{mapData.path}</p>
+				<div class="border-base-300 flex-shrink-0 border-b p-4">
+					<h3 class="truncate text-lg font-semibold">{mapData.name}</h3>
+					<p class="text-base-content/60 truncate text-sm">{mapData.path}</p>
 				</div>
 
 				<!-- Content - flexible, takes available space with max height -->
-				<div class="flex items-center justify-center p-4 bg-base-200/30" style="max-height: 70vh; width: 100%;">
+				<div
+					class="bg-base-200/30 flex items-center justify-center p-4"
+					style="max-height: 70vh; width: 100%;"
+				>
 					{#if imageLoading}
 						<!-- Loading state using DaisyUI loading-dots -->
 						<div class="flex flex-col items-center justify-center p-8">
@@ -123,16 +119,12 @@
 						<!-- Error state -->
 						<div class="flex flex-col items-center justify-center p-8">
 							<div class="text-center">
-								<CircleAlert class="w-16 h-16 mx-auto mb-4 text-error" />
-								<p class="text-base-content/70 text-center text-sm mb-4">
+								<CircleAlert class="text-error mx-auto mb-4 h-16 w-16" />
+								<p class="text-base-content/70 mb-4 text-center text-sm">
 									<TranslatedText key="app.map.loadError" />
 								</p>
-								<button
-									class="btn btn-outline btn-sm"
-									onclick={retryImageLoad}
-									type="button"
-								>
-									<RefreshCw class="w-4 h-4 mr-1" />
+								<button class="btn btn-outline btn-sm" onclick={retryImageLoad} type="button">
+									<RefreshCw class="mr-1 h-4 w-4" />
 									<TranslatedText key="app.map.retry" />
 								</button>
 							</div>
@@ -142,7 +134,7 @@
 							<img
 								src={mapData.image}
 								alt="Map: {mapData.name}"
-								class="max-w-full max-h-full object-contain rounded-lg"
+								class="max-h-full max-w-full rounded-lg object-contain"
 								style="max-height: 66vh;"
 								onload={handleImageLoad}
 								onerror={handleImageError}
@@ -152,12 +144,8 @@
 				</div>
 
 				<!-- Footer - always visible, fixed height -->
-				<div class="flex-shrink-0 p-4 border-t border-base-300">
-					<button
-						class="btn btn-secondary w-full"
-						onclick={closeModal}
-						type="button"
-					>
+				<div class="border-base-300 flex-shrink-0 border-t p-4">
+					<button class="btn btn-secondary w-full" onclick={closeModal} type="button">
 						<TranslatedText key="app.map.close" />
 					</button>
 				</div>

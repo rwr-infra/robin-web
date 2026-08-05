@@ -16,15 +16,15 @@ import { resolve } from 'path';
 
 // Configuration - match docker-entrypoint.sh behavior
 const PLACEHOLDERS: Record<string, string> = {
-	'__VITE_SITE_URL__': 'VITE_SITE_URL',
-	'__VITE_CDN_IMAGE_URL__': 'VITE_CDN_IMAGE_URL',
-	'__VITE_ANALYTICS_ID__': 'VITE_ANALYTICS_ID',
+	__VITE_SITE_URL__: 'VITE_SITE_URL',
+	__VITE_CDN_IMAGE_URL__: 'VITE_CDN_IMAGE_URL',
+	__VITE_ANALYTICS_ID__: 'VITE_ANALYTICS_ID'
 };
 
 const DEFAULTS: Record<string, string> = {
-	'VITE_SITE_URL': 'https://robin.kreedzt.com',
-	'VITE_CDN_IMAGE_URL': '',
-	'VITE_ANALYTICS_ID': '',
+	VITE_SITE_URL: 'https://robin.kreedzt.com',
+	VITE_CDN_IMAGE_URL: '',
+	VITE_ANALYTICS_ID: ''
 };
 
 function injectEnv(): void {
@@ -45,7 +45,10 @@ function injectEnv(): void {
 			const value = process.env[envKey] || DEFAULTS[envKey] || '';
 
 			if (html.includes(placeholder)) {
-				html = html.replace(new RegExp(placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), value);
+				html = html.replace(
+					new RegExp(placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
+					value
+				);
 				modified = true;
 				console.log(`  ✓ ${placeholder} → ${value || '(empty)'}`);
 			} else {
@@ -89,7 +92,6 @@ function injectEnv(): void {
 		} catch {
 			// manifest.webmanifest may not exist, ignore
 		}
-
 	} catch (error) {
 		console.error('❌ Error injecting environment variables:', error);
 		process.exit(1);

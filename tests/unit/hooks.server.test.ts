@@ -249,7 +249,6 @@ describe('hooks.server', () => {
 			expect(response.body).toBeNull();
 		});
 
-
 		test('should handle multiple conditions in single error', () => {
 			const error = new Error('404 Not Found: /apple-icon-180.png');
 			const mockEvent = {
@@ -264,18 +263,18 @@ describe('hooks.server', () => {
 	});
 
 	describe('error message variations', () => {
-	test('should handle error message with different 404 format', () => {
-		const error = new Error('Not Found (404): /favicon.png');
-		const mockEvent = {
-			request: new Request('http://localhost:3000/favicon.png')
-		} as RequestEvent;
+		test('should handle error message with different 404 format', () => {
+			const error = new Error('Not Found (404): /favicon.png');
+			const mockEvent = {
+				request: new Request('http://localhost:3000/favicon.png')
+			} as RequestEvent;
 
-		const response = handleHttpError({ error, event: mockEvent });
+			const response = handleHttpError({ error, event: mockEvent });
 
-		// The error message contains '404' and pathname contains 'favicon'
-		// So it should return 200
-		expect(response.status).toBe(200);
-	});
+			// The error message contains '404' and pathname contains 'favicon'
+			// So it should return 200
+			expect(response.status).toBe(200);
+		});
 
 		test('should be case-sensitive for 404 in error message', () => {
 			const error = new Error('not found: /favicon.png'); // lowercase
@@ -289,4 +288,3 @@ describe('hooks.server', () => {
 		});
 	});
 });
-

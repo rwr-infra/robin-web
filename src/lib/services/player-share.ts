@@ -59,7 +59,10 @@ export class PlayerShareService {
 
 			return blob;
 		} catch (error) {
-			throw new Error(`Image generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+			throw new Error(
+				`Image generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+				{ cause: error }
+			);
 		}
 	}
 
@@ -77,7 +80,12 @@ export class PlayerShareService {
 			document.body.removeChild(link);
 			URL.revokeObjectURL(url);
 		} catch (error) {
-			throw new Error(`Download failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+			throw new Error(
+				`Download failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+				{
+					cause: error
+				}
+			);
 		}
 	}
 
@@ -93,7 +101,10 @@ export class PlayerShareService {
 			const item = new ClipboardItem({ 'image/png': blob });
 			await navigator.clipboard.write([item]);
 		} catch (error) {
-			throw new Error(`Copy to clipboard failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+			throw new Error(
+				`Copy to clipboard failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+				{ cause: error }
+			);
 		}
 	}
 
@@ -102,9 +113,7 @@ export class PlayerShareService {
 	 */
 	canCopyToClipboard(): boolean {
 		return (
-			'clipboard' in navigator &&
-			navigator.clipboard != null &&
-			'write' in navigator.clipboard
+			'clipboard' in navigator && navigator.clipboard != null && 'write' in navigator.clipboard
 		);
 	}
 
@@ -220,12 +229,7 @@ export class PlayerShareService {
 			color?: string;
 		} = {}
 	): Promise<Blob> {
-		const {
-			position = 'bottom-right',
-			fontSize = 16,
-			opacity = 0.5,
-			color = '#ffffff'
-		} = options;
+		const { position = 'bottom-right', fontSize = 16, opacity = 0.5, color = '#ffffff' } = options;
 
 		// Create an image element from the blob
 		const bitmap = await createImageBitmap(blob);
@@ -277,13 +281,7 @@ export class PlayerShareService {
 	/**
 	 * Crop image to specified dimensions (for future image editor)
 	 */
-	async cropImage(
-		blob: Blob,
-		x: number,
-		y: number,
-		width: number,
-		height: number
-	): Promise<Blob> {
+	async cropImage(blob: Blob, x: number, y: number, width: number, height: number): Promise<Blob> {
 		const bitmap = await createImageBitmap(blob);
 		const canvas = new OffscreenCanvas(width, height);
 		const ctx = canvas.getContext('2d')!;
