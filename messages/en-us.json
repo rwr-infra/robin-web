@@ -206,6 +206,20 @@
 				"error": "Failed to generate image",
 				"retry": "Retry",
 				"help": "Download the image or copy it to your clipboard to share"
+			},
+			"neighbors": {
+				"button": "Similar accounts",
+				"buttonTitle": "Show accounts registered next to this player",
+				"label": "Similar accounts",
+				"bannerAnchored": "Similar accounts to {username}",
+				"bannerSortOnly": "Ordered by similar accounts",
+				"range": "ranks {start}–{end}",
+				"hint": "Ordering comes from the player's Steam ID, which the API never returns.",
+				"exit": "Exit",
+				"notFound": "That player was not found in this database, showing the start of the list instead.",
+				"dismiss": "Dismiss",
+				"previousWindow": "Previous {count}",
+				"nextWindow": "Next {count}"
 			}
 		},
 		"footer": {
@@ -261,7 +275,8 @@
 			"togglePlayerDetails": "Toggle player details",
 			"clickToSort": "Click to sort",
 			"previewMap": "Preview map",
-			"sharePlayer": "Share player stats as image"
+			"sharePlayer": "Share player stats as image",
+			"findNeighbors": "Show similar accounts"
 		}
 	}
 }

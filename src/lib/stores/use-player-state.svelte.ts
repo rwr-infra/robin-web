@@ -1,5 +1,6 @@
 import { PlayerService } from '$lib/services/players';
 import type { IPlayerItem, PlayerDatabase, PlayerSortField } from '$lib/models/player.model';
+import { SID_SORT_FIELD, toPlayerSortField } from '$lib/models/player.model';
 
 interface PlayerStats {
 	totalPlayers: number;
@@ -48,6 +49,32 @@ export function createPlayerState(initialDb: PlayerDatabase = 'invasion' as Play
 	let playerSortColumn = $state<string | null>(null);
 	let playerSortDirection = $state<'asc' | 'desc' | null>(null);
 
+	// "Similar accounts" (SID) neighbor mode state.
+	// Upstream orders by Steam ID but never returns the value, so the window is positioned
+	// by anchoring on a username: when `search` is present upstream ignores `start` and
+	// answers with the window that begins 10 rows before the matched player.
+	let sidAnchor = $state<string | null>(null);
+	// Absolute start once the user shifts the window; overrides anchor positioning because
+	// `start` only works when no `search` is sent.
+	let sidWindowStart = $state<number | null>(null);
+	// Upstream answers with the first page instead of an error when the anchor is unknown.
+	let sidAnchorMissing = $state(false);
+
+	// Query generation: responses that no longer match the current query are dropped, so a
+	// slow request cannot overwrite the window, append foreign rows or clear neighbor mode
+	// after the user moved on.
+	let queryGeneration = 0;
+	// Requests in flight. The loading flag follows this count instead of the generation, so a
+	// dropped stale response still clears it when nothing else is loading.
+	let activeRequests = 0;
+
+	/**
+	 * Invalidate every in-flight request, e.g. after the query state changed.
+	 */
+	function invalidateInFlightRequests(): void {
+		queryGeneration++;
+	}
+
 	// Calculate statistics
 	const calculatePlayerStats = (
 		playerList: IPlayerItem[],
@@ -60,39 +87,100 @@ export function createPlayerState(initialDb: PlayerDatabase = 'invasion' as Play
 	};
 
 	/**
+	 * Resolve the sort field sent to the API.
+	 * Neighbor mode always sorts by SID; otherwise the column key is converted and
+	 * validated, because an unknown sort value makes upstream return an empty table.
+	 */
+	function resolveSortParam(): PlayerSortField | undefined {
+		if (sidAnchor !== null) {
+			return SID_SORT_FIELD;
+		}
+		return playerSortColumn ? toPlayerSortField(playerSortColumn) : undefined;
+	}
+
+	/**
+	 * Absolute start of the currently loaded window, derived from the upstream row numbers.
+	 */
+	function loadedWindowStart(): number {
+		const firstRowNumber = players[0]?.rowNumber ?? 1;
+		return Math.max(0, firstRowNumber - 1);
+	}
+
+	/**
 	 * Load players from API
 	 */
 	async function loadPlayers(options: LoadPlayersOptions = {}): Promise<void> {
 		const searchQuery = options.searchQuery ?? '';
-		const start = options.start ?? (currentPage - 1) * playerPageSize;
+		// The anchored request must not send `start` - upstream would ignore it anyway and
+		// the window it picks is the whole point of the anchor.
+		// Snapshot the anchor: concurrent loads may clear it before this request resolves
+		const requestAnchor = sidWindowStart === null ? sidAnchor : null;
+		const anchored = requestAnchor !== null;
+		const generation = ++queryGeneration;
 
 		try {
 			// Always use loading state for consistent UI
+			activeRequests++;
 			loading = true;
 
-			// Convert camelCase to snake_case for API
-			const sortParam: PlayerSortField | undefined = playerSortColumn
-				? (playerSortColumn.replace(/([A-Z])/g, '_$1').toLowerCase() as PlayerSortField)
-				: undefined;
+			const sortParam = resolveSortParam();
+			// Neighbor mode never forwards the user's search: any `search` value makes upstream
+			// ignore `start`, which would snap the window back to the searched player
+			const search = anchored
+				? requestAnchor
+				: sidAnchor !== null
+					? undefined
+					: searchQuery.trim() || undefined;
+			const start = anchored
+				? undefined
+				: (sidWindowStart ?? options.start ?? (currentPage - 1) * playerPageSize);
 
 			const result = await PlayerService.listWithPagination({
 				db: playerDb,
-				search: searchQuery.trim() || undefined,
+				search,
 				sort: sortParam,
 				size: playerPageSize,
 				start
 			});
+
+			// A newer query started while this one was in flight
+			if (generation !== queryGeneration) {
+				return;
+			}
 
 			players = result.players;
 			playerHasNext = result.hasNext;
 			playerHasPrevious = result.hasPrevious;
 			mobilePlayerCurrentPage = 1;
 			lastQueryTimestamp = Date.now();
+
+			if (anchored) {
+				const anchorLower = requestAnchor.toLowerCase();
+				const anchorFound = result.players.some(
+					(player) => (player.username ?? '').toLowerCase() === anchorLower
+				);
+				if (!anchorFound) {
+					// Upstream silently fell back to the first page: leave neighbor mode and
+					// surface it, the rows on screen are not this player's neighbors.
+					// The SID ordering is deliberately kept (unlike exitSidNeighborMode): those
+					// rows really are SID-ordered, so the banner stays truthful and offers the
+					// explicit exit. Clearing it here would leave an unexplained ordering.
+					sidAnchorMissing = true;
+					sidAnchor = null;
+					sidWindowStart = null;
+				}
+			}
 		} catch (err) {
+			if (generation !== queryGeneration) {
+				return;
+			}
 			error = err instanceof Error ? err.message : 'Failed to load player data';
 			console.error('Error loading players:', err);
 		} finally {
-			loading = false;
+			activeRequests--;
+			if (activeRequests === 0) {
+				loading = false;
+			}
 		}
 	}
 
@@ -100,26 +188,38 @@ export function createPlayerState(initialDb: PlayerDatabase = 'invasion' as Play
 	 * Load more players for mobile infinite scroll
 	 */
 	async function loadPlayersMore(searchQuery: string = ''): Promise<void> {
-		try {
-			const start = (mobilePlayerCurrentPage - 1) * playerPageSize;
+		const generation = queryGeneration;
 
-			// Convert camelCase to snake_case for API
-			const sortParam: PlayerSortField | undefined = playerSortColumn
-				? (playerSortColumn.replace(/([A-Z])/g, '_$1').toLowerCase() as PlayerSortField)
-				: undefined;
+		try {
+			const inNeighborMode = sidAnchor !== null;
+			// In neighbor mode the next slice is an absolute offset from the loaded window and
+			// must be requested without `search`, otherwise upstream ignores `start`.
+			const start = inNeighborMode
+				? loadedWindowStart() + (mobilePlayerCurrentPage - 1) * playerPageSize
+				: (mobilePlayerCurrentPage - 1) * playerPageSize;
+
+			const sortParam = resolveSortParam();
 
 			const result = await PlayerService.listWithPagination({
 				db: playerDb,
-				search: searchQuery.trim() || undefined,
+				search: inNeighborMode ? undefined : searchQuery.trim() || undefined,
 				sort: sortParam,
 				size: playerPageSize,
 				start
 			});
 
+			// The window moved on: appending these rows would mix two different queries
+			if (generation !== queryGeneration) {
+				return;
+			}
+
 			players = [...players, ...result.players];
 			playerHasNext = result.hasNext;
 			playerHasPrevious = result.hasPrevious;
 		} catch (err) {
+			if (generation !== queryGeneration) {
+				return;
+			}
 			error = err instanceof Error ? err.message : 'Failed to load player data';
 			console.error('Error loading players:', err);
 		}
@@ -129,6 +229,11 @@ export function createPlayerState(initialDb: PlayerDatabase = 'invasion' as Play
 	 * Handle sort column change
 	 */
 	function handleSort(column: string): void {
+		invalidateInFlightRequests();
+		// Sorting by a visible column leaves the SID neighbor window
+		sidAnchor = null;
+		sidWindowStart = null;
+
 		// Toggle sort: if clicking same column, clear it; otherwise set to desc
 		if (playerSortColumn === column) {
 			playerSortColumn = null;
@@ -144,9 +249,60 @@ export function createPlayerState(initialDb: PlayerDatabase = 'invasion' as Play
 	}
 
 	/**
+	 * Enter "similar accounts" mode: order by SID and position the window on this player.
+	 */
+	function enterSidNeighborMode(username: string): void {
+		invalidateInFlightRequests();
+		sidAnchor = username;
+		sidWindowStart = null;
+		sidAnchorMissing = false;
+		playerSortColumn = SID_SORT_FIELD;
+		// Upstream accepts no direction for sid, so no arrow state is claimed
+		playerSortDirection = null;
+		currentPage = 1;
+		mobilePlayerCurrentPage = 1;
+		mobilePlayerLoadingMore = false;
+	}
+
+	/**
+	 * Leave "similar accounts" mode and drop the SID ordering, which is meaningless on its own.
+	 */
+	function exitSidNeighborMode(): void {
+		invalidateInFlightRequests();
+		sidAnchor = null;
+		sidWindowStart = null;
+		sidAnchorMissing = false;
+		if (playerSortColumn === SID_SORT_FIELD) {
+			playerSortColumn = null;
+			playerSortDirection = null;
+		}
+		currentPage = 1;
+		mobilePlayerCurrentPage = 1;
+		mobilePlayerLoadingMore = false;
+	}
+
+	/**
+	 * Move the neighbor window one page up or down.
+	 * Uses the absolute row numbers of the loaded window because the anchored request
+	 * cannot be paginated (upstream ignores `start` while `search` is present).
+	 */
+	function shiftSidWindow(direction: 1 | -1): void {
+		invalidateInFlightRequests();
+		const nextStart = Math.max(0, loadedWindowStart() + direction * playerPageSize);
+		sidWindowStart = nextStart;
+		mobilePlayerCurrentPage = 1;
+		mobilePlayerLoadingMore = false;
+	}
+
+	function dismissSidAnchorMissing(): void {
+		sidAnchorMissing = false;
+	}
+
+	/**
 	 * Handle page change
 	 */
 	function handlePageChange(page: number): void {
+		invalidateInFlightRequests();
 		currentPage = page;
 	}
 
@@ -168,13 +324,19 @@ export function createPlayerState(initialDb: PlayerDatabase = 'invasion' as Play
 	 * Handle player database change
 	 */
 	function handlePlayerDbChange(db: PlayerDatabase): void {
+		invalidateInFlightRequests();
 		playerDb = db;
+		// Row positions differ per database: re-anchor instead of keeping the old offset
+		if (sidAnchor !== null) {
+			sidWindowStart = null;
+		}
 	}
 
 	/**
 	 * Handle player page size change
 	 */
 	function handlePlayerPageSizeChange(size: number): void {
+		invalidateInFlightRequests();
 		playerPageSize = size;
 		currentPage = 1;
 		mobilePlayerCurrentPage = 1;
@@ -229,8 +391,19 @@ export function createPlayerState(initialDb: PlayerDatabase = 'invasion' as Play
 	 * Set sort state directly (useful for URL state sync)
 	 */
 	function setSortState(column: string | null, direction: 'asc' | 'desc' | null): void {
-		playerSortColumn = column;
-		playerSortDirection = direction;
+		// The `sort` URL parameter is shared with the server table, whose column keys the
+		// player API rejects with an empty table - ignore anything it cannot sort by.
+		const nextColumn = column !== null && toPlayerSortField(column) === undefined ? null : column;
+		const nextDirection = nextColumn === null ? null : direction;
+
+		// A different effective sort makes any in-flight response belong to the previous query.
+		// URL sync calls this on every history update, so an unchanged sort must not invalidate.
+		if (playerSortColumn !== nextColumn || playerSortDirection !== nextDirection) {
+			invalidateInFlightRequests();
+		}
+
+		playerSortColumn = nextColumn;
+		playerSortDirection = nextDirection;
 	}
 
 	return {
@@ -277,11 +450,24 @@ export function createPlayerState(initialDb: PlayerDatabase = 'invasion' as Play
 		get lastQueryTimestamp() {
 			return lastQueryTimestamp;
 		},
+		get sidAnchor() {
+			return sidAnchor;
+		},
+		get sidNeighborMode() {
+			return sidAnchor !== null;
+		},
+		get sidAnchorMissing() {
+			return sidAnchorMissing;
+		},
 
 		// Methods
 		loadPlayers,
 		loadPlayersMore,
 		handleSort,
+		enterSidNeighborMode,
+		exitSidNeighborMode,
+		shiftSidWindow,
+		dismissSidAnchorMissing,
 		handlePageChange,
 		handleLoadMore,
 		handlePlayerDbChange,

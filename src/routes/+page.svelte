@@ -6,6 +6,7 @@
 	import { columns } from '$lib/config/server-columns';
 	import { getMaps, type MapData } from '$lib/services/maps';
 	import type { IPlayerColumn, PlayerDatabase, PlayerSortField } from '$lib/models/player.model';
+	import { SID_SORT_FIELD } from '$lib/models/player.model';
 	import { playerColumns } from '$lib/config/player-columns';
 	import { PlayerService } from '$lib/services/players';
 	import {
@@ -67,11 +68,24 @@
 	let highlightedUsername = $state<string | undefined>(undefined);
 
 	// Update highlighted username when search changes
+	// The SID anchor wins: in neighbor mode the anchored player is what the window is about
 	$effect(() => {
-		if (searchQuery && currentView === 'players') {
+		if (currentView !== 'players') {
+			highlightedUsername = undefined;
+		} else if (playerState.sidAnchor) {
+			highlightedUsername = playerState.sidAnchor;
+		} else if (searchQuery) {
 			highlightedUsername = searchQuery.trim();
 		} else {
 			highlightedUsername = undefined;
+		}
+	});
+
+	// A missing anchor left neighbor mode, so drop it from the URL as well - otherwise a
+	// shared link would keep re-entering a window that cannot be positioned
+	$effect(() => {
+		if (playerState.sidAnchorMissing) {
+			updateUrlState({ sidAnchor: undefined }, true);
 		}
 	});
 
@@ -126,9 +140,21 @@
 		analytics.trackSearch('keyboard');
 	}
 
+	/**
+	 * A user-driven search replaces the SID anchor: both position the same window upstream,
+	 * so keeping neighbor mode would silently ignore what was typed.
+	 */
+	function leaveSidModeForSearch(): boolean {
+		if (!playerState.sidNeighborMode) return false;
+		playerState.exitSidNeighborMode();
+		updateUrlState({ sidAnchor: undefined, sortColumn: undefined, sortDirection: undefined }, true);
+		return true;
+	}
+
 	function handleSearchEnter(value: string) {
 		if (currentView === 'players') {
 			searchQuery = value;
+			leaveSidModeForSearch();
 			serverState.resetPagination();
 			playerState.resetPagination();
 			updateUrlState({ search: value.trim() || undefined }, true);
@@ -146,9 +172,14 @@
 
 	function handleSearchClear() {
 		searchQuery = '';
+		const leftSidMode = leaveSidModeForSearch();
 		serverState.resetPagination();
 		playerState.resetPagination();
 		updateUrlState({ search: undefined }, true);
+		// Leaving neighbor mode changes the ordering, so the visible rows are now stale
+		if (leftSidMode) {
+			playerState.loadPlayers({ searchQuery: '' });
+		}
 		analytics.trackSearch('click');
 	}
 
@@ -265,6 +296,50 @@
 		}
 		playerState.loadPlayers({ searchQuery });
 		analytics.trackColumnSort(column, playerState.playerSortDirection || 'asc');
+	}
+
+	/**
+	 * Enter "similar accounts" mode for a player: SID ordering anchored on their row.
+	 */
+	function handleFindNeighbors(player: import('$lib/models/player.model').IPlayerItem) {
+		playerState.enterSidNeighborMode(player.username);
+		updateUrlState(
+			{
+				sortColumn: playerState.playerSortColumn ?? undefined,
+				sortDirection: undefined,
+				sidAnchor: player.username,
+				page: undefined
+			},
+			true
+		);
+		playerState.loadPlayers({ searchQuery });
+		analytics.trackEvent('player_find_neighbors', { player_database: playerState.playerDb });
+	}
+
+	function handleExitSidMode() {
+		playerState.exitSidNeighborMode();
+		updateUrlState(
+			{
+				sortColumn: undefined,
+				sortDirection: undefined,
+				sidAnchor: undefined,
+				page: undefined
+			},
+			true
+		);
+		playerState.loadPlayers({ searchQuery });
+	}
+
+	function handleShiftSidWindow(direction: 1 | -1) {
+		playerState.shiftSidWindow(direction);
+		playerState.loadPlayers({ searchQuery });
+		analytics.trackEvent('player_neighbors_shift', {
+			action: direction > 0 ? 'next' : 'previous'
+		});
+	}
+
+	function handleDismissSidAnchorMissing() {
+		playerState.dismissSidAnchorMissing();
 	}
 
 	function toggleMobileCard(id: string) {
@@ -418,7 +493,9 @@
 				shots_fired: 'shotsFired',
 				throwables_thrown: 'throwablesThrown',
 				rank_progression: 'rankProgression',
-				username: 'username'
+				username: 'username',
+				// SID has no column and no meaningful ranking, it is never queried here
+				sid: 'sid'
 			};
 			return keyMap[sortField] || sortField;
 		}
@@ -449,7 +526,19 @@
 	function handleViewChange(view: 'servers' | 'players') {
 		currentView = view;
 		searchQuery = '';
-		updateUrlState({ view, search: undefined }, true);
+		// Dropping the SID ordering in state must drop it from the URL too, otherwise a
+		// reload or a shared link restores a mode the user just left
+		const leavingSidMode = playerState.playerSortColumn === SID_SORT_FIELD;
+		playerState.exitSidNeighborMode();
+		updateUrlState(
+			{
+				view,
+				search: undefined,
+				sidAnchor: undefined,
+				...(leavingSidMode ? { sortColumn: undefined, sortDirection: undefined } : {})
+			},
+			true
+		);
 		serverState.resetPagination();
 		playerState.resetPagination();
 		if (view === 'players') {
@@ -503,6 +592,10 @@
 		}
 		if (urlInit.initialPlayerDb) {
 			playerState.handlePlayerDbChange(urlInit.initialPlayerDb);
+		}
+		// A shared "similar accounts" link restores the anchored SID window
+		if (urlState.sidAnchor) {
+			playerState.enterSidNeighborMode(urlState.sidAnchor);
 		}
 	}
 
@@ -658,12 +751,19 @@
 				{layoutMode}
 				hasNext={playerState.playerHasNext}
 				hasPrevious={playerState.playerHasPrevious}
+				sidAnchor={playerState.sidAnchor}
+				sidSortActive={playerState.playerSortColumn === SID_SORT_FIELD}
+				sidAnchorMissing={playerState.sidAnchorMissing}
 				onSort={handlePlayerSort}
 				onPageChange={handlePageChange}
 				onPageSizeChange={handlePlayerPageSizeChange}
 				onLoadMore={handleLoadMore}
 				onToggleMobileCard={toggleMobileCard}
 				onShare={handlePlayerShare}
+				onFindNeighbors={handleFindNeighbors}
+				onExitSidMode={handleExitSidMode}
+				onShiftSidWindow={handleShiftSidWindow}
+				onDismissSidAnchorMissing={handleDismissSidAnchorMissing}
 			/>
 		{/if}
 	</div>

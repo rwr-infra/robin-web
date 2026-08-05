@@ -6,22 +6,51 @@ export enum PlayerDatabase {
 	PRERESET_INVASION = 'prereset_invasion'
 }
 
-export type PlayerSortField =
-	| 'rank_progression'
-	| 'username'
-	| 'kills'
-	| 'deaths'
-	| 'kd'
-	| 'score'
-	| 'time_played'
-	| 'teamkills'
-	| 'longest_kill_streak'
-	| 'targets_destroyed'
-	| 'vehicles_destroyed'
-	| 'soldiers_healed'
-	| 'distance_moved'
-	| 'shots_fired'
-	| 'throwables_thrown';
+/**
+ * Sort fields accepted by the upstream player list endpoint.
+ *
+ * `sid` is undocumented and has no matching table column: upstream orders rows by the
+ * player's Steam ID but never returns the value, so it can only be used as an ordering.
+ * An unknown value makes upstream answer with an empty table, so every sort value that
+ * reaches the API must be validated against this list.
+ */
+export const PLAYER_SORT_FIELDS = [
+	'rank_progression',
+	'username',
+	'kills',
+	'deaths',
+	'kd',
+	'score',
+	'time_played',
+	'teamkills',
+	'longest_kill_streak',
+	'targets_destroyed',
+	'vehicles_destroyed',
+	'soldiers_healed',
+	'distance_moved',
+	'shots_fired',
+	'throwables_thrown',
+	'sid'
+] as const;
+
+export type PlayerSortField = (typeof PLAYER_SORT_FIELDS)[number];
+
+/** Sort field behind the "similar accounts" feature. */
+export const SID_SORT_FIELD: PlayerSortField = 'sid';
+
+export function isPlayerSortField(value: unknown): value is PlayerSortField {
+	return typeof value === 'string' && (PLAYER_SORT_FIELDS as readonly string[]).includes(value);
+}
+
+/**
+ * Convert a table column key (camelCase) to the upstream snake_case sort field.
+ * Returns undefined for keys the API does not accept (e.g. server table columns
+ * arriving through a shared `sort` URL parameter).
+ */
+export function toPlayerSortField(columnKey: string): PlayerSortField | undefined {
+	const snakeCase = columnKey.replace(/([A-Z])/g, '_$1').toLowerCase();
+	return isPlayerSortField(snakeCase) ? snakeCase : undefined;
+}
 
 export interface IPlayerListParams {
 	search?: string;

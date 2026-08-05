@@ -700,4 +700,58 @@ describe('PlayerView Component', () => {
 			expect(desktopContainer).toBeInTheDocument();
 		});
 	});
+
+	describe('mobile highlight', () => {
+		const mobileProps = {
+			loading: false,
+			error: null,
+			searchQuery: '',
+			paginatedPlayers: mockPlayers,
+			mobilePaginatedPlayers: mockPlayers,
+			mobileHasMore: false,
+			mobileLoadingMore: false,
+			playerColumns: mockPlayerColumns,
+			visibleColumns: mockVisibleColumns,
+			currentPage: 1,
+			pageSize: 20,
+			sortColumn: null,
+			mobileExpandedCards: {},
+			layoutMode: 'fullPage' as const,
+			hasNext: false,
+			hasPrevious: false,
+			onSort: mockOnSort as any,
+			onPageChange: mockOnPageChange as any,
+			onPageSizeChange: mockOnPageSizeChange as any,
+			onLoadMore: mockOnLoadMore as any,
+			onToggleMobileCard: mockOnToggleMobileCard as any
+		};
+
+		it('should highlight the mobile card of the highlighted player', () => {
+			const { container } = render(PlayerView, {
+				props: { ...mobileProps, highlightedUsername: 'Player2' }
+			});
+
+			const highlighted = container.querySelectorAll('.highlighted-card');
+			expect(highlighted).toHaveLength(1);
+			expect(container.querySelector('#player-mobile-card-player2')).toHaveClass(
+				'highlighted-card'
+			);
+		});
+
+		it('should match the highlighted username case-insensitively', () => {
+			const { container } = render(PlayerView, {
+				props: { ...mobileProps, highlightedUsername: 'pLaYeR1' }
+			});
+
+			expect(container.querySelector('#player-mobile-card-player1')).toHaveClass(
+				'highlighted-card'
+			);
+		});
+
+		it('should highlight nothing without a highlighted username', () => {
+			const { container } = render(PlayerView, { props: mobileProps });
+
+			expect(container.querySelectorAll('.highlighted-card')).toHaveLength(0);
+		});
+	});
 });

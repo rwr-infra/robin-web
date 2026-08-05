@@ -7,7 +7,7 @@
 	import PageSizeSelector from '$lib/components/PageSizeSelector.svelte';
 	import Toast from '$lib/components/Toast.svelte';
 	import { m } from '$lib/paraglide/messages.js';
-	import { ArrowDown, CircleX, Info, Share } from '@lucide/svelte';
+	import { ArrowDown, CircleX, Info, Share, TriangleAlert, Users, X } from '@lucide/svelte';
 	import type { IPlayerItem, IPlayerColumn } from '$lib/models/player.model';
 	import { escapeHtml } from '$lib/utils/highlight';
 
@@ -29,12 +29,22 @@
 		layoutMode: 'fullPage' | 'tableOnly';
 		hasNext: boolean;
 		hasPrevious: boolean;
+		/** Username the SID window is anchored on, null when not in neighbor mode */
+		sidAnchor?: string | null;
+		/** SID ordering is active (with or without an anchor) */
+		sidSortActive?: boolean;
+		/** Anchor was not found in this database and neighbor mode was left */
+		sidAnchorMissing?: boolean;
 		onSort: (column: string) => void;
 		onPageChange: (page: number) => void;
 		onPageSizeChange: (size: number) => void;
 		onLoadMore: () => void;
 		onToggleMobileCard: (playerId: string) => void;
 		onShare?: (player: IPlayerItem) => void;
+		onFindNeighbors?: (player: IPlayerItem) => void;
+		onExitSidMode?: () => void;
+		onShiftSidWindow?: (direction: 1 | -1) => void;
+		onDismissSidAnchorMissing?: () => void;
 	}
 
 	let {
@@ -55,13 +65,25 @@
 		layoutMode,
 		hasNext,
 		hasPrevious,
+		sidAnchor = null,
+		sidSortActive = false,
+		sidAnchorMissing = false,
 		onSort,
 		onPageChange,
 		onPageSizeChange,
 		onLoadMore,
 		onToggleMobileCard,
-		onShare
+		onShare,
+		onFindNeighbors,
+		onExitSidMode,
+		onShiftSidWindow,
+		onDismissSidAnchorMissing
 	}: Props = $props();
+
+	// Absolute rank range of the loaded window, read from the upstream row numbers
+	const windowRangeStart = $derived(paginatedPlayers[0]?.rowNumber ?? 0);
+	const windowRangeEnd = $derived(paginatedPlayers[paginatedPlayers.length - 1]?.rowNumber ?? 0);
+	const canShiftBackward = $derived(windowRangeStart > 1);
 
 	// Helper function to get the display value for a column
 	function getDisplayValue(
@@ -110,6 +132,53 @@
 		}
 	});
 
+	// The anchored player usually sits below the fold (row 11 of the window on desktop, an even
+	// taller stack of cards on mobile). Bring it into view once per loaded window - keyed on the
+	// window's first rank as well, because the anchor is already on screen in the previous
+	// window when neighbor mode is entered.
+	// Plain let: writing it must not re-trigger the effect.
+	let lastScrolledKey: string | null = null;
+
+	$effect(() => {
+		if (!sidAnchor) {
+			lastScrolledKey = null;
+			return;
+		}
+		// Rows and cards are unmounted while loading, so wait for the new window to render
+		if (loading) return;
+
+		const windowTop = paginatedPlayers[0] ?? mobilePaginatedPlayers[0];
+		if (!windowTop) return;
+
+		const key = `${sidAnchor}@${windowTop.rowNumber}`;
+		if (lastScrolledKey === key) return;
+
+		const anchorLower = sidAnchor.toLowerCase();
+		const matchesAnchor = (player: IPlayerItem) => player.username.toLowerCase() === anchorLower;
+		const desktopTarget = paginatedPlayers.find(matchesAnchor);
+		const mobileTarget = mobilePaginatedPlayers.find(matchesAnchor);
+
+		// Both trees are mounted; the one hidden by the breakpoint has no box, so scrolling it
+		// is a no-op and this stays viewport-agnostic.
+		const targets = [
+			desktopTarget && document.getElementById(`player-row-${desktopTarget.id}`),
+			mobileTarget && document.getElementById(`player-mobile-card-${mobileTarget.id}`)
+		].filter((element): element is HTMLElement => Boolean(element));
+
+		// Not rendered yet: leave the key unset so a later update retries
+		if (targets.length === 0) return;
+
+		lastScrolledKey = key;
+		requestAnimationFrame(() => {
+			for (const element of targets) {
+				// Absent where scrollIntoView is unimplemented (jsdom)
+				if (typeof element.scrollIntoView === 'function') {
+					element.scrollIntoView({ block: 'center', behavior: 'smooth' });
+				}
+			}
+		});
+	});
+
 	const tableOnlyContainerClasses = 'md:flex-1 md:min-h-0 md:overflow-hidden';
 	const tableOnlyScrollClasses = 'md:flex-1 md:min-h-0 md:overflow-auto';
 	const fullPageScrollClasses = 'md:overflow-x-auto';
@@ -123,6 +192,54 @@
 		<span>{error}</span>
 	</div>
 {:else}
+	<!-- Anchor player missing in this database: upstream silently answered with the first page -->
+	{#if sidAnchorMissing}
+		<div class="alert alert-warning mb-3" data-testid="sid-anchor-missing">
+			<TriangleAlert class="h-5 w-5 shrink-0 stroke-current" />
+			<span><TranslatedText key="app.player.neighbors.notFound" /></span>
+			<button
+				type="button"
+				class="btn btn-ghost btn-xs btn-circle"
+				onclick={() => onDismissSidAnchorMissing?.()}
+				aria-label={m['app.player.neighbors.dismiss']()}
+			>
+				<X class="h-4 w-4" />
+			</button>
+		</div>
+	{/if}
+
+	<!-- SID ordering has no table column, so its state is surfaced here -->
+	{#if sidSortActive}
+		<div
+			class="mb-3 flex flex-wrap items-center justify-between gap-2 rounded border border-mil bg-mil-secondary px-3 py-2 text-sm"
+			data-testid="sid-mode-banner"
+		>
+			<div class="flex flex-wrap items-center gap-2">
+				<Users class="h-4 w-4 shrink-0" />
+				{#if sidAnchor}
+					<span class="font-medium">
+						{m['app.player.neighbors.bannerAnchored']({ username: sidAnchor })}
+					</span>
+				{:else}
+					<span class="font-medium"><TranslatedText key="app.player.neighbors.bannerSortOnly" /></span>
+				{/if}
+				{#if windowRangeStart > 0}
+					<span class="opacity-70">
+						{m['app.player.neighbors.range']({ start: windowRangeStart, end: windowRangeEnd })}
+					</span>
+				{/if}
+			</div>
+			<div class="flex items-center gap-2">
+				<span class="hidden opacity-60 lg:inline"
+					><TranslatedText key="app.player.neighbors.hint" /></span
+				>
+				<button type="button" class="btn btn-xs" onclick={() => onExitSidMode?.()}>
+					<TranslatedText key="app.player.neighbors.exit" />
+				</button>
+			</div>
+		</div>
+	{/if}
+
 	<!-- Desktop scrollable table container -->
 	<div class={`hidden md:flex md:flex-col ${layoutMode === 'tableOnly' ? tableOnlyContainerClasses : ''}`}>
 		<!-- Desktop table with scroll -->
@@ -136,19 +253,49 @@
 				{sortColumn}
 				onSort={onSort}
 				onShare={onShare}
+				onFindNeighbors={onFindNeighbors}
 			/>
 		</div>
 
-		<!-- Desktop pagination - fixed at bottom, hidden when no pagination needed -->
-		<div class="flex items-center justify-between border-t border-mil bg-mil-secondary px-3 py-2" class:hidden={!hasNext && !hasPrevious}>
-			<PaginationPrevNext
-				{currentPage}
-				{hasNext}
-				{hasPrevious}
-				onPageChange={onPageChange}
-			/>
-			<PageSizeSelector currentSize={pageSize} onSizeChange={onPageSizeChange} />
-		</div>
+		{#if sidAnchor}
+			<!-- Anchored requests cannot be paginated upstream: browse by absolute row offset -->
+			<div
+				class="flex items-center justify-between border-t border-mil bg-mil-secondary px-3 py-2"
+				data-testid="sid-window-nav"
+			>
+				<div class="join">
+					<button
+						type="button"
+						class="join-item btn btn-sm"
+						disabled={!canShiftBackward}
+						onclick={() => onShiftSidWindow?.(-1)}
+					>
+						‹ {m['app.player.neighbors.previousWindow']({ count: pageSize })}
+					</button>
+					<button
+						type="button"
+						class="join-item btn btn-sm"
+						data-testid="sid-window-next"
+						disabled={!hasNext}
+						onclick={() => onShiftSidWindow?.(1)}
+					>
+						{m['app.player.neighbors.nextWindow']({ count: pageSize })} ›
+					</button>
+				</div>
+				<PageSizeSelector currentSize={pageSize} onSizeChange={onPageSizeChange} />
+			</div>
+		{:else}
+			<!-- Desktop pagination - fixed at bottom, hidden when no pagination needed -->
+			<div class="flex items-center justify-between border-t border-mil bg-mil-secondary px-3 py-2" class:hidden={!hasNext && !hasPrevious}>
+				<PaginationPrevNext
+					{currentPage}
+					{hasNext}
+					{hasPrevious}
+					onPageChange={onPageChange}
+				/>
+				<PageSizeSelector currentSize={pageSize} onSizeChange={onPageSizeChange} />
+			</div>
+		{/if}
 	</div>
 
 	<!-- Mobile content area - 保持原有行为 -->
@@ -179,8 +326,27 @@
 				{/each}
 			</div>
 
+				{#if sidAnchor && canShiftBackward}
+					<!-- Mobile browses forward with infinite scroll, backward needs an explicit step -->
+					<button
+						type="button"
+						class="btn btn-sm btn-outline mb-4 w-full"
+						onclick={() => onShiftSidWindow?.(-1)}
+					>
+						‹ {m['app.player.neighbors.previousWindow']({ count: pageSize })}
+					</button>
+				{/if}
+
 				{#each mobilePaginatedPlayers as item (item.id)}
-					<div class="collapse collapse-arrow bg-base-100 border-base-300 mb-3 border">
+					{@const isHighlighted =
+						highlightedUsername &&
+						item.username.toLowerCase() === highlightedUsername.toLowerCase()}
+					<div
+						id={`player-mobile-card-${item.id}`}
+						class="collapse collapse-arrow mb-3 border {isHighlighted
+							? 'highlighted-card border-primary bg-primary/20 font-semibold'
+							: 'bg-base-100 border-base-300'}"
+					>
 						<input
 							id={`player-mobile-collapse-${item.id}`}
 							type="checkbox"
@@ -245,6 +411,28 @@
 									</button>
 								</div>
 							</div>
+
+							{#if onFindNeighbors}
+								<!-- Similar accounts entry point (mobile equivalent of the table action) -->
+								<div class="border-base-200 mt-3 pt-3 border-t">
+									<div class="flex items-center justify-between">
+										<span class="text-base-content/70 min-w-20 flex-shrink-0 text-sm">
+											<TranslatedText key="app.player.neighbors.label" />:
+										</span>
+										<button
+											class="btn btn-sm btn-outline"
+											onclick={(e) => {
+												e.stopPropagation();
+												onFindNeighbors(item);
+											}}
+											type="button"
+										>
+											<Users class="w-3 h-3 mr-1" />
+											<TranslatedText key="app.player.neighbors.button" />
+										</button>
+									</div>
+								</div>
+							{/if}
 						</div>
 					</div>
 				</div>

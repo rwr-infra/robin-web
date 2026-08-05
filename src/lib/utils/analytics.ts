@@ -43,6 +43,8 @@ const BAIDU_CATEGORIES = {
 	load_more_click: 'data',
 	auto_refresh_toggle: 'data',
 	player_database_change: 'data',
+	player_find_neighbors: 'data',
+	player_neighbors_shift: 'data',
 	share_modal_open: 'share',
 	share_download: 'share',
 	share_copy: 'share',
@@ -175,6 +177,8 @@ class Analytics {
 		if (params.image_format) labelParts.push(`format:${params.image_format}`);
 		if (params.share_type) labelParts.push(`type:${params.share_type}`);
 		if (params.method) labelParts.push(`method:${params.method}`);
+		// Baidu reuses the event name as its action, so the param needs its own label part
+		if (params.action) labelParts.push(`action:${params.action}`);
 
 		return {
 			category,

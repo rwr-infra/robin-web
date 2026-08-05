@@ -400,4 +400,65 @@ describe('URL State Management', () => {
 			);
 		});
 	});
+
+	describe('similar accounts anchor', () => {
+		test('should parse the anchor parameter', () => {
+			mockWindow.location.search = '?sort=sid&anchor=SGT.BONETRAIN';
+			const state = getUrlState();
+
+			expect(state.sidAnchor).toBe('SGT.BONETRAIN');
+			expect(state.sortColumn).toBe('sid');
+		});
+
+		test('should ignore an empty anchor parameter', () => {
+			mockWindow.location.search = '?anchor=';
+			const state = getUrlState();
+
+			expect(state.sidAnchor).toBeUndefined();
+		});
+
+		test('should write the anchor into the URL', () => {
+			updateUrlState({ sidAnchor: 'SGT.BONETRAIN' });
+
+			expect(mockWindow.history.pushState).toHaveBeenCalledWith(
+				mockWindow.history.state,
+				'',
+				`/test?${URL_PARAMS.SID_ANCHOR}=SGT.BONETRAIN`
+			);
+		});
+
+		test('should remove the anchor when cleared', () => {
+			mockWindow.location.search = '?anchor=SGT.BONETRAIN';
+			updateUrlState({ sidAnchor: undefined });
+
+			expect(mockWindow.history.pushState).toHaveBeenCalledWith(
+				mockWindow.history.state,
+				'',
+				'/test'
+			);
+		});
+
+		test('should round-trip a shared neighbor link', () => {
+			mockWindow.location.search = '?view=players&db=pacific&sort=sid&anchor=Someone';
+			const state = getUrlState();
+
+			expect(state).toEqual({
+				view: 'players',
+				playerDb: PlayerDatabase.PACIFIC,
+				sortColumn: 'sid',
+				sidAnchor: 'Someone'
+			});
+		});
+
+		test('should drop the anchor together with the rest of the state', () => {
+			mockWindow.location.search = '?search=a&anchor=Someone&sort=sid';
+			clearUrlState();
+
+			expect(mockWindow.history.replaceState).toHaveBeenCalledWith(
+				mockWindow.history.state,
+				'',
+				'/test'
+			);
+		});
+	});
 });

@@ -11,7 +11,8 @@ export const URL_PARAMS = {
 	SORT_COLUMN: 'sort',
 	SORT_DIRECTION: 'dir',
 	VIEW: 'view',
-	PLAYER_DB: 'db'
+	PLAYER_DB: 'db',
+	SID_ANCHOR: 'anchor'
 } as const;
 
 // URL状态管理接口
@@ -23,6 +24,8 @@ export interface UrlState {
 	sortDirection?: 'asc' | 'desc';
 	view?: 'servers' | 'players';
 	playerDb?: PlayerDatabase;
+	/** Username the "similar accounts" (SID) window is anchored on */
+	sidAnchor?: string;
 }
 
 // 从URL获取查询参数
@@ -72,6 +75,12 @@ export function getUrlState(): UrlState {
 	const playerDb = urlParams.get(URL_PARAMS.PLAYER_DB);
 	if (playerDb === 'invasion' || playerDb === 'pacific' || playerDb === 'prereset_invasion') {
 		state.playerDb = playerDb as PlayerDatabase;
+	}
+
+	// 相近账号锚点玩家
+	const sidAnchor = urlParams.get(URL_PARAMS.SID_ANCHOR);
+	if (sidAnchor) {
+		state.sidAnchor = sidAnchor;
 	}
 
 	return state;
@@ -145,6 +154,15 @@ export function updateUrlState(state: Partial<UrlState>, replace: boolean = fals
 		}
 	}
 
+	// 更新相近账号锚点
+	if ('sidAnchor' in state) {
+		if (state.sidAnchor) {
+			urlParams.set(URL_PARAMS.SID_ANCHOR, state.sidAnchor);
+		} else {
+			urlParams.delete(URL_PARAMS.SID_ANCHOR);
+		}
+	}
+
 	// 构建新的URL
 	const newUrl = `${window.location.pathname}${urlParams.toString() ? '?' + urlParams.toString() : ''}`;
 
@@ -164,7 +182,8 @@ export function clearUrlState(): void {
 			quickFilters: [],
 			page: undefined,
 			sortColumn: undefined,
-			sortDirection: undefined
+			sortDirection: undefined,
+			sidAnchor: undefined
 		},
 		true
 	);
@@ -196,7 +215,8 @@ export function createUrlStateSubscriber(callback: (state: UrlState) => void) {
 			view:
 				($page.url.searchParams.get(URL_PARAMS.VIEW) as 'servers' | 'players' | null) || undefined,
 			playerDb:
-				($page.url.searchParams.get(URL_PARAMS.PLAYER_DB) as PlayerDatabase | null) || undefined
+				($page.url.searchParams.get(URL_PARAMS.PLAYER_DB) as PlayerDatabase | null) || undefined,
+			sidAnchor: $page.url.searchParams.get(URL_PARAMS.SID_ANCHOR) || undefined
 		};
 		callback(state);
 	});

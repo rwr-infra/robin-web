@@ -402,4 +402,41 @@ describe('PlayerService', () => {
 			expect(url).toContain('/api/player_list?');
 		});
 	});
+
+	describe('sid sort field', () => {
+		test('should forward the undocumented sid sort field', async () => {
+			mockRequest.mockResolvedValue('<html><body><table>...</table></body></html>');
+			mockParsePlayerListWithPagination.mockReturnValue({
+				players: mockPlayers,
+				hasNext: true,
+				hasPrevious: false
+			});
+
+			await PlayerService.listWithPagination({
+				db: PlayerDatabase.INVASION,
+				search: 'SGT.BONETRAIN',
+				sort: 'sid',
+				size: 20
+			});
+
+			const url = mockRequest.mock.calls[0][0] as string;
+			expect(url).toContain('sort=sid');
+			expect(url).toContain('search=SGT.BONETRAIN');
+		});
+
+		test('should still send start=0 when the caller omits it', async () => {
+			// Harmless for anchored requests: upstream ignores `start` while `search` is present
+			mockRequest.mockResolvedValue('<html><body><table>...</table></body></html>');
+			mockParsePlayerListWithPagination.mockReturnValue({
+				players: mockPlayers,
+				hasNext: true,
+				hasPrevious: false
+			});
+
+			await PlayerService.listWithPagination({ sort: 'sid', search: 'Someone' });
+
+			const url = mockRequest.mock.calls[0][0] as string;
+			expect(url).toContain('start=0');
+		});
+	});
 });
