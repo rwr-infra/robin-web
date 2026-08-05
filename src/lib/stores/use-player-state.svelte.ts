@@ -64,6 +64,9 @@ export function createPlayerState(initialDb: PlayerDatabase = 'invasion' as Play
 	// slow request cannot overwrite the window, append foreign rows or clear neighbor mode
 	// after the user moved on.
 	let queryGeneration = 0;
+	// Requests in flight. The loading flag follows this count instead of the generation, so a
+	// dropped stale response still clears it when nothing else is loading.
+	let activeRequests = 0;
 
 	/**
 	 * Invalidate every in-flight request, e.g. after the query state changed.
@@ -117,6 +120,7 @@ export function createPlayerState(initialDb: PlayerDatabase = 'invasion' as Play
 
 		try {
 			// Always use loading state for consistent UI
+			activeRequests++;
 			loading = true;
 
 			const sortParam = resolveSortParam();
@@ -173,8 +177,8 @@ export function createPlayerState(initialDb: PlayerDatabase = 'invasion' as Play
 			error = err instanceof Error ? err.message : 'Failed to load player data';
 			console.error('Error loading players:', err);
 		} finally {
-			// Only the newest query owns the loading indicator
-			if (generation === queryGeneration) {
+			activeRequests--;
+			if (activeRequests === 0) {
 				loading = false;
 			}
 		}
@@ -389,13 +393,17 @@ export function createPlayerState(initialDb: PlayerDatabase = 'invasion' as Play
 	function setSortState(column: string | null, direction: 'asc' | 'desc' | null): void {
 		// The `sort` URL parameter is shared with the server table, whose column keys the
 		// player API rejects with an empty table - ignore anything it cannot sort by.
-		if (column !== null && toPlayerSortField(column) === undefined) {
-			playerSortColumn = null;
-			playerSortDirection = null;
-			return;
+		const nextColumn = column !== null && toPlayerSortField(column) === undefined ? null : column;
+		const nextDirection = nextColumn === null ? null : direction;
+
+		// A different effective sort makes any in-flight response belong to the previous query.
+		// URL sync calls this on every history update, so an unchanged sort must not invalidate.
+		if (playerSortColumn !== nextColumn || playerSortDirection !== nextDirection) {
+			invalidateInFlightRequests();
 		}
-		playerSortColumn = column;
-		playerSortDirection = direction;
+
+		playerSortColumn = nextColumn;
+		playerSortDirection = nextDirection;
 	}
 
 	return {

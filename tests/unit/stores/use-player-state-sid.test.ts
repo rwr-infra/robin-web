@@ -270,6 +270,47 @@ describe('createPlayerState - SID neighbor mode', () => {
 			expect(playerState.loading).toBe(false);
 		});
 
+		it('should drop a response whose sort was replaced through URL sync', async () => {
+			let resolveStale: (value: {
+				players: IPlayerItem[];
+				hasNext: boolean;
+				hasPrevious: boolean;
+			}) => void = () => {};
+			vi.mocked(PlayerService.listWithPagination).mockImplementationOnce(
+				() =>
+					new Promise((resolve) => {
+						resolveStale = resolve;
+					})
+			);
+
+			playerState.setSortState('kills', 'desc');
+			const stalePending = playerState.loadPlayers();
+
+			// Browser history moved to another sort while the request was in flight
+			playerState.setSortState('deaths', 'desc');
+
+			resolveStale({
+				players: createWindow(1, ['SortedByKills']),
+				hasNext: true,
+				hasPrevious: false
+			});
+			await stalePending;
+
+			expect(playerState.players).toEqual([]);
+			expect(playerState.loading).toBe(false);
+		});
+
+		it('should keep an in-flight response when URL sync repeats the same sort', async () => {
+			mockResponse(createWindow(1, ['Fresh']));
+
+			playerState.setSortState('kills', 'desc');
+			const pending = playerState.loadPlayers();
+			playerState.setSortState('kills', 'desc');
+			await pending;
+
+			expect(playerState.players.map((player) => player.username)).toEqual(['Fresh']);
+		});
+
 		it('should not let a stale anchored response leave neighbor mode', async () => {
 			let resolveStale: (value: {
 				players: IPlayerItem[];

@@ -132,6 +132,53 @@
 		}
 	});
 
+	// The anchored player usually sits below the fold (row 11 of the window on desktop, an even
+	// taller stack of cards on mobile). Bring it into view once per loaded window - keyed on the
+	// window's first rank as well, because the anchor is already on screen in the previous
+	// window when neighbor mode is entered.
+	// Plain let: writing it must not re-trigger the effect.
+	let lastScrolledKey: string | null = null;
+
+	$effect(() => {
+		if (!sidAnchor) {
+			lastScrolledKey = null;
+			return;
+		}
+		// Rows and cards are unmounted while loading, so wait for the new window to render
+		if (loading) return;
+
+		const windowTop = paginatedPlayers[0] ?? mobilePaginatedPlayers[0];
+		if (!windowTop) return;
+
+		const key = `${sidAnchor}@${windowTop.rowNumber}`;
+		if (lastScrolledKey === key) return;
+
+		const anchorLower = sidAnchor.toLowerCase();
+		const matchesAnchor = (player: IPlayerItem) => player.username.toLowerCase() === anchorLower;
+		const desktopTarget = paginatedPlayers.find(matchesAnchor);
+		const mobileTarget = mobilePaginatedPlayers.find(matchesAnchor);
+
+		// Both trees are mounted; the one hidden by the breakpoint has no box, so scrolling it
+		// is a no-op and this stays viewport-agnostic.
+		const targets = [
+			desktopTarget && document.getElementById(`player-row-${desktopTarget.id}`),
+			mobileTarget && document.getElementById(`player-mobile-card-${mobileTarget.id}`)
+		].filter((element): element is HTMLElement => Boolean(element));
+
+		// Not rendered yet: leave the key unset so a later update retries
+		if (targets.length === 0) return;
+
+		lastScrolledKey = key;
+		requestAnimationFrame(() => {
+			for (const element of targets) {
+				// Absent where scrollIntoView is unimplemented (jsdom)
+				if (typeof element.scrollIntoView === 'function') {
+					element.scrollIntoView({ block: 'center', behavior: 'smooth' });
+				}
+			}
+		});
+	});
+
 	const tableOnlyContainerClasses = 'md:flex-1 md:min-h-0 md:overflow-hidden';
 	const tableOnlyScrollClasses = 'md:flex-1 md:min-h-0 md:overflow-auto';
 	const fullPageScrollClasses = 'md:overflow-x-auto';
@@ -291,7 +338,15 @@
 				{/if}
 
 				{#each mobilePaginatedPlayers as item (item.id)}
-					<div class="collapse collapse-arrow bg-base-100 border-base-300 mb-3 border">
+					{@const isHighlighted =
+						highlightedUsername &&
+						item.username.toLowerCase() === highlightedUsername.toLowerCase()}
+					<div
+						id={`player-mobile-card-${item.id}`}
+						class="collapse collapse-arrow mb-3 border {isHighlighted
+							? 'highlighted-card border-primary bg-primary/20 font-semibold'
+							: 'bg-base-100 border-base-300'}"
+					>
 						<input
 							id={`player-mobile-collapse-${item.id}`}
 							type="checkbox"

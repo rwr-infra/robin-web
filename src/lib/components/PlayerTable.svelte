@@ -120,7 +120,10 @@
 			<tbody>
 				{#each data as item (item.id)}
 					{@const isHighlighted = highlightedUsername && item.username.toLowerCase() === highlightedUsername.toLowerCase()}
-					<tr class="min-h-12 border-b border-mil {isHighlighted ? 'highlighted-row bg-primary/20 font-semibold' : 'hover hover:bg-base-300'}">
+					<tr
+						id={`player-row-${item.id}`}
+						class="min-h-12 border-b border-mil {isHighlighted ? 'highlighted-row bg-primary/20 font-semibold' : 'hover hover:bg-base-300'}"
+					>
 						{#each playerColumns as column (column.key)}
 							{#if visibleColumns[column.key]}
 								<td

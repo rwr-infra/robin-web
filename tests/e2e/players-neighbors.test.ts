@@ -4,6 +4,16 @@ const BASE_URL = process.env.E2E_BASE_URL ?? 'http://localhost:5173';
 const MOCK_API_URL = process.env.E2E_MOCK_API_URL ?? 'http://localhost:5800';
 const PLAYERS_URL = `${BASE_URL}/?view=players`;
 
+/** Largest scroll offset anywhere on the page: the app may scroll an inner container. */
+function maxScrollTop(page: import('@playwright/test').Page): Promise<number> {
+	return page.evaluate(() =>
+		Math.max(
+			document.scrollingElement?.scrollTop ?? 0,
+			...Array.from(document.querySelectorAll('*')).map((element) => element.scrollTop)
+		)
+	);
+}
+
 test('similar accounts entry point anchors the SID window on a player', async ({ page }) => {
 	await page.goto(PLAYERS_URL);
 
@@ -58,6 +68,34 @@ test('unknown anchor reports the fallback instead of pretending to show neighbor
 	await expect(page.locator('[data-testid="sid-anchor-missing"]')).toBeVisible({ timeout: 10000 });
 	// Neighbor mode was left, so the window navigation is gone
 	await expect(page.locator('[data-testid="sid-window-nav"]')).toHaveCount(0);
+});
+
+test('desktop table scrolls the anchored row into view', async ({ page }) => {
+	// Short viewport: the anchored row sits below the fold in a 20-row window
+	await page.setViewportSize({ width: 1280, height: 400 });
+	await page.goto(`${PLAYERS_URL}&sort=sid&anchor=MockPlayer1`);
+
+	await expect(page.locator('[data-testid="sid-mode-banner"]')).toBeVisible({ timeout: 10000 });
+
+	const anchoredRow = page.locator('[id="player-row-invasion:MockPlayer1"]');
+	await expect(anchoredRow).toHaveClass(/highlighted-row/);
+	await expect(anchoredRow).toBeInViewport();
+	// It only got there by scrolling: without it the row is far below the fold
+	await expect.poll(() => maxScrollTop(page)).toBeGreaterThan(0);
+});
+
+test('mobile cards highlight the anchored player and scroll it into view', async ({ page }) => {
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.goto(`${PLAYERS_URL}&sort=sid&anchor=MockPlayer1`);
+
+	await expect(page.locator('[data-testid="sid-mode-banner"]')).toBeVisible({ timeout: 10000 });
+
+	const anchoredCard = page.locator('[id="player-mobile-card-invasion:MockPlayer1"]');
+	await expect(anchoredCard).toHaveClass(/highlighted-card/);
+	await expect(page.locator('.highlighted-card')).toHaveCount(1);
+	// The anchor sits below the fold in a 20-card window
+	await expect(anchoredCard).toBeInViewport();
+	await expect.poll(() => maxScrollTop(page)).toBeGreaterThan(0);
 });
 
 test('player list API honours the sid sort and rejects unknown sort values', async ({
