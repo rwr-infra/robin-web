@@ -1,5 +1,6 @@
 import { render, fireEvent } from '@testing-library/svelte/svelte5';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import type { Mock } from 'vitest';
 import PlayerView from '$lib/components/PlayerView.svelte';
 import { PlayerDatabase } from '$lib/models/player.model';
 import type { IPlayerItem, IPlayerColumn } from '$lib/models/player.model';
@@ -98,18 +99,19 @@ describe('PlayerView Component', () => {
 		rankProgression: true
 	};
 
-	let mockOnSort: ReturnType<typeof vi.fn>;
-	let mockOnPageChange: ReturnType<typeof vi.fn>;
-	let mockOnPageSizeChange: ReturnType<typeof vi.fn>;
-	let mockOnLoadMore: ReturnType<typeof vi.fn>;
-	let mockOnToggleMobileCard: ReturnType<typeof vi.fn>;
+	// Typed with the PlayerView callback signatures so props need no casts
+	let mockOnSort: Mock<(column: string) => void>;
+	let mockOnPageChange: Mock<(page: number) => void>;
+	let mockOnPageSizeChange: Mock<(size: number) => void>;
+	let mockOnLoadMore: Mock<() => void>;
+	let mockOnToggleMobileCard: Mock<(playerId: string) => void>;
 
 	beforeEach(() => {
-		mockOnSort = vi.fn();
-		mockOnPageChange = vi.fn();
-		mockOnPageSizeChange = vi.fn();
-		mockOnLoadMore = vi.fn();
-		mockOnToggleMobileCard = vi.fn();
+		mockOnSort = vi.fn<(column: string) => void>();
+		mockOnPageChange = vi.fn<(page: number) => void>();
+		mockOnPageSizeChange = vi.fn<(size: number) => void>();
+		mockOnLoadMore = vi.fn<() => void>();
+		mockOnToggleMobileCard = vi.fn<(playerId: string) => void>();
 		vi.clearAllMocks();
 	});
 
@@ -133,11 +135,11 @@ describe('PlayerView Component', () => {
 					mobileExpandedCards: {},
 					hasNext: false,
 					hasPrevious: false,
-					onSort: mockOnSort as any,
-					onPageChange: mockOnPageChange as any,
-					onPageSizeChange: mockOnPageSizeChange as any,
-					onLoadMore: mockOnLoadMore as any,
-					onToggleMobileCard: mockOnToggleMobileCard as any
+					onSort: mockOnSort,
+					onPageChange: mockOnPageChange,
+					onPageSizeChange: mockOnPageSizeChange,
+					onLoadMore: mockOnLoadMore,
+					onToggleMobileCard: mockOnToggleMobileCard
 				}
 			});
 
@@ -164,11 +166,11 @@ describe('PlayerView Component', () => {
 					mobileExpandedCards: {},
 					hasNext: false,
 					hasPrevious: false,
-					onSort: mockOnSort as any,
-					onPageChange: mockOnPageChange as any,
-					onPageSizeChange: mockOnPageSizeChange as any,
-					onLoadMore: mockOnLoadMore as any,
-					onToggleMobileCard: mockOnToggleMobileCard as any
+					onSort: mockOnSort,
+					onPageChange: mockOnPageChange,
+					onPageSizeChange: mockOnPageSizeChange,
+					onLoadMore: mockOnLoadMore,
+					onToggleMobileCard: mockOnToggleMobileCard
 				}
 			});
 
@@ -196,11 +198,11 @@ describe('PlayerView Component', () => {
 					mobileExpandedCards: {},
 					hasNext: false,
 					hasPrevious: false,
-					onSort: mockOnSort as any,
-					onPageChange: mockOnPageChange as any,
-					onPageSizeChange: mockOnPageSizeChange as any,
-					onLoadMore: mockOnLoadMore as any,
-					onToggleMobileCard: mockOnToggleMobileCard as any
+					onSort: mockOnSort,
+					onPageChange: mockOnPageChange,
+					onPageSizeChange: mockOnPageSizeChange,
+					onLoadMore: mockOnLoadMore,
+					onToggleMobileCard: mockOnToggleMobileCard
 				}
 			});
 
@@ -229,11 +231,11 @@ describe('PlayerView Component', () => {
 					mobileExpandedCards: {},
 					hasNext: false,
 					hasPrevious: false,
-					onSort: mockOnSort as any,
-					onPageChange: mockOnPageChange as any,
-					onPageSizeChange: mockOnPageSizeChange as any,
-					onLoadMore: mockOnLoadMore as any,
-					onToggleMobileCard: mockOnToggleMobileCard as any
+					onSort: mockOnSort,
+					onPageChange: mockOnPageChange,
+					onPageSizeChange: mockOnPageSizeChange,
+					onLoadMore: mockOnLoadMore,
+					onToggleMobileCard: mockOnToggleMobileCard
 				}
 			});
 
@@ -263,11 +265,11 @@ describe('PlayerView Component', () => {
 					mobileExpandedCards: {},
 					hasNext: false,
 					hasPrevious: false,
-					onSort: mockOnSort as any,
-					onPageChange: mockOnPageChange as any,
-					onPageSizeChange: mockOnPageSizeChange as any,
-					onLoadMore: mockOnLoadMore as any,
-					onToggleMobileCard: mockOnToggleMobileCard as any
+					onSort: mockOnSort,
+					onPageChange: mockOnPageChange,
+					onPageSizeChange: mockOnPageSizeChange,
+					onLoadMore: mockOnLoadMore,
+					onToggleMobileCard: mockOnToggleMobileCard
 				}
 			});
 
@@ -294,11 +296,11 @@ describe('PlayerView Component', () => {
 					mobileExpandedCards: {},
 					hasNext: false,
 					hasPrevious: false,
-					onSort: mockOnSort as any,
-					onPageChange: mockOnPageChange as any,
-					onPageSizeChange: mockOnPageSizeChange as any,
-					onLoadMore: mockOnLoadMore as any,
-					onToggleMobileCard: mockOnToggleMobileCard as any
+					onSort: mockOnSort,
+					onPageChange: mockOnPageChange,
+					onPageSizeChange: mockOnPageSizeChange,
+					onLoadMore: mockOnLoadMore,
+					onToggleMobileCard: mockOnToggleMobileCard
 				}
 			});
 
@@ -325,11 +327,11 @@ describe('PlayerView Component', () => {
 					mobileExpandedCards: {},
 					hasNext: false,
 					hasPrevious: false,
-					onSort: mockOnSort as any,
-					onPageChange: mockOnPageChange as any,
-					onPageSizeChange: mockOnPageSizeChange as any,
-					onLoadMore: mockOnLoadMore as any,
-					onToggleMobileCard: mockOnToggleMobileCard as any
+					onSort: mockOnSort,
+					onPageChange: mockOnPageChange,
+					onPageSizeChange: mockOnPageSizeChange,
+					onLoadMore: mockOnLoadMore,
+					onToggleMobileCard: mockOnToggleMobileCard
 				}
 			});
 
@@ -360,11 +362,11 @@ describe('PlayerView Component', () => {
 					mobileExpandedCards: {},
 					hasNext: false,
 					hasPrevious: false,
-					onSort: mockOnSort as any,
-					onPageChange: mockOnPageChange as any,
-					onPageSizeChange: mockOnPageSizeChange as any,
-					onLoadMore: mockOnLoadMore as any,
-					onToggleMobileCard: mockOnToggleMobileCard as any
+					onSort: mockOnSort,
+					onPageChange: mockOnPageChange,
+					onPageSizeChange: mockOnPageSizeChange,
+					onLoadMore: mockOnLoadMore,
+					onToggleMobileCard: mockOnToggleMobileCard
 				}
 			});
 
@@ -394,11 +396,11 @@ describe('PlayerView Component', () => {
 					mobileExpandedCards: {},
 					hasNext: false,
 					hasPrevious: false,
-					onSort: mockOnSort as any,
-					onPageChange: mockOnPageChange as any,
-					onPageSizeChange: mockOnPageSizeChange as any,
-					onLoadMore: mockOnLoadMore as any,
-					onToggleMobileCard: mockOnToggleMobileCard as any
+					onSort: mockOnSort,
+					onPageChange: mockOnPageChange,
+					onPageSizeChange: mockOnPageSizeChange,
+					onLoadMore: mockOnLoadMore,
+					onToggleMobileCard: mockOnToggleMobileCard
 				}
 			});
 
@@ -425,11 +427,11 @@ describe('PlayerView Component', () => {
 					mobileExpandedCards: {},
 					hasNext: false,
 					hasPrevious: false,
-					onSort: mockOnSort as any,
-					onPageChange: mockOnPageChange as any,
-					onPageSizeChange: mockOnPageSizeChange as any,
-					onLoadMore: mockOnLoadMore as any,
-					onToggleMobileCard: mockOnToggleMobileCard as any
+					onSort: mockOnSort,
+					onPageChange: mockOnPageChange,
+					onPageSizeChange: mockOnPageSizeChange,
+					onLoadMore: mockOnLoadMore,
+					onToggleMobileCard: mockOnToggleMobileCard
 				}
 			});
 
@@ -458,11 +460,11 @@ describe('PlayerView Component', () => {
 					mobileExpandedCards: {},
 					hasNext: false,
 					hasPrevious: false,
-					onSort: mockOnSort as any,
-					onPageChange: mockOnPageChange as any,
-					onPageSizeChange: mockOnPageSizeChange as any,
-					onLoadMore: mockOnLoadMore as any,
-					onToggleMobileCard: mockOnToggleMobileCard as any
+					onSort: mockOnSort,
+					onPageChange: mockOnPageChange,
+					onPageSizeChange: mockOnPageSizeChange,
+					onLoadMore: mockOnLoadMore,
+					onToggleMobileCard: mockOnToggleMobileCard
 				}
 			});
 
@@ -491,11 +493,11 @@ describe('PlayerView Component', () => {
 					mobileExpandedCards: {},
 					hasNext: false,
 					hasPrevious: false,
-					onSort: mockOnSort as any,
-					onPageChange: mockOnPageChange as any,
-					onPageSizeChange: mockOnPageSizeChange as any,
-					onLoadMore: mockOnLoadMore as any,
-					onToggleMobileCard: mockOnToggleMobileCard as any
+					onSort: mockOnSort,
+					onPageChange: mockOnPageChange,
+					onPageSizeChange: mockOnPageSizeChange,
+					onLoadMore: mockOnLoadMore,
+					onToggleMobileCard: mockOnToggleMobileCard
 				}
 			});
 
@@ -524,11 +526,11 @@ describe('PlayerView Component', () => {
 					mobileExpandedCards: {},
 					hasNext: false,
 					hasPrevious: false,
-					onSort: mockOnSort as any,
-					onPageChange: mockOnPageChange as any,
-					onPageSizeChange: mockOnPageSizeChange as any,
-					onLoadMore: mockOnLoadMore as any,
-					onToggleMobileCard: mockOnToggleMobileCard as any
+					onSort: mockOnSort,
+					onPageChange: mockOnPageChange,
+					onPageSizeChange: mockOnPageSizeChange,
+					onLoadMore: mockOnLoadMore,
+					onToggleMobileCard: mockOnToggleMobileCard
 				}
 			});
 
@@ -555,11 +557,11 @@ describe('PlayerView Component', () => {
 					mobileExpandedCards: {},
 					hasNext: false,
 					hasPrevious: false,
-					onSort: mockOnSort as any,
-					onPageChange: mockOnPageChange as any,
-					onPageSizeChange: mockOnPageSizeChange as any,
-					onLoadMore: mockOnLoadMore as any,
-					onToggleMobileCard: mockOnToggleMobileCard as any
+					onSort: mockOnSort,
+					onPageChange: mockOnPageChange,
+					onPageSizeChange: mockOnPageSizeChange,
+					onLoadMore: mockOnLoadMore,
+					onToggleMobileCard: mockOnToggleMobileCard
 				}
 			});
 
@@ -590,11 +592,11 @@ describe('PlayerView Component', () => {
 					mobileExpandedCards: {},
 					hasNext: false,
 					hasPrevious: false,
-					onSort: mockOnSort as any,
-					onPageChange: mockOnPageChange as any,
-					onPageSizeChange: mockOnPageSizeChange as any,
-					onLoadMore: mockOnLoadMore as any,
-					onToggleMobileCard: mockOnToggleMobileCard as any
+					onSort: mockOnSort,
+					onPageChange: mockOnPageChange,
+					onPageSizeChange: mockOnPageSizeChange,
+					onLoadMore: mockOnLoadMore,
+					onToggleMobileCard: mockOnToggleMobileCard
 				}
 			});
 
@@ -625,11 +627,11 @@ describe('PlayerView Component', () => {
 					mobileExpandedCards: {},
 					hasNext: false,
 					hasPrevious: false,
-					onSort: mockOnSort as any,
-					onPageChange: mockOnPageChange as any,
-					onPageSizeChange: mockOnPageSizeChange as any,
-					onLoadMore: mockOnLoadMore as any,
-					onToggleMobileCard: mockOnToggleMobileCard as any
+					onSort: mockOnSort,
+					onPageChange: mockOnPageChange,
+					onPageSizeChange: mockOnPageSizeChange,
+					onLoadMore: mockOnLoadMore,
+					onToggleMobileCard: mockOnToggleMobileCard
 				}
 			});
 
@@ -657,11 +659,11 @@ describe('PlayerView Component', () => {
 					mobileExpandedCards: {},
 					hasNext: false,
 					hasPrevious: false,
-					onSort: mockOnSort as any,
-					onPageChange: mockOnPageChange as any,
-					onPageSizeChange: mockOnPageSizeChange as any,
-					onLoadMore: mockOnLoadMore as any,
-					onToggleMobileCard: mockOnToggleMobileCard as any
+					onSort: mockOnSort,
+					onPageChange: mockOnPageChange,
+					onPageSizeChange: mockOnPageSizeChange,
+					onLoadMore: mockOnLoadMore,
+					onToggleMobileCard: mockOnToggleMobileCard
 				}
 			});
 
@@ -688,11 +690,11 @@ describe('PlayerView Component', () => {
 					layoutMode: 'fullPage',
 					hasNext: true,
 					hasPrevious: true,
-					onSort: mockOnSort as any,
-					onPageChange: mockOnPageChange as any,
-					onPageSizeChange: mockOnPageSizeChange as any,
-					onLoadMore: mockOnLoadMore as any,
-					onToggleMobileCard: mockOnToggleMobileCard as any
+					onSort: mockOnSort,
+					onPageChange: mockOnPageChange,
+					onPageSizeChange: mockOnPageSizeChange,
+					onLoadMore: mockOnLoadMore,
+					onToggleMobileCard: mockOnToggleMobileCard
 				}
 			});
 
@@ -702,7 +704,8 @@ describe('PlayerView Component', () => {
 	});
 
 	describe('mobile highlight', () => {
-		const mobileProps = {
+		// Built per test: the mocks only exist after beforeEach has run
+		const mobileProps = () => ({
 			loading: false,
 			error: null,
 			searchQuery: '',
@@ -719,16 +722,16 @@ describe('PlayerView Component', () => {
 			layoutMode: 'fullPage' as const,
 			hasNext: false,
 			hasPrevious: false,
-			onSort: mockOnSort as any,
-			onPageChange: mockOnPageChange as any,
-			onPageSizeChange: mockOnPageSizeChange as any,
-			onLoadMore: mockOnLoadMore as any,
-			onToggleMobileCard: mockOnToggleMobileCard as any
-		};
+			onSort: mockOnSort,
+			onPageChange: mockOnPageChange,
+			onPageSizeChange: mockOnPageSizeChange,
+			onLoadMore: mockOnLoadMore,
+			onToggleMobileCard: mockOnToggleMobileCard
+		});
 
 		it('should highlight the mobile card of the highlighted player', () => {
 			const { container } = render(PlayerView, {
-				props: { ...mobileProps, highlightedUsername: 'Player2' }
+				props: { ...mobileProps(), highlightedUsername: 'Player2' }
 			});
 
 			const highlighted = container.querySelectorAll('.highlighted-card');
@@ -740,7 +743,7 @@ describe('PlayerView Component', () => {
 
 		it('should match the highlighted username case-insensitively', () => {
 			const { container } = render(PlayerView, {
-				props: { ...mobileProps, highlightedUsername: 'pLaYeR1' }
+				props: { ...mobileProps(), highlightedUsername: 'pLaYeR1' }
 			});
 
 			expect(container.querySelector('#player-mobile-card-player1')).toHaveClass(
@@ -749,7 +752,7 @@ describe('PlayerView Component', () => {
 		});
 
 		it('should highlight nothing without a highlighted username', () => {
-			const { container } = render(PlayerView, { props: mobileProps });
+			const { container } = render(PlayerView, { props: mobileProps() });
 
 			expect(container.querySelectorAll('.highlighted-card')).toHaveLength(0);
 		});
