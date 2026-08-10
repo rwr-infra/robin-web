@@ -1,4 +1,5 @@
 <script lang="ts">
+	import DataField from '$lib/components/DataField.svelte';
 	import TranslatedText from '$lib/components/TranslatedText.svelte';
 	import LoadingState from '$lib/components/LoadingState.svelte';
 	import Pagination from '$lib/components/Pagination.svelte';
@@ -133,7 +134,7 @@
 	<LoadingState type="servers" />
 {:else if error}
 	<div class="alert alert-error">
-		<CircleX class="h-6 w-6 shrink-0 stroke-current" />
+		<CircleX class="size-6 shrink-0 stroke-current" />
 		<span>{error}</span>
 	</div>
 {:else}
@@ -177,7 +178,7 @@
 		</div>
 
 		<!-- Desktop pagination - fixed at bottom, hidden when totalPages <= 1 -->
-		<div class="border-mil bg-mil-secondary border-t px-3 py-2" class:hidden={totalPages <= 1}>
+		<div class="border-base-300 bg-base-100 border-t px-3 py-2" class:hidden={totalPages <= 1}>
 			<Pagination
 				{currentPage}
 				{totalPages}
@@ -201,11 +202,11 @@
 					>
 						{#if column.i18n}<TranslatedText key={column.i18n} />{:else}{column.label}{/if}
 						{#if sortColumn !== column.key || !sortDirection}
-							<ArrowDownUp class="h-4 w-4 opacity-30" />
+							<ArrowDownUp class="text-muted size-4" />
 						{:else if sortDirection === 'asc'}
-							<ArrowUp class="text-primary h-4 w-4" />
+							<ArrowUp class="text-primary size-4" />
 						{:else if sortDirection === 'desc'}
-							<ArrowDown class="text-primary h-4 w-4" />
+							<ArrowDown class="text-primary size-4" />
 						{/if}
 					</button>
 				{/each}
@@ -223,7 +224,7 @@
 					/>
 					<label
 						for={`server-mobile-collapse-${item.id}`}
-						class="collapse-title min-h-14 cursor-pointer px-4 py-5 font-semibold"
+						class="collapse-title min-h-12 cursor-pointer px-4 py-4 font-semibold"
 					>
 						<div class="mr-6 flex items-center justify-between gap-2">
 							<div class="text-base-content flex-1 truncate text-base font-medium">
@@ -255,77 +256,60 @@
 						<div class="border-base-200 border-t">
 							<div class="space-y-2 pt-3">
 								{#each columns.filter((col) => !['name', 'playerCount', 'mapId', 'action'].includes(col.key)) as column (column.key)}
-									<div class="flex items-center justify-between py-1">
-										<span class="text-base-content/60 min-w-20 flex-shrink-0 text-sm">
-											{#if column.i18n}<TranslatedText
-													key={column.i18n}
-												/>{:else}{column.label}{/if}:
-										</span>
-										<div class="text-base-content ml-3 flex-1 text-right text-sm">
-											{#if column.key === 'url' && item.url}
-												<a
-													href={item.url}
-													target="_blank"
-													rel="noopener noreferrer"
-													class="link link-primary"
-													onclick={(e) => e.stopPropagation()}
-													title={item.url}
-												>
-													{item.url.length > 30 ? item.url.substring(0, 27) + '...' : item.url}
-												</a>
-											{:else if column.key === 'comment' || column.key === 'playerList'}
-												<div class="text-left break-words whitespace-pre-wrap">
-													{@html getDisplayValue(item, column, searchQuery)}
-												</div>
-											{:else}
-												<div class="flex items-center justify-end">
-													{@html getDisplayValue(item, column, searchQuery)}
-												</div>
-											{/if}
-										</div>
-									</div>
+									{@const isLongText = column.key === 'comment' || column.key === 'playerList'}
+									<DataField labelKey={column.i18n} label={column.label} wrap={isLongText}>
+										{#if column.key === 'url' && item.url}
+											<a
+												href={item.url}
+												target="_blank"
+												rel="noopener noreferrer"
+												class="link link-primary"
+												onclick={(e) => e.stopPropagation()}
+												title={item.url}
+											>
+												{item.url.length > 30 ? item.url.substring(0, 27) + '...' : item.url}
+											</a>
+										{:else if isLongText}
+											<div class="break-words whitespace-pre-wrap">
+												{@html getDisplayValue(item, column, searchQuery)}
+											</div>
+										{:else}
+											<div class="flex items-center justify-end">
+												{@html getDisplayValue(item, column, searchQuery)}
+											</div>
+										{/if}
+									</DataField>
 								{/each}
 								{#if maps.find((m) => m.path === item.mapId)}
 									{@const mapData = maps.find((m) => m.path === item.mapId)}
-									<div class="border-base-200 mt-4 border-t pt-3">
-										<div class="flex items-center justify-between">
-											<span class="text-base-content/70 min-w-20 flex-shrink-0 text-sm">
-												<TranslatedText key="app.map.preview" />:
-											</span>
-											<button
-												class="btn btn-success btn-sm text-white"
-												onclick={(e) => {
-													e.stopPropagation();
-													onMapView(mapData!);
-												}}
-												type="button"
-											>
-												<Eye class="mr-1 h-3 w-3" />
-												<TranslatedText key="app.map.buttonPreviewMap" />
-											</button>
-										</div>
-									</div>
-								{/if}
-
-								<!-- Share button section -->
-								<div class="border-base-200 mt-4 border-t pt-3">
-									<div class="flex items-center justify-between">
-										<span class="text-base-content/70 min-w-20 flex-shrink-0 text-sm">
-											<TranslatedText key="app.server.share" />:
-										</span>
+									<DataField labelKey="app.map.preview" divider>
 										<button
-											class="btn btn-success btn-sm text-white"
+											class="btn btn-primary btn-sm"
 											onclick={(e) => {
 												e.stopPropagation();
-												onShare?.(item);
+												onMapView(mapData!);
 											}}
 											type="button"
 										>
-											<Share class="mr-1 h-3 w-3" />
-											<TranslatedText key="app.server.buttonShare" />
+											<Eye class="mr-1 size-4" />
+											<TranslatedText key="app.map.buttonPreviewMap" />
 										</button>
-									</div>
-								</div>
+									</DataField>
+								{/if}
+
+								<DataField labelKey="app.server.share" divider>
+									<button
+										class="btn btn-outline btn-sm"
+										onclick={(e) => {
+											e.stopPropagation();
+											onShare?.(item);
+										}}
+										type="button"
+									>
+										<Share class="mr-1 size-4" />
+										<TranslatedText key="app.server.buttonShare" />
+									</button>
+								</DataField>
 							</div>
 						</div>
 					</div>
@@ -334,7 +318,7 @@
 
 			{#if mobilePaginatedServers.length === 0}
 				<div class="alert alert-info">
-					<Info class="h-6 w-6 shrink-0 stroke-current" />
+					<Info class="size-6 shrink-0 stroke-current" />
 					<span
 						><TranslatedText key="app.server.noDataFound" />{#if searchQuery}
 							<TranslatedText key="app.server.matchingSearch" />{/if}.</span

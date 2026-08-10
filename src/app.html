@@ -7,10 +7,7 @@
 
 		<!-- Primary Meta Tags -->
 		<title>Robin - Community-Driven RWR Data Platform</title>
-		<meta
-			name="title"
-			content="Robin - Community-Driven RWR Data Platform"
-		/>
+		<meta name="title" content="Robin - Community-Driven RWR Data Platform" />
 		<meta
 			name="description"
 			content="A community-driven, unofficial platform for browsing live Running with Rifles game servers and player statistics. Real-time server list, player rankings across Invasion/Pacific databases, advanced search, and multilingual support."
@@ -27,16 +24,16 @@
 		<meta name="theme-color" content="#ff6b35" />
 
 		<!-- Canonical URL -->
-		<link rel="canonical" href="https://robin.kreedzt.com/" />
+		<link rel="canonical" href="__VITE_SITE_URL__/" />
 
 		<!-- Alternate Language Links (language stored in localStorage, not routes) -->
-		<link rel="alternate" hreflang="en" href="https://robin.kreedzt.com/" />
-		<link rel="alternate" hreflang="zh" href="https://robin.kreedzt.com/" />
-		<link rel="alternate" hreflang="x-default" href="https://robin.kreedzt.com/" />
+		<link rel="alternate" hreflang="en" href="__VITE_SITE_URL__/" />
+		<link rel="alternate" hreflang="zh" href="__VITE_SITE_URL__/" />
+		<link rel="alternate" hreflang="x-default" href="__VITE_SITE_URL__/" />
 
 		<!-- Open Graph / Facebook -->
 		<meta property="og:type" content="website" />
-		<meta property="og:url" content="https://robin.kreedzt.com/" />
+		<meta property="og:url" content="__VITE_SITE_URL__/" />
 		<meta property="og:title" content="Robin - Community-Driven RWR Data Platform" />
 		<meta
 			property="og:description"
@@ -52,25 +49,18 @@
 
 		<!-- Twitter Card -->
 		<meta name="twitter:card" content="summary_large_image" />
-		<meta name="twitter:url" content="https://robin.kreedzt.com/" />
+		<meta name="twitter:url" content="__VITE_SITE_URL__/" />
 		<meta name="twitter:title" content="Robin - Community-Driven RWR Data Platform" />
 		<meta
 			name="twitter:description"
 			content="A community-driven, unofficial platform for browsing live RWR servers and player statistics."
 		/>
-		<meta
-			name="twitter:image"
-			content="/og-image-1200x630.png"
-		/>
+		<meta name="twitter:image" content="/og-image-1200x630.png" />
 		<meta name="twitter:image:alt" content="Robin - RWR Server Browser Interface" />
 
 		<!-- Apple Touch Icon -->
 		<link rel="apple-touch-icon" href="%sveltekit.assets%/apple-icon-180.png" />
-		<link
-			rel="apple-touch-icon"
-			sizes="180x180"
-			href="%sveltekit.assets%/apple-icon-180.png"
-		/>
+		<link rel="apple-touch-icon" sizes="180x180" href="%sveltekit.assets%/apple-icon-180.png" />
 
 		<!-- Apple Mobile Web App -->
 		<meta name="apple-mobile-web-app-capable" content="yes" />
@@ -290,6 +280,27 @@
 		<!-- <link rel="preconnect" href="https://img.kreedzt.cn" /> -->
 		<!-- <link rel="dns-prefetch" href="https://img.kreedzt.cn" /> -->
 
+		<!--
+			Resolve the theme before the first paint. app.css only arrives after this
+			point, and theme.ts only runs after hydration, so without this the page
+			flashes the wrong theme on every load. Keep the localStorage key and
+			values in sync with src/lib/stores/theme.ts.
+		-->
+		<script>
+			(function () {
+				var stored = null;
+				try {
+					stored = localStorage.getItem('theme');
+				} catch (e) {
+					/* storage blocked — fall back to the OS preference */
+				}
+				var dark =
+					stored === 'dark' ||
+					(stored !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+				document.documentElement.setAttribute('data-theme', dark ? 'rwr-dark' : 'rwr-light');
+			})();
+		</script>
+
 		<!-- Loading Screen Styles -->
 		<style>
 			#svelte-loading {
@@ -300,23 +311,34 @@
 				align-items: center;
 				justify-content: center;
 				gap: 1.5rem;
-				background: var(--color-bg-primary, #1a1d1f);
 				z-index: 9999;
 				transition: opacity 0.3s ease;
+				/* Literal values: app.css has not loaded yet, so the theme tokens
+				   are not available. The script above already picked the theme. */
+				background: #fbfaf7;
+			}
+
+			[data-theme='rwr-dark'] #svelte-loading {
+				background: #26231c;
 			}
 
 			.loading-spinner {
 				width: 48px;
 				height: 48px;
-				border: 4px solid var(--color-accent, #ff6b35);
+				border: 4px solid #c52707;
 				border-top-color: transparent;
 				border-radius: 50%;
 				animation: spin 0.8s linear infinite;
 			}
 
+			[data-theme='rwr-dark'] .loading-spinner {
+				border-color: #f9703e;
+				border-top-color: transparent;
+			}
+
 			.loading-text {
-				color: var(--color-text-secondary, #a0a0a0);
-				font-family: var(--font-mono, 'Consolas', monospace);
+				color: #85806f;
+				font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
 				font-size: 0.875rem;
 				letter-spacing: 0.1em;
 				text-transform: uppercase;
@@ -338,7 +360,7 @@
 				"applicationCategory": "GameApplication",
 				"operatingSystem": "Web Browser",
 				"description": "A community-driven, unofficial platform for browsing live Running with Rifles game servers and player statistics. Browse live game servers, view player rankings across multiple databases, and join matches instantly with Steam integration.",
-				"url": "https://robin.kreedzt.com/",
+				"url": "__VITE_SITE_URL__/",
 				"author": {
 					"@type": "Person",
 					"name": "Kreedzt"

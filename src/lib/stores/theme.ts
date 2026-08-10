@@ -39,21 +39,16 @@ function applyTheme(themeValue: Theme): void {
 		actualTheme = themeValue;
 	}
 
-	// Apply DaisyUI theme
-	root.setAttribute('data-theme', actualTheme);
+	// Single source of truth: the daisyUI theme name on <html>.
+	// The inline script in app.html sets the same attribute before the first
+	// paint — keep the two in sync.
+	root.setAttribute('data-theme', actualTheme === 'dark' ? 'rwr-dark' : 'rwr-light');
 
 	// Store preference
 	if (themeValue !== 'system') {
 		localStorage.setItem('theme', themeValue);
 	} else {
 		localStorage.removeItem('theme');
-	}
-
-	// Also set our custom theme attribute for CSS custom properties
-	if (actualTheme === 'dark') {
-		root.setAttribute('data-custom-theme', 'dark');
-	} else {
-		root.removeAttribute('data-custom-theme');
 	}
 }
 

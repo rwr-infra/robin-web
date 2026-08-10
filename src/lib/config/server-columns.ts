@@ -1,5 +1,22 @@
 import type { IColumn, IDisplayServerItem } from '$lib/models/server.model';
-import { escapeHtml, highlightMatch, renderPlayerListWithHighlight } from '$lib/utils/highlight';
+import {
+	escapeHtml,
+	highlightInBadge,
+	highlightMatch,
+	renderPlayerListWithHighlight
+} from '$lib/utils/highlight';
+
+/**
+ * Badges are emitted as raw HTML into the tables, so they can only use
+ * theme-aware classes — a hardcoded `bg-cyan-50` is unreadable on the dark
+ * theme. Every badge below is a daisyUI semantic badge, so it follows
+ * `data-theme` automatically.
+ *
+ * Sizing, radius and padding come from the `badge`/`badge-sm` component and the
+ * theme's `--radius-selector`; they are not repeated per call site. No shadow —
+ * a badge is not a raised element.
+ */
+const BADGE = 'badge badge-sm font-medium';
 
 // Function to get map preview HTML for desktop
 function getMapPreviewHtml(server: IDisplayServerItem, query?: string): string {
@@ -7,37 +24,42 @@ function getMapPreviewHtml(server: IDisplayServerItem, query?: string): string {
 	const mapName = mapId.split('/').pop() || '';
 
 	// Just show the map name badge - preview button is handled separately in the component
-	const displayText = query ? highlightMatch(mapName, query) : escapeHtml(mapName);
-	return `<span class="badge badge-outline bg-cyan-50 text-cyan-700 border-cyan-200 font-medium text-xs px-2 py-1 rounded-md shadow-sm">${displayText}</span>`;
+	// highlightInBadge, not highlightMatch: the mark lands inside a badge, whose
+	// background and content colour are set by the badge classes.
+	const displayText = highlightInBadge(mapName, query ?? '');
+	return `<span class="${BADGE} badge-soft badge-info">${displayText}</span>`;
 }
 
-// Function to get capacity status and styling
+/**
+ * Occupancy is carried by three redundant channels, not colour alone
+ * (Refactoring UI p.146): the hue, the soft/solid contrast step (solid = the
+ * two states you should act on), and the `title` text. The `x/y` figure itself
+ * is the primary signal.
+ */
 function getCapacityStyling(server: IDisplayServerItem, query?: string): string {
 	const { currentPlayers, maxPlayers } = server;
 	const occupancy = maxPlayers > 0 ? currentPlayers / maxPlayers : 0;
-	const playerText = query
-		? highlightMatch(`${currentPlayers}/${maxPlayers}`, query)
-		: `${currentPlayers}/${maxPlayers}`;
+	const playerText = highlightInBadge(`${currentPlayers}/${maxPlayers}`, query ?? '');
 
 	// Check for empty servers first
 	if (currentPlayers === 0) {
-		// Empty server - gray with dimmed effect
-		return `<span class="badge bg-gray-100 text-gray-500 border-gray-200 font-medium text-xs px-2 py-1 rounded-md shadow-sm opacity-60" title="Empty server">${playerText}</span>`;
+		return `<span class="${BADGE} badge-soft badge-neutral" title="Empty server">${playerText}</span>`;
 	}
 
-	// Determine color based on occupancy
+	const pct = Math.round(occupancy * 100);
+
 	if (occupancy >= 1.0 || currentPlayers >= maxPlayers) {
-		// Full server - red
-		return `<span class="badge bg-red-100 text-red-700 border-red-200 font-medium text-xs px-2 py-1 rounded-md shadow-sm" title="Full server">${playerText}</span>`;
+		// Full — solid, the highest-contrast step
+		return `<span class="${BADGE} badge-error" title="Full server">${playerText}</span>`;
 	} else if (occupancy >= 0.8) {
-		// 80% or more - orange
-		return `<span class="badge bg-orange-100 text-orange-700 border-orange-200 font-medium text-xs px-2 py-1 rounded-md shadow-sm" title="${Math.round(occupancy * 100)}% full">${playerText}</span>`;
+		// Nearly full — solid warning
+		return `<span class="${BADGE} badge-warning" title="${pct}% full">${playerText}</span>`;
 	} else if (occupancy >= 0.6) {
-		// 60-79% - yellow (warning)
-		return `<span class="badge bg-amber-100 text-amber-700 border-amber-200 font-medium text-xs px-2 py-1 rounded-md shadow-sm" title="${Math.round(occupancy * 100)}% full">${playerText}</span>`;
+		// Filling up — same hue, one contrast step softer
+		return `<span class="${BADGE} badge-soft badge-warning" title="${pct}% full">${playerText}</span>`;
 	} else {
-		// Less than 60% - green (available)
-		return `<span class="badge bg-green-100 text-green-700 border-green-200 font-medium text-xs px-2 py-1 rounded-md shadow-sm" title="${Math.round(occupancy * 100)}% full">${playerText}</span>`;
+		// Room to spare
+		return `<span class="${BADGE} badge-soft badge-success" title="${pct}% full">${playerText}</span>`;
 	}
 }
 
@@ -90,12 +112,12 @@ export const columns: IColumn[] = [
 		i18n: 'app.column.mode',
 		getValue: (server: IDisplayServerItem) => {
 			const modeText = escapeHtml(server.mode || 'Unknown');
-			return `<span class="badge badge-outline bg-blue-50 text-blue-700 border-blue-200 font-medium text-xs px-2 py-1 rounded-md shadow-sm" data-mode="mode">${modeText}</span>`;
+			return `<span class="${BADGE} badge-soft badge-neutral" data-mode="mode">${modeText}</span>`;
 		},
 		getValueWithHighlight: (server: IDisplayServerItem, query: string) => {
 			const modeText = server.mode || 'Unknown';
-			const highlightedText = highlightMatch(modeText, query);
-			return `<span class="badge badge-outline bg-blue-50 text-blue-700 border-blue-200 font-medium text-xs px-2 py-1 rounded-md shadow-sm" data-mode="mode">${highlightedText}</span>`;
+			const highlightedText = highlightInBadge(modeText, query);
+			return `<span class="${BADGE} badge-soft badge-neutral" data-mode="mode">${highlightedText}</span>`;
 		}
 	},
 	{

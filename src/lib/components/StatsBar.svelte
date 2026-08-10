@@ -39,53 +39,45 @@
 	);
 </script>
 
+<!--
+	Separated from the page by background + elevation, not a border
+	(Refactoring UI p.206 — use fewer borders).
+	The counts read as one phrase instead of "label: value" (p.41).
+-->
 <div
-	class="stats-container mb-4 flex items-center justify-between px-4 py-4 text-sm md:mb-2 md:py-2"
+	class="stats-container bg-base-100 shadow-e1 text-base-content/70 mb-4 flex items-center justify-between gap-3 rounded px-4 py-3 text-sm md:mb-2 md:py-2"
 >
+	<!--
+		The whole phrase comes from i18n — word order differs per locale, so the
+		counts cannot be spliced in as separate emphasized spans. The data stays
+		primary by weight and colour on the phrase as a whole (p.41).
+	-->
 	<div class="flex items-center gap-4">
 		{#if currentView === 'servers'}
-			<span class="font-medium">
-				<span class="stats-number">{serverFilteredStats.totalServers}</span> /
-				<span class="stats-number">{serverTotalStats.totalServers}</span> servers
+			<span class="stats-number text-base-content font-semibold">
+				{m['app.stats.servers']({
+					filtered: serverFilteredStats.totalServers,
+					total: serverTotalStats.totalServers
+				})}
 			</span>
-			<span class="font-medium">
-				<span class="stats-number">{serverFilteredStats.totalPlayers}</span> /
-				<span class="stats-number">{serverTotalStats.totalPlayers}</span> players
+			<span class="stats-number text-base-content font-semibold">
+				{m['app.stats.players']({
+					filtered: serverFilteredStats.totalPlayers,
+					total: serverTotalStats.totalPlayers
+				})}
 			</span>
 		{:else}
-			<span class="font-medium">
-				{playerFilteredStats.paginatedCount} / {playerFilteredStats.totalPlayers} players
+			<span class="stats-number text-base-content font-semibold">
+				{m['app.stats.players']({
+					filtered: playerFilteredStats.paginatedCount,
+					total: playerFilteredStats.totalPlayers
+				})}
 			</span>
 		{/if}
 	</div>
 	{#if showFilterIndicator}
-		<span class="filter-indicator text-base-content/60 text-xs italic">
+		<span class="filter-indicator badge badge-soft badge-warning badge-sm shrink-0 italic">
 			{m['app.stats.filteredBy']({ query: searchQuery })}
 		</span>
 	{/if}
 </div>
-
-<style>
-	/* Statistics display styling */
-	.stats-container {
-		background: linear-gradient(135deg, hsl(var(--b1) / 0.5) 0%, hsl(var(--b2) / 0.3) 100%);
-		border: 1px solid hsl(var(--bc) / 0.1);
-		border-radius: 0.5rem;
-		box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
-		backdrop-filter: blur(8px);
-	}
-
-	/* Stats number highlighting */
-	.stats-number {
-		font-weight: 600;
-		color: hsl(var(--bc));
-	}
-
-	/* Filter indicator styling */
-	.filter-indicator {
-		background: hsl(var(--wa) / 0.1);
-		border: 1px solid hsl(var(--wa) / 0.2);
-		border-radius: 0.25rem;
-		padding: 0.25rem 0.5rem;
-	}
-</style>

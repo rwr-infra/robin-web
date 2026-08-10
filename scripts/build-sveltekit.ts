@@ -35,7 +35,11 @@ async function buildSvelteKit() {
 		// For static builds, we need to replace %VITE_*% placeholders directly in app.html
 		console.log('📝 Step 0: Pre-processing app.html for environment variables...');
 		const appHtmlPath = 'src/app.html';
-		let appHtmlContent = readFileSync(appHtmlPath, 'utf-8');
+		// Kept verbatim so the file can be restored byte-for-byte after the build.
+		// This used to be `git checkout src/app.html`, which discarded *every*
+		// uncommitted change to the file, not just the substitution below.
+		const originalAppHtml = readFileSync(appHtmlPath, 'utf-8');
+		let appHtmlContent = originalAppHtml;
 
 		// Only replace placeholders if KEEP_PLACEHOLDERS is not set
 		// This allows community builds to keep placeholders for runtime replacement
@@ -69,7 +73,7 @@ async function buildSvelteKit() {
 		} finally {
 			// Restore original app.html after build (only if we modified it)
 			if (modified) {
-				execSync('git checkout src/app.html', { stdio: 'inherit' });
+				writeFileSync(appHtmlPath, originalAppHtml);
 				console.log('✅ Restored original app.html\n');
 			}
 		}

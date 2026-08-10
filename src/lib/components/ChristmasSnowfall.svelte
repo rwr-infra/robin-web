@@ -75,14 +75,13 @@
 		text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
 	}
 
-	/* Dark theme snowflakes - use :has() selector or data attribute */
-	:global(html[data-theme='dark']) .snowflake {
+	/* Theme names come from the daisyUI theme blocks in app.css */
+	:global(html[data-theme='rwr-dark']) .snowflake {
 		color: #e0f2fe;
 		text-shadow: 0 0 8px rgba(224, 242, 254, 0.6);
 	}
 
-	/* Light theme snowflakes */
-	:global(html[data-theme='light']) .snowflake {
+	:global(html[data-theme='rwr-light']) .snowflake {
 		color: #bae6fd;
 		text-shadow: 0 0 5px rgba(186, 230, 253, 0.4);
 	}

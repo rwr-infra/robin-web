@@ -5,6 +5,11 @@
 
 	interface Props {
 		player: IPlayerItem;
+		/**
+		 * `desktop` is a 600px two-column card, `mobile` a 360px single-column one.
+		 * Everything else is shared, which is why this is one component.
+		 */
+		variant?: 'desktop' | 'mobile';
 		// Timestamp for data freshness
 		queryTimestamp?: number;
 		// Ranking data - maps field key to ranking position
@@ -25,6 +30,7 @@
 
 	let {
 		player,
+		variant = 'desktop',
 		queryTimestamp,
 		rankings = {},
 		customTheme = 'default',
@@ -33,6 +39,8 @@
 		customSections = [],
 		hiddenFields = []
 	}: Props = $props();
+
+	const isMobile = $derived(variant === 'mobile');
 
 	// Check if a field should be visible
 	function isFieldVisible(key: keyof IPlayerItem | 'rankIcon'): boolean {
@@ -84,13 +92,13 @@
 		return dbMap[db] || db;
 	}
 
-	// Theme classes
+	// Explicit theme overrides use the same warm ramp as the rest of the app
 	const themeClasses = $derived(() => {
 		switch (customTheme) {
 			case 'dark':
-				return 'bg-gray-900 text-white from-gray-800 to-gray-900';
+				return 'bg-sand-900 text-sand-100 from-sand-800 to-sand-900';
 			case 'light':
-				return 'bg-gray-50 text-gray-900 from-gray-50 to-white';
+				return 'bg-sand-100 text-sand-900 from-sand-50 to-sand-100';
 			default:
 				return 'from-base-100 to-base-200 text-base-content';
 		}
@@ -115,38 +123,50 @@
 	];
 </script>
 
-<div class="share-card-wrapper w-full max-w-[600px] rounded-xl p-4 shadow-2xl {themeClasses()}">
+<!--
+	No shadow: the capture crops to the card bounds, so an outer shadow would only
+	produce a dirty edge in the exported PNG. A 1px border defines the edge instead.
+	Type never drops below 12px (text-xs); the mobile variant buys the space back
+	with a single column, not with smaller type (p.91).
+-->
+<div
+	class="share-card-wrapper border-base-content/15 w-full rounded border {isMobile
+		? 'max-w-[360px] p-3'
+		: 'max-w-[600px] p-4'} {themeClasses()}"
+>
 	<!-- Header Section with database badge -->
-	<div class="border-base-content/15 mb-3 flex items-center justify-between border-b pb-3">
-		<div class="flex items-center gap-2">
-			<User class="h-4 w-4 opacity-70" />
-			<h2 class="text-lg font-bold">{player.username}</h2>
+	<div
+		class="border-base-content/15 mb-3 flex items-center justify-between gap-2 border-b {isMobile
+			? 'pb-2'
+			: 'pb-3'}"
+	>
+		<div class="flex min-w-0 items-center gap-2">
+			<User class="text-base-content/70 size-4 shrink-0" />
+			<h2 class="truncate font-bold {isMobile ? 'text-base' : 'text-lg'}">{player.username}</h2>
 		</div>
 		{#if isFieldVisible('db')}
-			<span
-				class="badge badge-ghost badge-sm flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium"
-			>
-				<Database class="h-3 w-3" />
+			<span class="badge badge-soft badge-neutral shrink-0 gap-1 font-medium">
+				<Database class="size-4" />
 				{formatDbName(player.db)}
 			</span>
 		{/if}
 	</div>
 
-	<!-- Stats Grid - Simple 2-column layout without responsive switching -->
-	<div class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
+	<!-- Stats: two columns on desktop, one on mobile -->
+	<div class="text-xs {isMobile ? 'flex flex-col gap-1' : 'grid grid-cols-2 gap-x-4 gap-y-1'}">
 		{#each allStatsFields as field}
 			{#if isFieldVisible(field.key as keyof IPlayerItem)}
 				{@const display = getDisplayValueWithRank(field.key)}
 				<div class="flex items-center justify-between gap-1">
-					<span class="text-base-content/60 text-xs whitespace-nowrap">
+					<span class="text-base-content/70 whitespace-nowrap">
 						<TranslatedText key={field.i18n} />
 					</span>
 					<div class="flex items-center justify-end gap-1">
-						<span class="text-right text-xs font-semibold">
+						<span class="text-right font-semibold">
 							{display.value}
 						</span>
 						{#if display.rank}
-							<span class="text-primary shrink-0 text-[10px]">#{display.rank}</span>
+							<span class="text-primary shrink-0">#{display.rank}</span>
 						{/if}
 					</div>
 				</div>
@@ -157,12 +177,12 @@
 	<!-- Footer with timestamp -->
 	<div class="border-base-content/15 mt-3 border-t pt-2">
 		{#if queryTimestamp}
-			<div class="text-base-content/40 text-center text-[10px]">
+			<div class="text-muted text-center text-xs">
 				<TranslatedText key="app.player.shareCard.queryTime" />: {formatTimestamp(queryTimestamp)}
 			</div>
 		{/if}
 		{#if showWatermark && watermarkText}
-			<div class="text-base-content/30 mt-1 text-center text-[10px]">{watermarkText}</div>
+			<div class="text-muted mt-1 text-center text-xs">{watermarkText}</div>
 		{/if}
 	</div>
 
@@ -176,7 +196,7 @@
 
 <style>
 	.share-card-wrapper {
-		background: linear-gradient(135deg, hsl(var(--b1)), hsl(var(--b2)));
+		background: linear-gradient(135deg, var(--color-base-100), var(--color-base-200));
 		font-family:
 			-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 	}

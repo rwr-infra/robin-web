@@ -1,4 +1,5 @@
 <script lang="ts">
+	import DataField from '$lib/components/DataField.svelte';
 	import TranslatedText from '$lib/components/TranslatedText.svelte';
 	import LoadingState from '$lib/components/LoadingState.svelte';
 	import PaginationPrevNext from '$lib/components/PaginationPrevNext.svelte';
@@ -184,14 +185,14 @@
 	<LoadingState type="players" />
 {:else if error}
 	<div class="alert alert-error">
-		<CircleX class="h-6 w-6 shrink-0 stroke-current" />
+		<CircleX class="size-6 shrink-0 stroke-current" />
 		<span>{error}</span>
 	</div>
 {:else}
 	<!-- Anchor player missing in this database: upstream silently answered with the first page -->
 	{#if sidAnchorMissing}
 		<div class="alert alert-warning mb-3" data-testid="sid-anchor-missing">
-			<TriangleAlert class="h-5 w-5 shrink-0 stroke-current" />
+			<TriangleAlert class="size-5 shrink-0 stroke-current" />
 			<span><TranslatedText key="app.player.neighbors.notFound" /></span>
 			<button
 				type="button"
@@ -199,7 +200,7 @@
 				onclick={() => onDismissSidAnchorMissing?.()}
 				aria-label={m['app.player.neighbors.dismiss']()}
 			>
-				<X class="h-4 w-4" />
+				<X class="size-4" />
 			</button>
 		</div>
 	{/if}
@@ -207,11 +208,11 @@
 	<!-- SID ordering has no table column, so its state is surfaced here -->
 	{#if sidSortActive}
 		<div
-			class="border-mil bg-mil-secondary mb-3 flex flex-wrap items-center justify-between gap-2 rounded border px-3 py-2 text-sm"
+			class="border-base-300 bg-base-100 mb-3 flex flex-wrap items-center justify-between gap-2 rounded border px-3 py-2 text-sm"
 			data-testid="sid-mode-banner"
 		>
 			<div class="flex flex-wrap items-center gap-2">
-				<Users class="h-4 w-4 shrink-0" />
+				<Users class="size-4 shrink-0" />
 				{#if sidAnchor}
 					<span class="font-medium">
 						{m['app.player.neighbors.bannerAnchored']({ username: sidAnchor })}
@@ -222,13 +223,13 @@
 					>
 				{/if}
 				{#if windowRangeStart > 0}
-					<span class="opacity-70">
+					<span class="text-base-content/70">
 						{m['app.player.neighbors.range']({ start: windowRangeStart, end: windowRangeEnd })}
 					</span>
 				{/if}
 			</div>
 			<div class="flex items-center gap-2">
-				<span class="hidden opacity-60 lg:inline"
+				<span class="text-base-content/70 hidden lg:inline"
 					><TranslatedText key="app.player.neighbors.hint" /></span
 				>
 				<button type="button" class="btn btn-xs" onclick={() => onExitSidMode?.()}>
@@ -262,7 +263,7 @@
 		{#if sidAnchor}
 			<!-- Anchored requests cannot be paginated upstream: browse by absolute row offset -->
 			<div
-				class="border-mil bg-mil-secondary flex items-center justify-between border-t px-3 py-2"
+				class="border-base-300 bg-base-100 flex items-center justify-between border-t px-3 py-2"
 				data-testid="sid-window-nav"
 			>
 				<div class="join">
@@ -289,7 +290,7 @@
 		{:else}
 			<!-- Desktop pagination - fixed at bottom, hidden when no pagination needed -->
 			<div
-				class="border-mil bg-mil-secondary flex items-center justify-between border-t px-3 py-2"
+				class="border-base-300 bg-base-100 flex items-center justify-between border-t px-3 py-2"
 				class:hidden={!hasNext && !hasPrevious}
 			>
 				<PaginationPrevNext {currentPage} {hasNext} {hasPrevious} {onPageChange} />
@@ -318,9 +319,9 @@
 					>
 						{#if column.i18n}<TranslatedText key={column.i18n} />{:else}{column.label}{/if}
 						{#if sortColumn !== column.key}
-							<ArrowDown class="h-4 w-4 opacity-30" />
+							<ArrowDown class="text-muted size-4" />
 						{:else}
-							<ArrowDown class="text-primary h-4 w-4" />
+							<ArrowDown class="text-primary size-4" />
 						{/if}
 					</button>
 				{/each}
@@ -356,7 +357,7 @@
 					/>
 					<label
 						for={`player-mobile-collapse-${item.id}`}
-						class="collapse-title min-h-14 cursor-pointer px-4 py-5 font-semibold"
+						class="collapse-title min-h-12 cursor-pointer px-4 py-4 font-semibold"
 					>
 						<div class="mr-6 flex items-center justify-between gap-2">
 							<div class="text-base-content flex-1 truncate text-base font-medium">
@@ -366,7 +367,7 @@
 									searchQuery
 								)}
 							</div>
-							<span class="text-base-content/60 text-sm">
+							<span class="text-base-content/70 text-sm">
 								#{@html getDisplayValue(
 									item,
 									playerColumns.find((col) => col.key === 'rowNumber')!
@@ -378,59 +379,41 @@
 						<div class="border-base-200 border-t">
 							<div class="space-y-2 pt-3">
 								{#each playerColumns.filter((col) => !['username', 'rowNumber', 'action'].includes(col.key as string)) as column (column.key)}
-									<div class="flex items-center justify-between py-1">
-										<span class="text-base-content/60 min-w-20 flex-shrink-0 text-sm">
-											{#if column.i18n}<TranslatedText
-													key={column.i18n}
-												/>{:else}{column.label}{/if}:
-										</span>
-										<div class="text-base-content ml-3 flex-1 text-right text-sm">
-											{@html getDisplayValue(item, column, searchQuery)}
-										</div>
-									</div>
+									<DataField labelKey={column.i18n} label={column.label}>
+										{@html getDisplayValue(item, column, searchQuery)}
+									</DataField>
 								{/each}
 							</div>
 
-							<!-- Share button section (similar to ServerView Preview Map) -->
-							<div class="border-base-200 mt-4 border-t pt-3">
-								<div class="flex items-center justify-between">
-									<span class="text-base-content/70 min-w-20 flex-shrink-0 text-sm">
-										<TranslatedText key="app.player.share" />:
-									</span>
-									<button
-										class="btn btn-success btn-sm text-white"
-										onclick={(e) => {
-											e.stopPropagation();
-											onShare?.(item);
-										}}
-										type="button"
-									>
-										<Share class="mr-1 h-3 w-3" />
-										<TranslatedText key="app.player.buttonShare" />
-									</button>
-								</div>
-							</div>
+							<DataField labelKey="app.player.share" divider>
+								<button
+									class="btn btn-primary btn-sm"
+									onclick={(e) => {
+										e.stopPropagation();
+										onShare?.(item);
+									}}
+									type="button"
+								>
+									<Share class="mr-1 size-4" />
+									<TranslatedText key="app.player.buttonShare" />
+								</button>
+							</DataField>
 
 							{#if onFindNeighbors}
 								<!-- Similar accounts entry point (mobile equivalent of the table action) -->
-								<div class="border-base-200 mt-3 border-t pt-3">
-									<div class="flex items-center justify-between">
-										<span class="text-base-content/70 min-w-20 flex-shrink-0 text-sm">
-											<TranslatedText key="app.player.neighbors.label" />:
-										</span>
-										<button
-											class="btn btn-sm btn-outline"
-											onclick={(e) => {
-												e.stopPropagation();
-												onFindNeighbors(item);
-											}}
-											type="button"
-										>
-											<Users class="mr-1 h-3 w-3" />
-											<TranslatedText key="app.player.neighbors.button" />
-										</button>
-									</div>
-								</div>
+								<DataField labelKey="app.player.neighbors.label" divider>
+									<button
+										class="btn btn-outline btn-sm"
+										onclick={(e) => {
+											e.stopPropagation();
+											onFindNeighbors(item);
+										}}
+										type="button"
+									>
+										<Users class="mr-1 size-4" />
+										<TranslatedText key="app.player.neighbors.button" />
+									</button>
+								</DataField>
 							{/if}
 						</div>
 					</div>
@@ -439,7 +422,7 @@
 
 			{#if mobilePaginatedPlayers.length === 0}
 				<div class="alert alert-info">
-					<Info class="h-6 w-6 shrink-0 stroke-current" />
+					<Info class="size-6 shrink-0 stroke-current" />
 					<span>
 						<TranslatedText key="app.player.noPlayersFound" />
 						{#if searchQuery}

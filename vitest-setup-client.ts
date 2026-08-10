@@ -46,3 +46,38 @@ const localStorageMock = (() => {
 Object.defineProperty(window, 'localStorage', {
 	value: localStorageMock
 });
+
+// jsdom 30 still ships no HTMLDialogElement methods, so ModalShell's showModal()/
+// close() calls would be no-ops and `open` would never flip. Reflect the `open`
+// attribute and fire the events the component listens for, which is all our
+// components observe about a dialog.
+if (typeof HTMLDialogElement !== 'undefined' && !HTMLDialogElement.prototype.showModal) {
+	Object.defineProperty(HTMLDialogElement.prototype, 'open', {
+		configurable: true,
+		get(this: HTMLDialogElement) {
+			return this.hasAttribute('open');
+		},
+		set(this: HTMLDialogElement, value: boolean) {
+			if (value) this.setAttribute('open', '');
+			else this.removeAttribute('open');
+		}
+	});
+
+	HTMLDialogElement.prototype.showModal = function showModal(this: HTMLDialogElement) {
+		this.setAttribute('open', '');
+	};
+
+	HTMLDialogElement.prototype.show = function show(this: HTMLDialogElement) {
+		this.setAttribute('open', '');
+	};
+
+	HTMLDialogElement.prototype.close = function close(
+		this: HTMLDialogElement,
+		returnValue?: string
+	) {
+		if (!this.hasAttribute('open')) return;
+		this.removeAttribute('open');
+		if (returnValue !== undefined) this.returnValue = returnValue;
+		this.dispatchEvent(new Event('close'));
+	};
+}

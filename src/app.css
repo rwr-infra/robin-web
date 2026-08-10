@@ -1,99 +1,166 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
-@plugin '@tailwindcss/typography';
-@plugin 'daisyui';
+@plugin 'daisyui' {
+	themes: false;
+}
+
+/* `dark:` follows the in-app theme toggle, not the OS preference */
+@custom-variant dark (&:where([data-theme='rwr-dark'], [data-theme='rwr-dark'] *));
 
 @theme {
-	/* Custom military theme colors */
-	--color-mil-bg-primary: #1a1d1f;
-	--color-mil-bg-secondary: #24282b;
-	--color-mil-bg-tertiary: #2e3336;
-	--color-mil-accent: #ff6b35;
-	--color-mil-accent-dim: #cc5629;
-	--color-mil-green: #4a5d4e;
-	--color-mil-tan: #c4a77d;
-	--color-mil-text-primary: #e8e8e8;
-	--color-mil-text-secondary: #a0a0a0;
-	--color-mil-border: #3a3f44;
-}
+	/* ---- Warm grey ramp: saturation rises at both ends so the extremes
+	       don't wash out (Refactoring UI p.139 — greys aren't hueless) ---- */
+	--color-sand-50: hsl(40 30% 99%);
+	--color-sand-100: hsl(40 23% 97%);
+	--color-sand-200: hsl(43 13% 90%);
+	--color-sand-300: hsl(40 15% 80%);
+	--color-sand-400: hsl(39 11% 69%);
+	--color-sand-500: hsl(41 8% 48%);
+	--color-sand-600: hsl(41 9% 35%);
+	--color-sand-700: hsl(37 11% 28%);
+	--color-sand-800: hsl(40 13% 23%);
+	--color-sand-900: hsl(42 15% 13%);
+	--color-sand-950: hsl(42 16% 9%);
 
-:root {
-	/* Light Theme (Default) */
-	--color-bg-primary: #f0f2f5;
-	--color-bg-secondary: #ffffff;
-	--color-bg-tertiary: #e8ebef;
-	--color-accent: #e65520;
-	--color-accent-dim: #b84319;
-	--color-accent-glow: rgba(230, 85, 32, 0.1);
-	--color-military-green: #3d4f40;
-	--color-military-tan: #a89068;
-	--color-text-primary: #1a1d1f;
-	--color-text-secondary: #4a4f54;
-	--color-text-muted: #7a7f84;
-	--color-border: #d0d5da;
-	--color-grid: rgba(0, 0, 0, 0.04);
+	/* ---- Orange accent ramp; 400 matches the previous #ff6b35 ---- */
+	--color-ember-50: hsl(24 100% 93%);
+	--color-ember-100: hsl(22 100% 85%);
+	--color-ember-200: hsl(20 100% 77%);
+	--color-ember-300: hsl(18 100% 70%);
+	--color-ember-400: hsl(16 94% 61%);
+	--color-ember-500: hsl(14 89% 55%);
+	--color-ember-600: hsl(12 86% 47%);
+	--color-ember-700: hsl(10 93% 40%);
+	--color-ember-800: hsl(8 92% 35%);
+	--color-ember-900: hsl(6 96% 26%);
 
-	/* Typography - System fonts for performance */
+	/* ---- Typefaces ---- */
 	--font-display: 'Impact', 'Arial Black', -apple-system, sans-serif;
 	--font-mono: 'Consolas', 'Monaco', 'Courier New', monospace;
-	--font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+	--font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
-	/* Layout */
-	--column-width: 42rem;
-	--column-margin-top: 4rem;
-
-	font-family: var(--font-body);
-	color: var(--color-text-primary);
+	/* ---- Five elevation steps, two-part shadows (Refactoring UI p.160) ---- */
+	--shadow-e1: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+	--shadow-e2: 0 3px 6px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.12);
+	--shadow-e3: 0 10px 20px rgba(0, 0, 0, 0.15), 0 3px 6px rgba(0, 0, 0, 0.1);
+	--shadow-e4: 0 15px 25px rgba(0, 0, 0, 0.15), 0 5px 10px rgba(0, 0, 0, 0.05);
+	--shadow-e5: 0 20px 40px rgba(0, 0, 0, 0.2);
 }
 
-[data-custom-theme='dark'] {
-	/* Dark Theme */
-	--color-bg-primary: #1a1d1f;
-	--color-bg-secondary: #24282b;
-	--color-bg-tertiary: #2e3336;
-	--color-accent: #ff6b35;
-	--color-accent-dim: #cc5629;
-	--color-accent-glow: rgba(255, 107, 53, 0.15);
-	--color-military-green: #4a5d4e;
-	--color-military-tan: #c4a77d;
-	--color-text-primary: #e8e8e8;
-	--color-text-secondary: #a0a0a0;
-	--color-text-muted: #6a6a6a;
-	--color-border: #3a3f44;
-	--color-grid: rgba(255, 255, 255, 0.03);
+@plugin 'daisyui/theme' {
+	name: 'rwr-light';
+	default: true;
+	color-scheme: light;
+
+	--color-base-100: hsl(40 30% 99%); /* panels — lighter reads as closer */
+	--color-base-200: hsl(40 23% 97%); /* page */
+	--color-base-300: hsl(43 13% 90%); /* wells, dividers */
+	--color-base-content: hsl(42 15% 13%);
+
+	/* Primary has two jobs — button background and `text-primary`/`link-primary`
+	   — so it has to clear 4.5:1 against BOTH primary-content and the page.
+	   Darkening the book's orange ramp rotates its hue toward red (p.124), which
+	   made it read as an error colour next to `error`. Holding the hue at 20° and
+	   buying the contrast with lightness+saturation instead keeps it orange:
+	   #c74605 → 4.57:1 on primary-content, 4.59:1 as text on base-200. */
+	--color-primary: hsl(20 95% 40%);
+	--color-primary-content: hsl(24 100% 97%);
+	--color-secondary: hsl(37 11% 28%);
+	--color-secondary-content: hsl(40 23% 97%);
+	--color-accent: hsl(24 95% 34%);
+	--color-accent-content: hsl(24 100% 97%);
+	--color-neutral: hsl(37 11% 28%);
+	--color-neutral-content: hsl(40 23% 97%);
+
+	--color-info: hsl(209 34% 30%);
+	--color-info-content: hsl(210 36% 96%);
+	--color-success: hsl(122 80% 29%);
+	--color-success-content: hsl(125 65% 93%);
+	/* Yellow rather than amber, so a solid `warning` badge cannot be mistaken for
+	   the orange primary. Yellow needs dark content text, not white (5.72:1). */
+	--color-warning: hsl(38 88% 48%);
+	--color-warning-content: hsl(28 90% 15%);
+	--color-error: hsl(354 85% 44%);
+	--color-error-content: hsl(360 100% 95%);
+
+	--radius-selector: 0.25rem;
+	--radius-field: 0rem; /* terminal-sharp fields: button, input, select, tab */
+	--radius-box: 0.25rem; /* card, modal, alert */
+	--size-selector: 0.25rem;
+	--size-field: 0.25rem;
+	--border: 1px;
+	--depth: 0; /* elevation is owned by the five shadow steps above */
+	--noise: 0;
 }
 
-/* Tailwind custom utilities using CSS variables */
-@utility bg-mil-primary {
-	background-color: var(--color-bg-primary);
+@plugin 'daisyui/theme' {
+	name: 'rwr-dark';
+	prefersdark: true;
+	color-scheme: dark;
+
+	--color-base-100: hsl(40 12% 16%); /* panels */
+	--color-base-200: hsl(42 15% 13%); /* page */
+	--color-base-300: hsl(42 16% 9%); /* deepest */
+	--color-base-content: hsl(43 13% 90%);
+
+	--color-primary: hsl(16 94% 61%);
+	--color-primary-content: hsl(42 16% 9%);
+	--color-secondary: hsl(40 15% 80%);
+	--color-secondary-content: hsl(42 16% 9%);
+	--color-accent: hsl(18 100% 70%);
+	--color-accent-content: hsl(42 16% 9%);
+	/* daisyUI derives `badge-soft`'s *text* colour from the base colour itself, so
+	   on a dark surface neutral has to be a LIGHT warm grey — a dark neutral makes
+	   soft badges (the player chips) unreadable. */
+	--color-neutral: hsl(40 15% 80%);
+	--color-neutral-content: hsl(42 16% 9%);
+
+	--color-info: hsl(211 27% 70%);
+	--color-info-content: hsl(209 61% 16%);
+	--color-success: hsl(123 53% 55%);
+	--color-success-content: hsl(125 97% 14%);
+	--color-warning: hsl(42 87% 55%);
+	--color-warning-content: hsl(15 86% 30%);
+	--color-error: hsl(360 83% 62%);
+	--color-error-content: hsl(348 94% 20%);
+
+	--radius-selector: 0.25rem;
+	--radius-field: 0rem;
+	--radius-box: 0.25rem;
+	--size-selector: 0.25rem;
+	--size-field: 0.25rem;
+	--border: 1px;
+	--depth: 0;
+	--noise: 0;
 }
 
-@utility bg-mil-secondary {
-	background-color: var(--color-bg-secondary);
+/* Tertiary text and the background grid line — one definition per theme */
+/* The tertiary text colour has to sit BETWEEN secondary (`base-content/70`) and
+   the WCAG AA floor, and that window is different on each ground — one shared
+   value cannot clear 4.5:1 on both. Measured against each theme's base-100:
+   light  secondary 5.76:1 → tertiary 4.89:1
+   dark   secondary 6.44:1 → tertiary 4.97:1 */
+[data-theme='rwr-light'] {
+	--color-text-muted: hsl(41 10% 42%);
+	--grid-line: rgba(0, 0, 0, 0.04);
+	--scanline: rgba(0, 0, 0, 0.01);
+	/* One step off the panel, in the direction that reads as raised on this
+	   ground: darker on a light page, lighter on a dark one (p.137). A single
+	   base step cannot do both, hence the per-theme value. */
+	--tactical-face: hsl(43 13% 90%);
 }
 
-@utility bg-mil-tertiary {
-	background-color: var(--color-bg-tertiary);
+[data-theme='rwr-dark'] {
+	--color-text-muted: hsl(41 11% 58%);
+	--grid-line: rgba(255, 255, 255, 0.03);
+	--scanline: rgba(0, 0, 0, 0.02);
+	--tactical-face: hsl(40 12% 24%);
 }
 
-@utility text-mil-primary {
-	color: var(--color-text-primary);
-}
-
-@utility text-mil-secondary {
-	color: var(--color-text-secondary);
-}
-
-@utility border-mil {
-	border-color: var(--color-border);
-}
-
-@utility font-display {
-	font-family: var(--font-display);
-}
-
-@utility font-mono {
-	font-family: var(--font-mono);
+/* Third and last text colour. Primary is `text-base-content`,
+   secondary is `text-base-content/70`. Nothing else. */
+@utility text-muted {
+	color: var(--color-text-muted);
 }
 
 html,
@@ -101,31 +168,32 @@ body {
 	height: 100%;
 	width: 100%;
 	overflow-x: hidden;
-	background: var(--color-bg-primary);
+	background: var(--color-base-200);
 }
 
 body {
 	min-height: 100vh;
 	margin: 0;
+	color: var(--color-base-content);
 	background-attachment: fixed;
 	background-size: 100vw 100vh;
 	background-image:
-		/* Scanline effect */
+		/* Scanline */
 		repeating-linear-gradient(
 			0deg,
 			transparent,
 			transparent 2px,
-			rgba(0, 0, 0, 0.01) 2px,
-			rgba(0, 0, 0, 0.01) 4px
+			var(--scanline) 2px,
+			var(--scanline) 4px
 		),
-		/* Grid overlay */ linear-gradient(var(--color-grid) 1px, transparent 1px),
-		linear-gradient(90deg, var(--color-grid) 1px, transparent 1px),
-		/* Main gradient background */
+		/* 40px grid */ linear-gradient(var(--grid-line) 1px, transparent 1px),
+		linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+		/* Page gradient */
 		linear-gradient(
 				180deg,
-				var(--color-bg-primary) 0%,
-				var(--color-bg-secondary) 50%,
-				var(--color-bg-tertiary) 100%
+				var(--color-base-200) 0%,
+				var(--color-base-100) 50%,
+				var(--color-base-300) 100%
 			);
 	background-position:
 		0 0,
@@ -140,68 +208,57 @@ body {
 	transition: background 0.3s ease;
 }
 
-[data-custom-theme='dark'] body {
-	background-image:
-		/* Scanline effect */
-		repeating-linear-gradient(
-			0deg,
-			transparent,
-			transparent 2px,
-			rgba(0, 0, 0, 0.02) 2px,
-			rgba(0, 0, 0, 0.02) 4px
-		),
-		/* Grid overlay */ linear-gradient(var(--color-grid) 1px, transparent 1px),
-		linear-gradient(90deg, var(--color-grid) 1px, transparent 1px),
-		/* Main gradient background */
-		linear-gradient(
-				180deg,
-				var(--color-bg-primary) 0%,
-				var(--color-bg-secondary) 50%,
-				var(--color-bg-tertiary) 100%
-			);
-}
-
-a {
-	/*color: var(--color-theme-1);*/
-	/*text-decoration: none;*/
-}
-
-a:hover {
-	/*text-decoration: underline;*/
-}
-
 input,
 button {
 	font-size: inherit;
 	font-family: inherit;
 }
 
+@layer base {
+	/* One rule covers every interactive element in the app */
+	:where(
+		a[href],
+		button,
+		[role='button'],
+		[role='tab'],
+		input,
+		select,
+		textarea,
+		summary
+	):focus-visible {
+		outline: 2px solid var(--color-primary);
+		outline-offset: 2px;
+	}
+
+	/* daisyUI's .input wrapper draws the ring for the control it contains,
+	   so the inner control must not draw a second one. */
+	:where(.input, .select) > :where(input, select, textarea):focus-visible {
+		outline: none;
+	}
+}
+
 button:focus:not(:focus-visible) {
 	outline: none;
 }
 
-/* ========== Military Terminal Base Styles ========== */
-
-/* Custom selection styling */
 ::selection {
-	background: var(--color-accent);
-	color: #fff;
+	background: var(--color-primary);
+	color: var(--color-primary-content);
 }
 
-/* Scrollbar styling */
 ::-webkit-scrollbar {
 	width: 10px;
 	height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-	background: var(--color-bg-secondary);
-	border-left: 1px solid var(--color-border);
+	background: var(--color-base-100);
+	border-left: 1px solid var(--color-base-300);
 }
 
 ::-webkit-scrollbar-thumb {
-	background: var(--color-bg-tertiary);
-	border: 2px solid var(--color-bg-secondary);
+	background: var(--color-base-300);
+	border: 2px solid var(--color-base-100);
 	border-radius: 0;
 }
 
@@ -209,212 +266,57 @@ button:focus:not(:focus-visible) {
 	background: var(--color-text-muted);
 }
 
-/* Typography utilities */
-.font-mono {
-	font-family: var(--font-mono);
-}
+/* ========== Military terminal component layer ==========
+   These live in @layer components on purpose: Tailwind's utilities layer sits
+   after it, so a call site can override colour or spacing with a utility class
+   instead of an !important. */
 
-.font-display {
-	font-family: var(--font-display);
-}
-
-/* Military terminal container */
-.military-terminal {
-	position: relative;
-	background: var(--color-bg-secondary);
-	border: 1px solid var(--color-border);
-	box-shadow:
-		0 0 0 1px rgba(0, 0, 0, 0.1),
-		0 4px 12px rgba(0, 0, 0, 0.2),
-		inset 0 1px 0 rgba(255, 255, 255, 0.05);
-}
-
-.military-terminal::before {
-	content: '';
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	height: 2px;
-	background: linear-gradient(90deg, transparent 0%, var(--color-accent) 50%, transparent 100%);
-	opacity: 0.5;
-}
-
-/* Tactical button styling */
-.btn-tactical {
-	cursor: pointer;
-	position: relative;
-	background: var(--color-bg-tertiary);
-	border: 1px solid var(--color-border);
-	color: var(--color-text-primary);
-	font-family: var(--font-mono);
-	font-size: 0.75rem;
-	text-transform: uppercase;
-	letter-spacing: 0.05em;
-	transition: all 0.15s ease;
-	clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
-}
-
-.btn-tactical:hover {
-	background: var(--color-accent);
-	border-color: var(--color-accent);
-	box-shadow: 0 0 12px var(--color-accent-glow);
-}
-
-.btn-tactical:active {
-	transform: translateY(1px);
-}
-
-/* Status indicator pulse */
-@keyframes status-pulse {
-	0%,
-	100% {
-		opacity: 1;
+@layer components {
+	/* Notched tactical button — the signature control of the UI */
+	.btn-tactical {
+		cursor: pointer;
+		position: relative;
+		background: var(--tactical-face);
+		border: 1px solid var(--tactical-face);
+		color: var(--color-base-content);
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		transition: all 0.15s ease;
+		clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
 	}
-	50% {
-		opacity: 0.5;
+
+	.btn-tactical:hover {
+		background: var(--color-primary);
+		border-color: var(--color-primary);
+		color: var(--color-primary-content);
 	}
-}
 
-.status-online {
-	color: #4ade80;
-	animation: status-pulse 2s ease-in-out infinite;
-}
-
-.status-offline {
-	color: #ef4444;
-}
-
-/* Data display styling */
-.data-value {
-	font-family: var(--font-mono);
-	font-variant-numeric: tabular-nums;
-	letter-spacing: -0.02em;
-}
-
-/* Card panel styling */
-.panel-military {
-	background: var(--color-bg-secondary);
-	border: 1px solid var(--color-border);
-	position: relative;
-}
-
-.panel-military::after {
-	content: '';
-	position: absolute;
-	top: 4px;
-	left: 4px;
-	right: 4px;
-	bottom: 4px;
-	border: 1px solid var(--color-border);
-	pointer-events: none;
-}
-
-/* Corner accent decorations */
-.corner-accent {
-	position: relative;
-}
-
-.corner-accent::before,
-.corner-accent::after {
-	content: '';
-	position: absolute;
-	width: 12px;
-	height: 12px;
-	border-color: var(--color-accent);
-	border-style: solid;
-	pointer-events: none;
-}
-
-.corner-accent::before {
-	top: -1px;
-	left: -1px;
-	border-width: 2px 0 0 2px;
-}
-
-.corner-accent::after {
-	bottom: -1px;
-	right: -1px;
-	border-width: 0 2px 2px 0;
-}
-
-/* Header stripe effect */
-.header-stripe {
-	position: relative;
-	border-bottom: 2px solid var(--color-accent);
-}
-
-.header-stripe::after {
-	content: '';
-	position: absolute;
-	bottom: -2px;
-	left: 0;
-	width: 60px;
-	height: 2px;
-	background: var(--color-accent);
-	box-shadow: 0 0 8px var(--color-accent);
-}
-
-/* Table row hover effect with military theme */
-.table-military tbody tr {
-	transition: all 0.15s ease;
-	border-left: 2px solid transparent;
-}
-
-.table-military tbody tr:hover {
-	background: rgba(255, 107, 53, 0.05);
-	border-left-color: var(--color-accent);
-}
-
-/* Badge/tag styling */
-.tag-military {
-	display: inline-flex;
-	align-items: center;
-	padding: 2px 8px;
-	font-family: var(--font-mono);
-	font-size: 0.65rem;
-	text-transform: uppercase;
-	letter-spacing: 0.05em;
-	background: var(--color-bg-tertiary);
-	border: 1px solid var(--color-border);
-	color: var(--color-text-secondary);
-}
-
-/* Input field with military styling */
-.input-tactical {
-	background: var(--color-bg-primary);
-	border: 1px solid var(--color-border);
-	color: var(--color-text-primary);
-	font-family: var(--font-mono);
-	transition: all 0.15s ease;
-}
-
-.input-tactical:focus {
-	border-color: var(--color-accent);
-	box-shadow: 0 0 0 2px var(--color-accent-glow);
-	outline: none;
-}
-
-/* Glitch text effect (subtle) */
-@keyframes glitch {
-	0%,
-	100% {
-		transform: translate(0);
+	.btn-tactical:active {
+		transform: translateY(1px);
 	}
-	20% {
-		transform: translate(-1px, 1px);
-	}
-	40% {
-		transform: translate(-1px, -1px);
-	}
-	60% {
-		transform: translate(1px, 1px);
-	}
-	80% {
-		transform: translate(1px, -1px);
-	}
-}
 
-.glitch-hover:hover {
-	animation: glitch 0.3s ease;
+	/* clip-path would crop an outline, so this one focus ring has to be inset */
+	.btn-tactical:focus-visible {
+		outline: none;
+		box-shadow: inset 0 0 0 2px var(--color-primary);
+	}
+
+	/* Accent stripe under the app header */
+	.header-stripe {
+		position: relative;
+		border-bottom: 2px solid var(--color-primary);
+	}
+
+	.header-stripe::after {
+		content: '';
+		position: absolute;
+		bottom: -2px;
+		left: 0;
+		width: 60px;
+		height: 2px;
+		background: var(--color-primary);
+		box-shadow: 0 0 8px var(--color-primary);
+	}
 }

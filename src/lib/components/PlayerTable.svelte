@@ -61,7 +61,7 @@
 
 {#if data.length === 0}
 	<div class="alert alert-info">
-		<Info class="h-6 w-6 shrink-0 stroke-current" />
+		<Info class="size-6 shrink-0 stroke-current" />
 		<span>
 			<TranslatedText key="app.player.noPlayersFound" />
 			{#if searchQuery}
@@ -71,13 +71,13 @@
 	</div>
 {:else}
 	<div class="player-table-wrapper w-full">
-		<table class="table-pin-rows table-zebra bg-mil-primary mb-0 table border-0">
+		<table class="table-pin-rows table-zebra bg-base-200 mb-0 table border-0">
 			<thead>
-				<tr class="bg-mil-secondary">
+				<tr class="bg-base-100">
 					{#each playerColumns as column (column.key)}
 						{#if visibleColumns[column.key]}
 							<th
-								class="border-mil text-mil-primary sticky top-0 z-10 h-12 px-1 py-1 align-middle {getStickyClass(
+								class="border-base-300 text-base-content sticky top-0 z-10 px-1 py-1 align-middle {getStickyClass(
 									column.key
 								)}"
 								class:sticky-row-number-header={column.key === 'rowNumber'}
@@ -102,9 +102,9 @@
 												/>{:else}{column.label}{/if}
 										</span>
 										{#if sortColumn !== column.key}
-											<ArrowDown class="h-4 w-4 opacity-30" />
+											<ArrowDown class="text-muted size-4" />
 										{:else}
-											<ArrowDown class="text-primary h-4 w-4" />
+											<ArrowDown class="text-primary size-4" />
 										{/if}
 									</button>
 								{/if}
@@ -120,16 +120,16 @@
 						item.username.toLowerCase() === highlightedUsername.toLowerCase()}
 					<tr
 						id={`player-row-${item.id}`}
-						class="border-mil min-h-12 border-b {isHighlighted
+						class="border-base-300 border-b {isHighlighted
 							? 'highlighted-row bg-primary/20 font-semibold'
 							: 'hover hover:bg-base-300'}"
 					>
 						{#each playerColumns as column (column.key)}
 							{#if visibleColumns[column.key]}
 								<td
-									class="border-mil px-4 py-2 {getStickyClass(
+									class="border-base-300 px-4 py-2 {getStickyClass(
 										column.key
-									)} text-mil-primary {column.alignment === 'center'
+									)} text-base-content {column.alignment === 'center'
 										? 'text-center align-middle'
 										: column.alignment === 'right'
 											? 'text-right align-middle'
@@ -143,7 +143,7 @@
 												onclick={() => onShare?.(item)}
 												title={m['app.ariaLabel.sharePlayer']()}
 											>
-												<Share class="h-4 w-4" />
+												<Share class="size-4" />
 											</button>
 											{#if onFindNeighbors}
 												<button
@@ -154,7 +154,7 @@
 													title={m['app.player.neighbors.buttonTitle']()}
 													aria-label={m['app.ariaLabel.findNeighbors']()}
 												>
-													<Users class="h-4 w-4" />
+													<Users class="size-4" />
 												</button>
 											{/if}
 										</div>

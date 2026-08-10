@@ -648,13 +648,18 @@
 	class={`flex flex-col items-center ${layoutMode === 'tableOnly' ? 'md:min-h-0 md:flex-1' : ''}`}
 >
 	<div
-		class={`container flex flex-col px-4 py-2 md:py-3 ${layoutMode === 'tableOnly' ? tableOnlyLayoutClasses : ''}`}
+		class={`container flex flex-col px-4 py-3 md:py-4 ${layoutMode === 'tableOnly' ? tableOnlyLayoutClasses : ''}`}
 	>
-		<!-- View Tabs -->
-		<div role="tablist" class="tabs tabs-border border-mil mb-2 md:mb-3">
+		<!--
+			Page rhythm: 16px (mb-4) between blocks, ≤12px inside a block, so the
+			gap below a group always beats the gap within it (p.83).
+			The dim only applies to the inactive tab — a utility class would
+			otherwise outrank daisyUI's .tab-active colour (p.39).
+		-->
+		<div role="tablist" class="tabs tabs-border border-base-300 mb-4">
 			<button
 				role="tab"
-				class="tab md:tabs-sm text-mil-secondary"
+				class="tab md:tabs-sm {currentView === 'servers' ? '' : 'text-base-content/70'}"
 				class:tab-active={currentView === 'servers'}
 				onclick={() => handleViewChange('servers')}
 			>
@@ -662,7 +667,7 @@
 			</button>
 			<button
 				role="tab"
-				class="tab md:tabs-sm text-mil-secondary"
+				class="tab md:tabs-sm {currentView === 'players' ? '' : 'text-base-content/70'}"
 				class:tab-active={currentView === 'players'}
 				onclick={() => handleViewChange('players')}
 			>
@@ -802,7 +807,6 @@
 	<!-- Server share modal -->
 	<ServerShareModal
 		server={serverShareData}
-		{maps}
 		show={serverShareShow}
 		onClose={handleServerShareClose}
 		queryTimestamp={serverShareTimestamp}

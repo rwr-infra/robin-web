@@ -78,8 +78,12 @@
 	}
 </script>
 
+<!--
+	Raised by background + elevation instead of a border (p.206). Internal gap
+	and padding stay at 12px so the 16px mb-4 below reads as the larger gap (p.83).
+-->
 <div
-	class="border-mil bg-mil-secondary mb-4 flex flex-col items-stretch gap-4 rounded-lg border p-4 sm:flex-row sm:items-center md:mb-2"
+	class="bg-base-100 shadow-e1 mb-4 flex flex-col items-stretch gap-3 rounded p-3 sm:flex-row sm:items-center"
 >
 	<!-- Left side: Player DB selector (only in players view) + Search input -->
 	<div class="flex flex-1 flex-col gap-2 sm:flex-row sm:items-center">
@@ -108,8 +112,8 @@
 		>
 			{#if isRefreshing}
 				<span
-					class="h-4 w-4 animate-spin"
-					style="border: 2px solid currentColor; border-top-color: transparent; border-radius: 50%;"
+					class="size-4 shrink-0 animate-spin rounded-full border-2 border-current border-t-transparent"
+					aria-hidden="true"
 				></span>
 			{/if}
 			<TranslatedText key="app.button.refresh" />

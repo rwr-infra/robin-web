@@ -207,7 +207,7 @@ describe('ControlBar Component', () => {
 			});
 
 			const wrapper = container.querySelector('.mb-4');
-			expect(wrapper).toHaveClass('flex', 'flex-col', 'items-stretch', 'gap-4');
+			expect(wrapper).toHaveClass('flex', 'flex-col', 'items-stretch', 'gap-3');
 		});
 	});
 

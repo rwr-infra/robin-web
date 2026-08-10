@@ -1,14 +1,23 @@
 /**
+ * Default search highlight, for matches sitting directly on a table cell or
+ * other neutral surface. A translucent `warning` tint plus weight — two channels,
+ * not colour alone (Refactoring UI p.146) — and no text colour of its own, so it
+ * inherits whatever the surrounding surface already uses. That is what keeps it
+ * correct on both themes without a `dark:` override (p.198).
+ */
+const HIGHLIGHT_CLASS = 'bg-warning/25 rounded px-1 font-semibold';
+
+/**
  * Highlights matching text in a string with HTML markup
  * @param text The text to search within
  * @param query The search query to highlight
- * @param className Optional CSS class name to apply to the highlight (default: classic yellow highlight)
+ * @param className Optional CSS class name to apply to the highlight
  * @returns String with HTML markup for highlighting
  */
 export function highlightMatch(
 	text: string,
 	query: string,
-	className: string = 'bg-yellow-200 text-gray-900 dark:bg-yellow-500 dark:text-gray-900 rounded px-0.5'
+	className: string = HIGHLIGHT_CLASS
 ): string {
 	const escapedText = escapeHtml(text);
 	if (!query || !text) return escapedText;
@@ -35,10 +44,14 @@ export function highlightInBadge(text: string, query: string): string {
 	const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 	const regex = new RegExp(`(${escapedQuery})`, 'gi');
 
-	// Use yellow highlight that works well on neutral badge backgrounds
+	// Deliberately colour-free. A badge's own background is unknown at this point
+	// — it may be a soft tint or a solid `warning`/`error` fill — so a warning
+	// tint here would vanish on some of them and a fixed text colour would fight
+	// the badge's `*-content` pair. Weight plus an underline read on every badge,
+	// and carry no padding that would break the badge's rhythm.
 	return escapedText.replace(
 		regex,
-		`<span class="bg-yellow-300 text-gray-900 dark:bg-yellow-400 dark:text-gray-900 rounded">$1</span>`
+		`<span class="font-bold underline decoration-2 underline-offset-2">$1</span>`
 	);
 }
 
@@ -52,8 +65,8 @@ export function renderPlayerListWithHighlight(players: string[], query: string =
 	if (players.length === 0) return '-';
 
 	const playerBadges = players.map((player) => {
-		const displayText = query ? highlightInBadge(player, query) : escapeHtml(player);
-		return `<span class="badge gap-0 badge-neutral text-xs whitespace-nowrap flex-shrink-0">${displayText}</span>`;
+		const displayText = highlightInBadge(player, query);
+		return `<span class="badge badge-sm badge-soft badge-neutral gap-0 whitespace-nowrap shrink-0">${displayText}</span>`;
 	});
 
 	return `<div class="flex flex-wrap gap-1 items-start w-full">${playerBadges.join('')}</div>`;

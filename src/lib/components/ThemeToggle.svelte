@@ -40,11 +40,11 @@
 >
 	<div class="relative">
 		{#if currentTheme === 'light'}
-			<Sun class="h-5 w-5" />
+			<Sun class="size-5" />
 		{:else if currentTheme === 'dark'}
-			<Moon class="h-5 w-5" />
+			<Moon class="size-5" />
 		{:else}
-			<Palette class="h-5 w-5" />
+			<Palette class="size-5" />
 		{/if}
 	</div>
 </button>

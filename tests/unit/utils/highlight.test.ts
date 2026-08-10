@@ -17,9 +17,7 @@ describe('highlightMatch', () => {
 
 	test('should highlight simple match', () => {
 		const result = highlightMatch('Hello World', 'World');
-		expect(result).toContain(
-			'<mark class="bg-yellow-200 text-gray-900 dark:bg-yellow-500 dark:text-gray-900 rounded px-0.5">World</mark>'
-		);
+		expect(result).toContain('<mark class="bg-warning/25 rounded px-1 font-semibold">World</mark>');
 	});
 
 	test('should be case insensitive', () => {
@@ -109,10 +107,10 @@ describe('highlightInBadge', () => {
 		expect(highlightInBadge('', 'test')).toBe('');
 	});
 
-	test('should highlight simple match with bg-yellow-300 class', () => {
+	test('should mark the match with weight and an underline', () => {
 		const result = highlightInBadge('Player1', 'Player');
 		expect(result).toContain(
-			'<span class="bg-yellow-300 text-gray-900 dark:bg-yellow-400 dark:text-gray-900 rounded">Player</span>'
+			'<span class="font-bold underline decoration-2 underline-offset-2">Player</span>'
 		);
 	});
 
@@ -133,7 +131,7 @@ describe('highlightInBadge', () => {
 
 	test('should use inline styling approach suitable for badges', () => {
 		const result = highlightInBadge('Player1', 'Player');
-		expect(result).toContain('bg-yellow-300');
+		expect(result).toContain('underline');
 	});
 
 	test('should escape html when query is empty', () => {
@@ -162,9 +160,9 @@ describe('renderPlayerListWithHighlight', () => {
 	test('should render single player badge with highlighting', () => {
 		const result = renderPlayerListWithHighlight(['Player1'], 'Player');
 		expect(result).toContain(
-			'<span class="bg-yellow-300 text-gray-900 dark:bg-yellow-400 dark:text-gray-900 rounded">Player</span>'
+			'<span class="font-bold underline decoration-2 underline-offset-2">Player</span>'
 		);
-		expect(result).toContain('bg-yellow-300');
+		expect(result).toContain('underline');
 	});
 
 	test('should render multiple players with badges', () => {
@@ -177,7 +175,7 @@ describe('renderPlayerListWithHighlight', () => {
 	test('should highlight matching players', () => {
 		const result = renderPlayerListWithHighlight(['Alpha', 'Bravo', 'Charlie'], 'Bravo');
 		expect(result).toContain(
-			'<span class="bg-yellow-300 text-gray-900 dark:bg-yellow-400 dark:text-gray-900 rounded">Bravo</span>'
+			'<span class="font-bold underline decoration-2 underline-offset-2">Bravo</span>'
 		);
 	});
 
@@ -188,7 +186,9 @@ describe('renderPlayerListWithHighlight', () => {
 
 	test('should include badge styling classes', () => {
 		const result = renderPlayerListWithHighlight(['Player1']);
-		expect(result).toContain('badge gap-0 badge-neutral text-xs whitespace-nowrap flex-shrink-0');
+		expect(result).toContain(
+			'badge badge-sm badge-soft badge-neutral gap-0 whitespace-nowrap shrink-0'
+		);
 	});
 
 	test('should highlight partial matches', () => {
@@ -258,14 +258,14 @@ describe('Edge Cases and Integration', () => {
 	test('should work with renderPlayerListWithHighlight and complex queries', () => {
 		const players = ['Player-One', 'Player_Two', 'Player.Three'];
 		const result = renderPlayerListWithHighlight(players, 'Player');
-		const matches = result.match(/bg-yellow-300/g);
+		const matches = result.match(/underline-offset-2/g);
 		expect(matches?.length).toBe(3);
 	});
 
 	test('should handle player names with numbers', () => {
 		const result = renderPlayerListWithHighlight(['Player123', 'Player456'], '123');
 		expect(result).toContain(
-			'<div class="flex flex-wrap gap-1 items-start w-full"><span class="badge gap-0 badge-neutral text-xs whitespace-nowrap flex-shrink-0">Player<span class="bg-yellow-300 text-gray-900 dark:bg-yellow-400 dark:text-gray-900 rounded">123</span></span><span class="badge gap-0 badge-neutral text-xs whitespace-nowrap flex-shrink-0">Player456</span></div>'
+			'<div class="flex flex-wrap gap-1 items-start w-full"><span class="badge badge-sm badge-soft badge-neutral gap-0 whitespace-nowrap shrink-0">Player<span class="font-bold underline decoration-2 underline-offset-2">123</span></span><span class="badge badge-sm badge-soft badge-neutral gap-0 whitespace-nowrap shrink-0">Player456</span></div>'
 		);
 	});
 

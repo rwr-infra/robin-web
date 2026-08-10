@@ -89,7 +89,6 @@
 			"title": "Map Order: {filters}",
 			"allMaps": "All Maps",
 			"selectFilters": "Select Quick Filters to View Map Order",
-			"chooseCategories": "Choose your preferred map categories in Quick Filters to display the corresponding server list",
 			"noMaps": "No maps found for selected filters.",
 			"servers": "{count} servers",
 			"bots": "{count} Bots"
@@ -123,24 +122,20 @@
 		},
 		"guide": {
 			"searchInput": {
-				"title": "Search Input",
-				"description": "Use this search box to find servers, maps, players, modes, countries, and more. Results update in real-time as you type!"
+				"title": "Search Input"
 			},
 			"columnVisibility": {
 				"title": "Column Visibility",
 				"description": "Customize which columns appear in your table. Show only the data that matters to you!"
 			},
 			"viewModeToggle": {
-				"title": "View Mode Toggle",
-				"description": "Switch between list and map view modes to find servers in your preferred way. List view provides detailed information in a table format, while map view offers a geographical perspective."
+				"title": "View Mode Toggle"
 			},
 			"helpGuide": {
-				"title": "Help Guide",
-				"description": "Click this button anytime to replay the help guide and refresh your memory about the available features."
+				"title": "Help Guide"
 			},
 			"quickFilters": {
-				"title": "Quick Filters",
-				"description": "Apply filters to quickly find servers matching specific criteria. You can use multiple filters together and combine them with the search box for powerful queries!"
+				"title": "Quick Filters"
 			}
 		},
 		"autoRefresh": {

@@ -16,7 +16,7 @@
 
 {#if showConfetti}
 	<div
-		class="confetti-container pointer-events-none fixed top-20 left-1/2 z-[60]"
+		class="confetti-container pointer-events-none fixed top-16 left-1/2 z-[60]"
 		use:confetti={{
 			particleCount: 50,
 			force: 0.5,

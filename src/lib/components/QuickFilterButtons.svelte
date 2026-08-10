@@ -51,7 +51,7 @@
 				class:font-bold={activeFilters.includes(filter.id)}
 				class:border-2={activeFilters.includes(filter.id)}
 				class:border-primary={activeFilters.includes(filter.id)}
-				class:shadow-xs={activeFilters.includes(filter.id)}
+				class:shadow-e1={activeFilters.includes(filter.id)}
 				disabled={isLoading}
 				onclick={() => handleQuickFilter(filter.id)}
 				type="button"

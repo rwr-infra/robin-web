@@ -65,7 +65,10 @@ function buildCDNForSvelteKit() {
 		// For static builds, we need to replace %VITE_*% placeholders directly in app.html
 		console.log('📝 Step 0: Pre-processing app.html for environment variables...');
 		const appHtmlPath = 'src/app.html';
-		let appHtmlContent = readFileSync(appHtmlPath, 'utf-8');
+		// Captured before any substitution, so the restore below puts the source
+		// file back exactly as the working tree had it.
+		const originalAppHtml = readFileSync(appHtmlPath, 'utf-8');
+		let appHtmlContent = originalAppHtml;
 
 		// Replace __VITE_SITE_URL__ and __VITE_CDN_IMAGE_URL__ placeholders
 		const siteUrl = process.env.VITE_SITE_URL || 'https://robin.kreedzt.com';
@@ -104,9 +107,6 @@ function buildCDNForSvelteKit() {
 		console.log(`  ✓ Replaced __VITE_CDN_IMAGE_URL__ with ${cdnImageUrl}`);
 		console.log('✅ app.html pre-processed\n');
 
-		// Backup original app.html content
-		const appHtmlBackup = readFileSync(appHtmlPath, 'utf-8');
-
 		try {
 			// Step 1: 标准构建
 			console.log('🏗️  Step 1: Building with standard SvelteKit process...');
@@ -126,7 +126,7 @@ function buildCDNForSvelteKit() {
 			console.log('✅ Standard build completed\n');
 		} finally {
 			// Restore original app.html after build (without git dependency)
-			writeFileSync(appHtmlPath, appHtmlBackup);
+			writeFileSync(appHtmlPath, originalAppHtml);
 			console.log('✅ Restored original app.html\n');
 		}
 

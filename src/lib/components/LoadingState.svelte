@@ -25,7 +25,7 @@
 {#if refreshing}
 	<!-- Refreshing state - lighter indicator -->
 	<div
-		class="loading-container flex min-h-[200px] w-full flex-col items-center justify-center rounded-lg p-6"
+		class="loading-container bg-base-100 shadow-e2 flex min-h-48 w-full flex-col items-center justify-center rounded p-6"
 		role="status"
 		aria-label="Refreshing data"
 		aria-live="polite"
@@ -38,7 +38,7 @@
 {:else}
 	<!-- Initial loading state -->
 	<div
-		class="loading-container flex min-h-[400px] w-full flex-col items-center justify-center rounded-lg p-6"
+		class="loading-container bg-base-100 shadow-e2 flex min-h-96 w-full flex-col items-center justify-center rounded p-6"
 		role="status"
 		aria-label={type === 'servers' ? 'Loading server data' : 'Loading player data'}
 		aria-live="polite"
@@ -71,7 +71,7 @@
 			<div class="progress progress-primary h-2 w-full">
 				<div class="progress-bar bg-primary h-2 w-[60%] animate-pulse"></div>
 			</div>
-			<p class="text-base-content/50 mt-2 text-center text-xs">
+			<p class="text-muted mt-2 text-center text-xs">
 				<TranslatedText key={messages[type].progress} />
 			</p>
 		</div>
@@ -79,15 +79,6 @@
 {/if}
 
 <style>
-	/* Enhanced loading animations */
-	.loading-container {
-		background: linear-gradient(135deg, hsl(var(--b1)) 0%, hsl(var(--b2)) 100%);
-		border: 1px solid hsl(var(--bc) / 0.1);
-		box-shadow:
-			0 4px 6px -1px rgba(0, 0, 0, 0.1),
-			0 2px 4px -1px rgba(0, 0, 0, 0.06);
-	}
-
 	/* Custom bounce animation for loading dots */
 	@keyframes bounce-custom {
 		0%,

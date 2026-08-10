@@ -1,6 +1,7 @@
 <script lang="ts">
+	import { tick } from 'svelte';
+	import ModalShell from '$lib/components/ModalShell.svelte';
 	import PlayerShareCard from '$lib/components/PlayerShareCard.svelte';
-	import PlayerShareCardMobile from '$lib/components/PlayerShareCardMobile.svelte';
 	import TranslatedText from '$lib/components/TranslatedText.svelte';
 	import { playerShareService } from '$lib/services/player-share';
 	import { analytics } from '$lib/utils/analytics';
@@ -183,162 +184,113 @@
 		}
 	}
 
+	/**
+	 * The capture target is only rendered in the non-error branch, so the
+	 * bindings are null while an error is shown and handleDownload would return
+	 * early. Clear the error and let the DOM flush first.
+	 */
+	async function handleRetry() {
+		errorMessage = undefined;
+		await tick();
+		await handleDownload();
+	}
+
 	// Check if clipboard is supported
 	const canCopy = $derived(playerShareService.canCopyToClipboard());
 </script>
 
 {#if player}
-	{#if show}
-		<dialog class="modal modal-open" onclose={closeModal}>
-			<div
-				class="modal-box max-w-4xl p-0"
-				role="dialog"
-				aria-modal="true"
-				tabindex="-1"
-				onclick={(e) => e.stopPropagation()}
-				onkeydown={(e) => {
-					if (e.key === 'Escape') closeModal();
-				}}
-			>
-				<!-- Header -->
-				<div class="border-base-300 flex items-center justify-between border-b p-4">
-					<div>
-						<h3 class="text-lg font-semibold">
-							<TranslatedText key="app.player.shareModal.title" />
-						</h3>
-						<p class="text-base-content/60 text-sm">{player.username}</p>
-					</div>
-					<button
-						class="btn btn-circle btn-ghost btn-sm"
-						onclick={closeModal}
-						type="button"
-						aria-label={m['app.map.close']()}
-					>
-						✕
-					</button>
-				</div>
-
-				<!-- Content -->
-				<div class="bg-base-200/30 flex items-center justify-center p-6">
-					<!-- Error state -->
-					{#if errorMessage}
-						<div class="flex flex-col items-center gap-4">
-							<CircleAlert class="text-error h-16 w-16" />
-							<div class="text-center">
-								<p class="text-base-content/70 mb-2 text-sm">
-									<TranslatedText key="app.player.shareModal.error" />
-								</p>
-								<p class="text-error text-sm">{errorMessage}</p>
-							</div>
-							<button class="btn btn-outline btn-sm" onclick={handleDownload} type="button">
-								<TranslatedText key="app.player.shareModal.retry" />
-							</button>
-						</div>
-					{:else if isLoadingRankings}
-						<!-- Loading rankings state -->
-						<div class="flex flex-col items-center gap-4">
-							<LoaderCircle class="text-primary h-16 w-16 animate-spin" />
-							<p class="text-base-content/70 text-center text-sm">
-								<TranslatedText key="app.player.shareModal.loadingRankings" />
-							</p>
-						</div>
-					{:else}
-						<!-- Share Card Preview -->
-						<div class="flex w-full justify-center overflow-auto">
-							<div bind:this={cardElement} class="bg-base-200 inline-block rounded-xl p-3">
-								{#if isMobile}
-									<PlayerShareCardMobile
-										{player}
-										queryTimestamp={displayTimestamp}
-										{rankings}
-										{customTheme}
-										{showWatermark}
-										{watermarkText}
-										{customSections}
-										{hiddenFields}
-									/>
-								{:else}
-									<PlayerShareCard
-										{player}
-										queryTimestamp={displayTimestamp}
-										{rankings}
-										{customTheme}
-										{showWatermark}
-										{watermarkText}
-										{customSections}
-										{hiddenFields}
-									/>
-								{/if}
-							</div>
-						</div>
-					{/if}
-				</div>
-
-				<!-- Footer with action buttons -->
-				<div class="border-base-300 border-t p-4">
-					<div class="flex flex-wrap items-center justify-center gap-3">
-						<!-- Download button -->
-						<button
-							class="btn btn-primary min-w-[140px] flex-1"
-							onclick={handleDownload}
-							disabled={isDownloading || isCopying || isLoadingRankings}
-							type="button"
-						>
-							{#if isDownloading}
-								<LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
-								<TranslatedText key="app.player.shareModal.downloading" />
-							{:else}
-								<Download class="mr-2 h-4 w-4" />
-								<TranslatedText key="app.player.shareModal.download" />
-							{/if}
-						</button>
-
-						<!-- Copy button (only if supported) -->
-						{#if canCopy}
-							<button
-								class="btn btn-secondary min-w-[140px] flex-1"
-								onclick={handleCopy}
-								disabled={isCopying || isDownloading || isLoadingRankings}
-								type="button"
-							>
-								{#if isCopying}
-									<LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
-									<TranslatedText key="app.player.shareModal.copying" />
-								{:else if copySuccess}
-									<Check class="mr-2 h-4 w-4" />
-									<TranslatedText key="app.player.shareModal.copied" />
-								{:else}
-									<Copy class="mr-2 h-4 w-4" />
-									<TranslatedText key="app.player.shareModal.copy" />
-								{/if}
-							</button>
-						{/if}
-
-						<!-- Edit button placeholder for future image editor -->
-						<!-- Hidden for now, but structure is in place
-						{#if onEditStart}
-							<button
-								class="btn btn-outline"
-								onclick={handleEditStart}
-								type="button"
-							>
-								<TranslatedText key="app.player.shareModal.edit" />
-							</button>
-						{/if}
-						-->
-					</div>
-
-					<!-- Help text -->
-					<p class="text-base-content/50 mt-3 text-center text-xs">
-						<TranslatedText key="app.player.shareModal.help" />
+	<ModalShell
+		{show}
+		title={m['app.player.shareModal.title']()}
+		subtitle={player.username}
+		dismissible
+		onClose={closeModal}
+	>
+		{#if errorMessage}
+			<div class="flex max-w-[65ch] flex-col items-center gap-4 text-center">
+				<CircleAlert class="text-error size-8" />
+				<div>
+					<p class="text-base-content/70 mb-2 text-sm">
+						<TranslatedText key="app.player.shareModal.error" />
 					</p>
+					<p class="text-error text-sm">{errorMessage}</p>
+				</div>
+				<button class="btn btn-outline btn-sm" onclick={handleRetry} type="button">
+					<TranslatedText key="app.player.shareModal.retry" />
+				</button>
+			</div>
+		{:else if isLoadingRankings}
+			<div class="flex max-w-[65ch] flex-col items-center gap-4">
+				<LoaderCircle class="text-primary size-8 animate-spin" />
+				<p class="text-base-content/70 text-center text-sm">
+					<TranslatedText key="app.player.shareModal.loadingRankings" />
+				</p>
+			</div>
+		{:else}
+			<!-- Share Card Preview -->
+			<div class="flex w-full justify-center overflow-auto">
+				<div bind:this={cardElement} class="bg-base-200 inline-block rounded p-3">
+					<PlayerShareCard
+						{player}
+						variant={isMobile ? 'mobile' : 'desktop'}
+						queryTimestamp={displayTimestamp}
+						{rankings}
+						{customTheme}
+						{showWatermark}
+						{watermarkText}
+						{customSections}
+						{hiddenFields}
+					/>
 				</div>
 			</div>
+		{/if}
 
-			<!-- Backdrop -->
-			<form method="dialog" class="modal-backdrop">
-				<button>close</button>
-			</form>
-		</dialog>
-	{/if}
+		{#snippet footer()}
+			<!--
+				One primary action, one secondary, help text as tertiary — an
+				importance pyramid rather than two equal-weight buttons (p.243).
+			-->
+			<div class="flex flex-wrap items-center justify-center gap-3">
+				<button
+					class="btn btn-primary min-w-32 flex-1"
+					onclick={handleDownload}
+					disabled={isDownloading || isCopying || isLoadingRankings}
+					type="button"
+				>
+					{#if isDownloading}
+						<LoaderCircle class="mr-2 size-4 animate-spin" />
+						<TranslatedText key="app.player.shareModal.downloading" />
+					{:else}
+						<Download class="mr-2 size-4" />
+						<TranslatedText key="app.player.shareModal.download" />
+					{/if}
+				</button>
+
+				{#if canCopy}
+					<button
+						class="btn btn-outline min-w-32 flex-1"
+						onclick={handleCopy}
+						disabled={isCopying || isDownloading || isLoadingRankings}
+						type="button"
+					>
+						{#if isCopying}
+							<LoaderCircle class="mr-2 size-4 animate-spin" />
+							<TranslatedText key="app.player.shareModal.copying" />
+						{:else if copySuccess}
+							<Check class="mr-2 size-4" />
+							<TranslatedText key="app.player.shareModal.copied" />
+						{:else}
+							<Copy class="mr-2 size-4" />
+							<TranslatedText key="app.player.shareModal.copy" />
+						{/if}
+					</button>
+				{/if}
+			</div>
+
+			<p class="text-muted mx-auto mt-3 max-w-[65ch] text-center text-xs">
+				<TranslatedText key="app.player.shareModal.help" />
+			</p>
+		{/snippet}
+	</ModalShell>
 {/if}

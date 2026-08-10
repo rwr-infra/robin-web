@@ -71,7 +71,7 @@
 			{#if isLoading}
 				<!-- Loading indicator -->
 				<div class="flex items-center gap-3">
-					<LoaderCircle class="text-primary h-5 w-5 animate-spin" />
+					<LoaderCircle class="text-primary size-5 animate-spin" />
 					<span class="text-base-content/70 text-sm">
 						<TranslatedText key={loadingTextKey} />
 					</span>
@@ -87,7 +87,7 @@
 		<!-- Final loading state -->
 		<div class="flex w-full items-center justify-center py-4" role="status">
 			<div class="flex items-center gap-3">
-				<LoaderCircle class="text-primary h-5 w-5 animate-spin" />
+				<LoaderCircle class="text-primary size-5 animate-spin" />
 				<span class="text-base-content/70 text-sm">
 					<TranslatedText key={loadingTextKey} />
 				</span>
@@ -96,7 +96,7 @@
 	{:else}
 		<!-- End of content indicator -->
 		<div class="w-full py-2 text-center" role="status">
-			<div class="text-base-content/50 text-sm">
+			<div class="text-muted text-sm">
 				<TranslatedText key="app.mobile.endOfContent" />
 			</div>
 		</div>
