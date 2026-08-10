@@ -1,11 +1,11 @@
 /**
- * Default search highlight. A translucent `warning` tint over whatever surface
- * the match sits on, with the surface's own text colour kept intact — the
- * flipped-contrast pattern (Refactoring UI p.198), which reads correctly on both
- * themes without a `dark:` override. `font-semibold` is the second channel, so
- * the highlight does not depend on colour alone (p.146).
+ * Default search highlight, for matches sitting directly on a table cell or
+ * other neutral surface. A translucent `warning` tint plus weight — two channels,
+ * not colour alone (Refactoring UI p.146) — and no text colour of its own, so it
+ * inherits whatever the surrounding surface already uses. That is what keeps it
+ * correct on both themes without a `dark:` override (p.198).
  */
-const HIGHLIGHT_CLASS = 'bg-warning/25 text-base-content rounded px-1 font-semibold';
+const HIGHLIGHT_CLASS = 'bg-warning/25 rounded px-1 font-semibold';
 
 /**
  * Highlights matching text in a string with HTML markup
@@ -44,10 +44,15 @@ export function highlightInBadge(text: string, query: string): string {
 	const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 	const regex = new RegExp(`(${escapedQuery})`, 'gi');
 
-	// Same tint as HIGHLIGHT_CLASS but with no padding — inside a badge the
-	// extra horizontal space breaks the badge's own rhythm. Text colour is
-	// inherited from the badge so contrast stays correct on both themes.
-	return escapedText.replace(regex, `<span class="bg-warning/30 rounded font-semibold">$1</span>`);
+	// Deliberately colour-free. A badge's own background is unknown at this point
+	// — it may be a soft tint or a solid `warning`/`error` fill — so a warning
+	// tint here would vanish on some of them and a fixed text colour would fight
+	// the badge's `*-content` pair. Weight plus an underline read on every badge,
+	// and carry no padding that would break the badge's rhythm.
+	return escapedText.replace(
+		regex,
+		`<span class="font-bold underline decoration-2 underline-offset-2">$1</span>`
+	);
 }
 
 /**
@@ -60,7 +65,7 @@ export function renderPlayerListWithHighlight(players: string[], query: string =
 	if (players.length === 0) return '-';
 
 	const playerBadges = players.map((player) => {
-		const displayText = query ? highlightInBadge(player, query) : escapeHtml(player);
+		const displayText = highlightInBadge(player, query);
 		return `<span class="badge badge-sm badge-soft badge-neutral gap-0 whitespace-nowrap shrink-0">${displayText}</span>`;
 	});
 

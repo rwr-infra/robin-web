@@ -17,9 +17,7 @@ describe('highlightMatch', () => {
 
 	test('should highlight simple match', () => {
 		const result = highlightMatch('Hello World', 'World');
-		expect(result).toContain(
-			'<mark class="bg-warning/25 text-base-content rounded px-1 font-semibold">World</mark>'
-		);
+		expect(result).toContain('<mark class="bg-warning/25 rounded px-1 font-semibold">World</mark>');
 	});
 
 	test('should be case insensitive', () => {
@@ -109,9 +107,11 @@ describe('highlightInBadge', () => {
 		expect(highlightInBadge('', 'test')).toBe('');
 	});
 
-	test('should highlight simple match with the warning tint', () => {
+	test('should mark the match with weight and an underline', () => {
 		const result = highlightInBadge('Player1', 'Player');
-		expect(result).toContain('<span class="bg-warning/30 rounded font-semibold">Player</span>');
+		expect(result).toContain(
+			'<span class="font-bold underline decoration-2 underline-offset-2">Player</span>'
+		);
 	});
 
 	test('should be case insensitive', () => {
@@ -131,7 +131,7 @@ describe('highlightInBadge', () => {
 
 	test('should use inline styling approach suitable for badges', () => {
 		const result = highlightInBadge('Player1', 'Player');
-		expect(result).toContain('bg-warning/30');
+		expect(result).toContain('underline');
 	});
 
 	test('should escape html when query is empty', () => {
@@ -159,8 +159,10 @@ describe('renderPlayerListWithHighlight', () => {
 
 	test('should render single player badge with highlighting', () => {
 		const result = renderPlayerListWithHighlight(['Player1'], 'Player');
-		expect(result).toContain('<span class="bg-warning/30 rounded font-semibold">Player</span>');
-		expect(result).toContain('bg-warning/30');
+		expect(result).toContain(
+			'<span class="font-bold underline decoration-2 underline-offset-2">Player</span>'
+		);
+		expect(result).toContain('underline');
 	});
 
 	test('should render multiple players with badges', () => {
@@ -172,7 +174,9 @@ describe('renderPlayerListWithHighlight', () => {
 
 	test('should highlight matching players', () => {
 		const result = renderPlayerListWithHighlight(['Alpha', 'Bravo', 'Charlie'], 'Bravo');
-		expect(result).toContain('<span class="bg-warning/30 rounded font-semibold">Bravo</span>');
+		expect(result).toContain(
+			'<span class="font-bold underline decoration-2 underline-offset-2">Bravo</span>'
+		);
 	});
 
 	test('should include proper flex layout classes', () => {
@@ -254,14 +258,14 @@ describe('Edge Cases and Integration', () => {
 	test('should work with renderPlayerListWithHighlight and complex queries', () => {
 		const players = ['Player-One', 'Player_Two', 'Player.Three'];
 		const result = renderPlayerListWithHighlight(players, 'Player');
-		const matches = result.match(/bg-warning\/30/g);
+		const matches = result.match(/underline-offset-2/g);
 		expect(matches?.length).toBe(3);
 	});
 
 	test('should handle player names with numbers', () => {
 		const result = renderPlayerListWithHighlight(['Player123', 'Player456'], '123');
 		expect(result).toContain(
-			'<div class="flex flex-wrap gap-1 items-start w-full"><span class="badge badge-sm badge-soft badge-neutral gap-0 whitespace-nowrap shrink-0">Player<span class="bg-warning/30 rounded font-semibold">123</span></span><span class="badge badge-sm badge-soft badge-neutral gap-0 whitespace-nowrap shrink-0">Player456</span></div>'
+			'<div class="flex flex-wrap gap-1 items-start w-full"><span class="badge badge-sm badge-soft badge-neutral gap-0 whitespace-nowrap shrink-0">Player<span class="font-bold underline decoration-2 underline-offset-2">123</span></span><span class="badge badge-sm badge-soft badge-neutral gap-0 whitespace-nowrap shrink-0">Player456</span></div>'
 		);
 	});
 

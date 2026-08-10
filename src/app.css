@@ -135,8 +135,13 @@
 }
 
 /* Tertiary text and the background grid line — one definition per theme */
+/* The tertiary text colour has to sit BETWEEN secondary (`base-content/70`) and
+   the WCAG AA floor, and that window is different on each ground — one shared
+   value cannot clear 4.5:1 on both. Measured against each theme's base-100:
+   light  secondary 5.76:1 → tertiary 4.89:1
+   dark   secondary 6.44:1 → tertiary 4.97:1 */
 [data-theme='rwr-light'] {
-	--color-text-muted: hsl(41 8% 48%);
+	--color-text-muted: hsl(41 10% 42%);
 	--grid-line: rgba(0, 0, 0, 0.04);
 	--scanline: rgba(0, 0, 0, 0.01);
 	/* One step off the panel, in the direction that reads as raised on this
@@ -146,7 +151,7 @@
 }
 
 [data-theme='rwr-dark'] {
-	--color-text-muted: hsl(41 8% 48%);
+	--color-text-muted: hsl(41 11% 58%);
 	--grid-line: rgba(255, 255, 255, 0.03);
 	--scanline: rgba(0, 0, 0, 0.02);
 	--tactical-face: hsl(40 12% 24%);

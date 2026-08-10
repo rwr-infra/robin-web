@@ -12,10 +12,15 @@ vi.mock('$lib/components/TranslatedText.svelte', () => ({
 	}
 }));
 
-// Mock messages
+// Mock messages — the count phrases mirror the real en-us wording, since the
+// component now renders the whole localized phrase rather than splicing numbers in.
 vi.mock('$lib/paraglide/messages.js', () => ({
 	m: {
-		'app.stats.filteredBy': (props: { query: string }) => `Filtered by "${props.query}"`
+		'app.stats.filteredBy': (props: { query: string }) => `Filtered by "${props.query}"`,
+		'app.stats.servers': (props: { filtered: number; total: number }) =>
+			`${props.filtered} of ${props.total} servers`,
+		'app.stats.players': (props: { filtered: number; total: number }) =>
+			`${props.filtered} of ${props.total} players`
 	}
 }));
 

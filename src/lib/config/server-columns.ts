@@ -1,5 +1,10 @@
 import type { IColumn, IDisplayServerItem } from '$lib/models/server.model';
-import { escapeHtml, highlightMatch, renderPlayerListWithHighlight } from '$lib/utils/highlight';
+import {
+	escapeHtml,
+	highlightInBadge,
+	highlightMatch,
+	renderPlayerListWithHighlight
+} from '$lib/utils/highlight';
 
 /**
  * Badges are emitted as raw HTML into the tables, so they can only use
@@ -19,7 +24,9 @@ function getMapPreviewHtml(server: IDisplayServerItem, query?: string): string {
 	const mapName = mapId.split('/').pop() || '';
 
 	// Just show the map name badge - preview button is handled separately in the component
-	const displayText = query ? highlightMatch(mapName, query) : escapeHtml(mapName);
+	// highlightInBadge, not highlightMatch: the mark lands inside a badge, whose
+	// background and content colour are set by the badge classes.
+	const displayText = highlightInBadge(mapName, query ?? '');
 	return `<span class="${BADGE} badge-soft badge-info">${displayText}</span>`;
 }
 
@@ -32,9 +39,7 @@ function getMapPreviewHtml(server: IDisplayServerItem, query?: string): string {
 function getCapacityStyling(server: IDisplayServerItem, query?: string): string {
 	const { currentPlayers, maxPlayers } = server;
 	const occupancy = maxPlayers > 0 ? currentPlayers / maxPlayers : 0;
-	const playerText = query
-		? highlightMatch(`${currentPlayers}/${maxPlayers}`, query)
-		: `${currentPlayers}/${maxPlayers}`;
+	const playerText = highlightInBadge(`${currentPlayers}/${maxPlayers}`, query ?? '');
 
 	// Check for empty servers first
 	if (currentPlayers === 0) {
@@ -111,7 +116,7 @@ export const columns: IColumn[] = [
 		},
 		getValueWithHighlight: (server: IDisplayServerItem, query: string) => {
 			const modeText = server.mode || 'Unknown';
-			const highlightedText = highlightMatch(modeText, query);
+			const highlightedText = highlightInBadge(modeText, query);
 			return `<span class="${BADGE} badge-soft badge-neutral" data-mode="mode">${highlightedText}</span>`;
 		}
 	},

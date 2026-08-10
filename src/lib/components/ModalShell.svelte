@@ -30,9 +30,28 @@
 		footer
 	}: Props = $props();
 
+	let dialog = $state<HTMLDialogElement | undefined>(undefined);
+
 	function close() {
 		onClose?.();
 	}
+
+	/**
+	 * Drive the element through the native dialog API rather than daisyUI's
+	 * `modal-open` class. `showModal()` is what gives us Escape-to-dismiss, a real
+	 * focus trap and an inert background — none of which a class can provide, and
+	 * a keydown handler on the box only fires once something inside it is focused.
+	 * jsdom has no dialog methods, hence the capability check (see
+	 * vitest-setup-client.ts for the test-env shim).
+	 */
+	$effect(() => {
+		if (!dialog) return;
+		if (show && !dialog.open) {
+			dialog.showModal?.();
+		} else if (!show && dialog.open) {
+			dialog.close?.();
+		}
+	});
 </script>
 
 <!--
@@ -42,17 +61,13 @@
 	The content well is *darker* than the box, so it reads as recessed (p.149).
 -->
 {#if show}
-	<dialog class="modal modal-open" onclose={close}>
-		<div
-			class="modal-box shadow-e5 flex flex-col p-0 {widthClass}"
-			role="dialog"
-			aria-modal="true"
-			tabindex="-1"
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => {
-				if (e.key === 'Escape') close();
-			}}
-		>
+	<!-- `oncancel` is the Escape key; `onclose` also covers the backdrop form
+	     submit. Both funnel into the same callback so the parent's `show` prop
+	     cannot drift out of sync with the element's real state. -->
+	<dialog bind:this={dialog} class="modal" onclose={close} oncancel={close}>
+		<!-- No click-stopper needed: the backdrop is a sibling form, not an
+		     ancestor, so clicks in here never reach it. -->
+		<div class="modal-box shadow-e5 flex flex-col p-0 {widthClass}">
 			<div class="border-base-300 flex shrink-0 items-start justify-between gap-3 border-b p-4">
 				<div class="min-w-0">
 					<h3 class="text-base-content truncate text-lg font-semibold">{title}</h3>

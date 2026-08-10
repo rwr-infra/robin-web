@@ -139,7 +139,7 @@ describe('server-columns', () => {
 
 			expect(highlighted).toContain('badge');
 			expect(highlighted).toContain('inance');
-			expect(highlighted).toContain('<mark');
+			expect(highlighted).toContain('font-bold underline decoration-2 underline-offset-2');
 		});
 	});
 
@@ -160,7 +160,7 @@ describe('server-columns', () => {
 
 			expect(highlighted).toContain('badge');
 			expect(highlighted).toContain('1');
-			expect(highlighted).toContain('<mark');
+			expect(highlighted).toContain('font-bold underline decoration-2 underline-offset-2');
 		});
 
 		test('should extract map name from path', () => {
@@ -277,7 +277,7 @@ describe('server-columns', () => {
 			const highlighted = column!.getValueWithHighlight!(server, '15');
 
 			expect(highlighted).toContain('/32');
-			expect(highlighted).toContain('<mark');
+			expect(highlighted).toContain('font-bold underline decoration-2 underline-offset-2');
 		});
 	});
 

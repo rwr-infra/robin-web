@@ -47,36 +47,31 @@
 <div
 	class="stats-container bg-base-100 shadow-e1 text-base-content/70 mb-4 flex items-center justify-between gap-3 rounded px-4 py-3 text-sm md:mb-2 md:py-2"
 >
+	<!--
+		The whole phrase comes from i18n — word order differs per locale, so the
+		counts cannot be spliced in as separate emphasized spans. The data stays
+		primary by weight and colour on the phrase as a whole (p.41).
+	-->
 	<div class="flex items-center gap-4">
 		{#if currentView === 'servers'}
-			<span>
-				<span class="stats-number text-base-content font-semibold"
-					>{serverFilteredStats.totalServers}</span
-				>
-				/
-				<span class="stats-number text-base-content font-semibold"
-					>{serverTotalStats.totalServers}</span
-				> servers
+			<span class="stats-number text-base-content font-semibold">
+				{m['app.stats.servers']({
+					filtered: serverFilteredStats.totalServers,
+					total: serverTotalStats.totalServers
+				})}
 			</span>
-			<span>
-				<span class="stats-number text-base-content font-semibold"
-					>{serverFilteredStats.totalPlayers}</span
-				>
-				/
-				<span class="stats-number text-base-content font-semibold"
-					>{serverTotalStats.totalPlayers}</span
-				> players
+			<span class="stats-number text-base-content font-semibold">
+				{m['app.stats.players']({
+					filtered: serverFilteredStats.totalPlayers,
+					total: serverTotalStats.totalPlayers
+				})}
 			</span>
 		{:else}
-			<span>
-				<span class="stats-number text-base-content font-semibold"
-					>{playerFilteredStats.paginatedCount}</span
-				>
-				/
-				<span class="stats-number text-base-content font-semibold"
-					>{playerFilteredStats.totalPlayers}</span
-				>
-				players
+			<span class="stats-number text-base-content font-semibold">
+				{m['app.stats.players']({
+					filtered: playerFilteredStats.paginatedCount,
+					total: playerFilteredStats.totalPlayers
+				})}
 			</span>
 		{/if}
 	</div>

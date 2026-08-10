@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tick } from 'svelte';
 	import ModalShell from '$lib/components/ModalShell.svelte';
 	import ServerShareCard from '$lib/components/ServerShareCard.svelte';
 	import TranslatedText from '$lib/components/TranslatedText.svelte';
@@ -157,6 +158,17 @@
 		}
 	}
 
+	/**
+	 * The capture target is only rendered in the non-error branch, so the
+	 * bindings are null while an error is shown and handleDownload would return
+	 * early. Clear the error and let the DOM flush first.
+	 */
+	async function handleRetry() {
+		errorMessage = undefined;
+		await tick();
+		await handleDownload();
+	}
+
 	// Check if clipboard is supported
 	const canCopy = $derived(serverShareService.canCopyToClipboard());
 </script>
@@ -178,7 +190,7 @@
 					</p>
 					<p class="text-error text-sm">{errorMessage}</p>
 				</div>
-				<button class="btn btn-outline btn-sm" onclick={handleDownload} type="button">
+				<button class="btn btn-outline btn-sm" onclick={handleRetry} type="button">
 					<TranslatedText key="app.server.shareModal.retry" />
 				</button>
 			</div>
