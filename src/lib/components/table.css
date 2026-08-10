@@ -16,16 +16,16 @@
 	position: sticky;
 	right: 0;
 	z-index: 25;
-	background: var(--color-bg-secondary);
-	border-left: 1px solid var(--color-border);
+	background: var(--color-base-100);
+	border-left: 1px solid var(--color-base-300);
 }
 
 .action-header {
 	position: sticky;
 	right: 0;
 	z-index: 30 !important;
-	background: var(--color-bg-secondary) !important;
-	border-left: 1px solid var(--color-border);
+	background: var(--color-base-100) !important;
+	border-left: 1px solid var(--color-base-300);
 }
 
 /* PlayerTable specific: Row number - sticky first column */
@@ -33,16 +33,16 @@
 	position: sticky;
 	left: 0;
 	z-index: 20;
-	background: var(--color-bg-secondary);
-	border-right: 1px solid var(--color-border);
+	background: var(--color-base-100);
+	border-right: 1px solid var(--color-base-300);
 }
 
 .sticky-row-number-header {
 	position: sticky;
 	left: 0;
 	z-index: 30 !important;
-	background: var(--color-bg-secondary) !important;
-	border-right: 1px solid var(--color-border);
+	background: var(--color-base-100) !important;
+	border-right: 1px solid var(--color-base-300);
 }
 
 /* PlayerTable specific: Username - sticky second column */
@@ -50,16 +50,16 @@
 	position: sticky;
 	left: 4rem;
 	z-index: 20;
-	background: var(--color-bg-secondary);
-	border-right: 1px solid var(--color-border);
+	background: var(--color-base-100);
+	border-right: 1px solid var(--color-base-300);
 }
 
 .sticky-username-header {
 	position: sticky;
 	left: 4rem;
 	z-index: 30 !important;
-	background: var(--color-bg-secondary) !important;
-	border-right: 1px solid var(--color-border);
+	background: var(--color-base-100) !important;
+	border-right: 1px solid var(--color-base-300);
 }
 
 /* ServerTable specific: Name column - sticky first column */
@@ -67,16 +67,16 @@
 	position: sticky;
 	left: 0;
 	z-index: 20;
-	background: var(--color-bg-secondary);
-	border-right: 1px solid var(--color-border);
+	background: var(--color-base-100);
+	border-right: 1px solid var(--color-base-300);
 }
 
 .sticky-name-header {
 	position: sticky;
 	left: 0;
 	z-index: 30 !important;
-	background: var(--color-bg-secondary) !important;
-	border-right: 1px solid var(--color-border);
+	background: var(--color-base-100) !important;
+	border-right: 1px solid var(--color-base-300);
 }
 
 /* Mobile responsive styles */
@@ -97,5 +97,5 @@
 .table-pin-rows tbody tr.highlighted-row td.sticky-row-number,
 .table-pin-rows tbody tr.highlighted-row td.sticky-username,
 .table-pin-rows tbody tr.highlighted-row td.action-cell {
-	background: color-mix(in oklab, var(--color-primary) 20%, var(--color-bg-secondary)) !important;
+	background: color-mix(in oklab, var(--color-primary) 20%, var(--color-base-100)) !important;
 }

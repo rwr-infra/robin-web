@@ -35,9 +35,9 @@
 
 {#if visible}
 	<div transition:fade={{ duration: 300 }}>
-		<div class="alert alert-{type} shadow-lg" role="status" aria-live="polite">
+		<div class="alert alert-{type} shadow-e3" role="status" aria-live="polite">
 			{#if IconComponent}
-				<IconComponent class="h-5 w-5 shrink-0" />
+				<IconComponent class="size-5 shrink-0" />
 			{/if}
 			<span>{message}</span>
 		</div>

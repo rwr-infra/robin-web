@@ -1,13 +1,16 @@
 <script lang="ts">
 	import TranslatedText from '$lib/components/TranslatedText.svelte';
-	import { m } from '$lib/paraglide/messages.js';
 	import type { IDisplayServerItem } from '$lib/models/server.model';
-	import type { MapData } from '$lib/services/maps';
 	import { Server } from '@lucide/svelte';
 
 	interface Props {
 		server: IDisplayServerItem;
-		maps: MapData[];
+		/**
+		 * `desktop` is a 600px two-column card, `mobile` a 360px single-column one.
+		 * Both share every style decision except width, padding and column count —
+		 * that is the whole reason this is one component and not two.
+		 */
+		variant?: 'desktop' | 'mobile';
 		// Timestamp for data freshness
 		queryTimestamp?: number;
 		// Extensibility: Allow custom styling
@@ -26,7 +29,7 @@
 
 	let {
 		server,
-		maps,
+		variant = 'desktop',
 		queryTimestamp,
 		customTheme = 'default',
 		showWatermark = false,
@@ -34,6 +37,8 @@
 		customSections = [],
 		hiddenFields = []
 	}: Props = $props();
+
+	const isMobile = $derived(variant === 'mobile');
 
 	// Check if a field should be visible
 	function isFieldVisible(key: keyof IDisplayServerItem): boolean {
@@ -44,16 +49,6 @@
 	function getDisplayValue(value: unknown): string {
 		if (value === null || value === undefined) return '-';
 		return String(value);
-	}
-
-	// Get map name from map data - extract from path like getMapPreviewHtml
-	function getMapName(mapId: string): string {
-		// Extract the last part of the path (actual map name)
-		const mapName = mapId.split('/').pop() || mapId;
-
-		// Optionally, look up in maps data for display name
-		const map = maps.find((m) => m.path === mapId);
-		return map?.name || mapName;
 	}
 
 	// Format timestamp for display with timezone
@@ -67,7 +62,6 @@
 			minute: '2-digit'
 		});
 
-		const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 		const timeZoneName = date.toLocaleString('en-US', { timeZoneName: 'short' }).split(', ').pop();
 
 		return `${formatted} (${timeZoneName})`;
@@ -78,13 +72,13 @@
 		return `${current}/${max}`;
 	}
 
-	// Theme classes
+	// Explicit theme overrides use the same warm ramp as the rest of the app
 	const themeClasses = $derived(() => {
 		switch (customTheme) {
 			case 'dark':
-				return 'bg-gray-900 text-white from-gray-800 to-gray-900';
+				return 'bg-sand-900 text-sand-100 from-sand-800 to-sand-900';
 			case 'light':
-				return 'bg-gray-50 text-gray-900 from-gray-50 to-white';
+				return 'bg-sand-100 text-sand-900 from-sand-50 to-sand-100';
 			default:
 				return 'from-base-100 to-base-200 text-base-content';
 		}
@@ -105,34 +99,43 @@
 		{ key: 'country', i18n: 'app.server.column.country' },
 		{ key: 'version', i18n: 'app.server.column.version' }
 	];
+
+	// Semantic badges only — this card is captured as a PNG on either theme, so a
+	// hardcoded light palette would be unreadable half the time.
+	const BADGE = 'badge badge-sm font-medium';
 </script>
 
-<div class="share-card-wrapper w-full max-w-[600px] rounded-xl p-4 shadow-2xl {themeClasses()}">
+<!--
+	No shadow: the capture crops to the card bounds, so an outer shadow would only
+	produce a dirty edge in the exported PNG. A 1px border defines the edge
+	instead — the one place a border beats elevation here.
+	Type never drops below 12px (text-xs); the mobile variant buys the space back
+	with a single column, not with smaller type (p.91).
+-->
+<div
+	class="share-card-wrapper border-base-content/15 w-full rounded border {isMobile
+		? 'max-w-[360px] p-3'
+		: 'max-w-[600px] p-4'} {themeClasses()}"
+>
 	<!-- Header Section -->
 	<div class="mb-3">
 		<div class="mb-2">
 			<div class="mb-2 flex items-center gap-2">
-				<Server class="h-4 w-4 shrink-0 opacity-70" />
-				<h2 class="flex-1 truncate text-lg font-bold">{server.name}</h2>
+				<Server class="text-base-content/70 size-4 shrink-0" />
+				<h2 class="flex-1 truncate font-bold {isMobile ? 'text-base' : 'text-lg'}">
+					{server.name}
+				</h2>
 			</div>
 			<!-- Badges: Map, Mode, Capacity -->
 			<div class="flex flex-wrap gap-2">
-				<!-- Map Badge -->
-				<span
-					class="badge badge-outline rounded-md border-cyan-200 bg-cyan-50 px-2 py-1 text-xs font-medium text-cyan-700 shadow-sm"
-				>
+				<!-- Same value the Map column shows, so table and card never disagree -->
+				<span class="{BADGE} badge-soft badge-info">
 					{server.mapId.split('/').pop() || server.mapId}
 				</span>
-				<!-- Mode Badge -->
-				<span
-					class="badge badge-outline rounded-md border-blue-200 bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 shadow-sm"
-				>
+				<span class="{BADGE} badge-soft badge-neutral">
 					{server.mode || 'Unknown'}
 				</span>
-				<!-- Capacity Badge -->
-				<span
-					class="badge badge-success rounded-md px-2 py-1 text-xs font-medium text-white shadow-sm"
-				>
+				<span class="{BADGE} badge-soft badge-success">
 					{formatPlayerCount(server.currentPlayers, server.maxPlayers)}
 				</span>
 			</div>
@@ -141,15 +144,15 @@
 		<div class="border-base-content/15 border-b"></div>
 	</div>
 
-	<!-- Server Info Grid -->
-	<div class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
+	<!-- Server Info: two columns on desktop, one on mobile -->
+	<div class="text-xs {isMobile ? 'space-y-1' : 'grid grid-cols-2 gap-x-4 gap-y-1'}">
 		{#each serverInfoFields as field}
 			{#if isFieldVisible(field.key)}
 				<div class="flex items-center justify-between gap-1">
-					<span class="text-base-content/60 text-xs whitespace-nowrap">
+					<span class="text-base-content/70 whitespace-nowrap">
 						<TranslatedText key={field.i18n} />
 					</span>
-					<span class="text-right text-xs font-semibold {field.isMono ? 'font-mono' : ''}">
+					<span class="truncate text-right font-semibold {field.isMono ? 'font-mono' : ''}">
 						{field.format
 							? field.format(getDisplayValue(server[field.key]))
 							: getDisplayValue(server[field.key])}
@@ -161,14 +164,14 @@
 		<!-- URL field - conditional rendering -->
 		{#if server.url && isFieldVisible('url')}
 			<div class="flex items-center justify-between gap-1">
-				<span class="text-base-content/60 text-xs whitespace-nowrap">
+				<span class="text-base-content/70 whitespace-nowrap">
 					<TranslatedText key="app.column.url" />:
 				</span>
 				<a
 					href={server.url}
 					target="_blank"
 					rel="noopener noreferrer"
-					class="link link-primary truncate text-xs"
+					class="link link-primary truncate"
 					title={server.url}
 				>
 					{server.url.length > 30 ? server.url.substring(0, 27) + '...' : server.url}
@@ -180,12 +183,14 @@
 	<!-- Player List Section -->
 	{#if server.playerList && server.playerList.length > 0 && isFieldVisible('playerList')}
 		<div class="border-base-content/15 mt-3 border-t pt-2">
-			<div class="text-base-content/60 mb-2 text-xs">
+			<div class="text-base-content/70 mb-2 text-xs">
 				<TranslatedText key="app.server.column.playerList" /> ({server.playerList.length})
 			</div>
 			<div class="flex flex-wrap gap-1">
 				{#each server.playerList as player}
-					<span class="badge badge-neutral flex-shrink-0 text-xs whitespace-nowrap">{player}</span>
+					<span class="badge badge-sm badge-soft badge-neutral shrink-0 whitespace-nowrap"
+						>{player}</span
+					>
 				{/each}
 			</div>
 		</div>
@@ -194,7 +199,7 @@
 	<!-- Comment -->
 	{#if server.comment && isFieldVisible('comment')}
 		<div class="border-base-content/15 mt-3 border-t pt-2">
-			<div class="text-base-content/60 mb-1 text-xs">
+			<div class="text-base-content/70 mb-1 text-xs">
 				<TranslatedText key="app.server.column.comment" />
 			</div>
 			<div class="text-xs break-words whitespace-pre-wrap">{server.comment}</div>
@@ -204,12 +209,12 @@
 	<!-- Footer with timestamp -->
 	<div class="border-base-content/15 mt-3 border-t pt-2">
 		{#if queryTimestamp}
-			<div class="text-base-content/40 text-center text-[10px]">
+			<div class="text-muted text-center text-xs">
 				<TranslatedText key="app.server.shareCard.queryTime" />: {formatTimestamp(queryTimestamp)}
 			</div>
 		{/if}
 		{#if showWatermark && watermarkText}
-			<div class="text-base-content/30 mt-1 text-center text-[10px]">{watermarkText}</div>
+			<div class="text-muted mt-1 text-center text-xs">{watermarkText}</div>
 		{/if}
 	</div>
 
@@ -223,7 +228,7 @@
 
 <style>
 	.share-card-wrapper {
-		background: linear-gradient(135deg, hsl(var(--b1)), hsl(var(--b2)));
+		background: linear-gradient(135deg, var(--color-base-100), var(--color-base-200));
 		font-family:
 			-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 	}

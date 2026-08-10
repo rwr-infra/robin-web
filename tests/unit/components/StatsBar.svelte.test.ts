@@ -283,7 +283,7 @@ describe('StatsBar Component', () => {
 
 			const filterIndicator = container.querySelector('.filter-indicator');
 			expect(filterIndicator).toBeInTheDocument();
-			expect(filterIndicator).toHaveClass('text-base-content/60', 'text-xs', 'italic');
+			expect(filterIndicator).toHaveClass('badge', 'badge-soft', 'badge-warning', 'italic');
 		});
 	});
 

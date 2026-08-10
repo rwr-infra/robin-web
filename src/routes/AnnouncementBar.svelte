@@ -63,14 +63,14 @@
 
 {#if visible && data}
 	<div
-		class="announcement-bar border-mil bg-mil-secondary flex w-full justify-center border-b"
+		class="announcement-bar border-base-300 bg-base-100 flex w-full justify-center border-b"
 		role="region"
 		aria-label="Site announcement"
 	>
 		<div class="container flex items-center justify-between gap-3 px-4 py-2">
 			<div
 				bind:this={contentEl}
-				class="announcement-content text-mil-primary min-w-0 flex-1 text-sm"
+				class="announcement-content text-base-content min-w-0 flex-1 text-sm"
 			>
 				<!-- Rich text from backend, rendered directly (trusted source) -->
 				{@html data.html}
@@ -81,7 +81,7 @@
 				aria-label={m['app.announcement.close']()}
 				onclick={handleClose}
 			>
-				<X class="h-4 w-4" />
+				<X class="size-4" />
 			</button>
 		</div>
 	</div>

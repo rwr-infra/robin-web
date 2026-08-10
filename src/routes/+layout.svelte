@@ -111,28 +111,32 @@
 		{@render children()}
 	</main>
 
+	<!--
+		Three tiers, top to bottom: primary / secondary / tertiary (p.32).
+		Centred copy is capped to a readable measure (p.99).
+	-->
 	<footer
-		class="footer sm:footer-horizontal footer-center border-mil bg-mil-secondary border-t px-4 py-4 md:py-3"
+		class="footer sm:footer-horizontal footer-center border-base-300 bg-base-100 border-t px-4 py-4"
 	>
-		<aside class="flex flex-col items-center gap-2 md:gap-1">
-			<p class="text-mil-primary text-sm md:text-xs">
+		<aside class="flex max-w-[65ch] flex-col items-center gap-1">
+			<p class="text-base-content text-sm">
 				<TranslatedText key="app.footer.developedBy" />
 				<a
 					href="https://www.kreedzt.com"
 					target="_blank"
 					rel="noopener noreferrer"
-					class="link link-hover text-mil-primary font-bold hover:underline"
+					class="link link-hover font-semibold"
 				>
 					Kreedzt
 				</a>
 			</p>
-			<p class="text-mil-secondary text-xs">
+			<p class="text-base-content/70 text-xs">
 				<TranslatedText key="app.footer.dataSourced" />
 				<a
 					href="http://rwr.runningwithrifles.com/rwr_stats/view_players.php"
 					target="_blank"
 					rel="noopener noreferrer"
-					class="link link-hover text-mil-secondary underline-offset-4"
+					class="link link-hover underline-offset-4"
 				>
 					<TranslatedText key="app.footer.rwrStatsApi" />
 				</a>
@@ -141,12 +145,12 @@
 					href="http://rwr.runningwithrifles.com/rwr_server_list/view_servers.php"
 					target="_blank"
 					rel="noopener noreferrer"
-					class="link link-hover text-mil-secondary underline-offset-4"
+					class="link link-hover underline-offset-4"
 				>
 					<TranslatedText key="app.footer.serverList" />
 				</a>
 			</p>
-			<p class="text-mil-secondary text-xs">
+			<p class="text-muted text-xs">
 				<TranslatedText key="app.footer.robinWeb" />
 				&bull;
 				<TranslatedText key="app.footer.copyright" params={{ year: copyrightYear }} />
@@ -154,6 +158,3 @@
 		</aside>
 	</footer>
 </div>
-
-<style>
-</style>

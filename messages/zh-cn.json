@@ -89,7 +89,6 @@
 			"title": "地图排序: {filters}",
 			"allMaps": "所有地图",
 			"selectFilters": "选择快速过滤器以查看地图排序",
-			"chooseCategories": "在快速过滤器中选择您喜欢的地图类别以显示相应的服务器列表",
 			"noMaps": "所选过滤器未找到地图。",
 			"servers": "{count} 个服务器",
 			"bots": "{count} 个机器人"
@@ -123,24 +122,20 @@
 		},
 		"guide": {
 			"searchInput": {
-				"title": "搜索输入框",
-				"description": "使用此搜索框查找服务器、地图、玩家、模式、国家等。输入时结果将实时更新！"
+				"title": "搜索输入框"
 			},
 			"columnVisibility": {
 				"title": "列可见性",
 				"description": "自定义表格中显示的列。只显示对您重要的数据！"
 			},
 			"viewModeToggle": {
-				"title": "视图模式切换",
-				"description": "在列表和地图视图模式之间切换，以您喜欢的方式找到服务器。列表视图以表格形式提供详细信息，而地图视图提供地理视角。"
+				"title": "视图模式切换"
 			},
 			"helpGuide": {
-				"title": "帮助指南",
-				"description": "随时点击此按钮可重新播放帮助指南，并刷新您对可用功能的记忆。"
+				"title": "帮助指南"
 			},
 			"quickFilters": {
-				"title": "快速过滤器",
-				"description": "应用过滤器快速找到符合特定条件的服务器。您可以同时使用多个过滤器，并将它们与搜索框结合使用，进行强大的查询！"
+				"title": "快速过滤器"
 			}
 		},
 		"autoRefresh": {

@@ -179,58 +179,59 @@ describe('server-columns', () => {
 			expect(column?.alignment).toBe('center');
 		});
 
-		test('should render empty server with gray badge', () => {
+		test('should render empty server with a neutral badge', () => {
 			const column = columns.find((col) => col.key === 'playerCount');
 			const server = createMockServer({ currentPlayers: 0, maxPlayers: 32 });
 			const value = column!.getValue!(server);
 
 			expect(value).toContain('badge');
 			expect(value).toContain('0/32');
-			expect(value).toContain('gray');
+			expect(value).toContain('badge-soft badge-neutral');
 			expect(value).toContain('Empty server');
 		});
 
-		test('should render full server with red badge', () => {
+		test('should render full server with an error badge', () => {
 			const column = columns.find((col) => col.key === 'playerCount');
 			const server = createMockServer({ currentPlayers: 32, maxPlayers: 32 });
 			const value = column!.getValue!(server);
 
 			expect(value).toContain('badge');
 			expect(value).toContain('32/32');
-			expect(value).toContain('red');
+			expect(value).toContain('badge-error');
 			expect(value).toContain('Full server');
 		});
 
-		test('should render 80%+ occupied server with orange badge', () => {
+		test('should render 80%+ occupied server with a solid warning badge', () => {
 			const column = columns.find((col) => col.key === 'playerCount');
 			const server = createMockServer({ currentPlayers: 26, maxPlayers: 32 }); // 81%
 			const value = column!.getValue!(server);
 
 			expect(value).toContain('badge');
 			expect(value).toContain('26/32');
-			expect(value).toContain('orange');
+			expect(value).toContain('badge-warning');
+			expect(value).not.toContain('badge-soft');
 			expect(value).toContain('81% full');
 		});
 
-		test('should render 60-79% occupied server with yellow badge', () => {
+		test('should render 60-79% occupied server with a soft warning badge', () => {
 			const column = columns.find((col) => col.key === 'playerCount');
 			const server = createMockServer({ currentPlayers: 20, maxPlayers: 32 }); // 62.5%
 			const value = column!.getValue!(server);
 
 			expect(value).toContain('badge');
 			expect(value).toContain('20/32');
-			expect(value).toContain('amber');
+			expect(value).toContain('badge-soft badge-warning');
 			expect(value).toContain('63% full'); // Math.round(62.5) = 63
 		});
 
-		test('should render less than 60% occupied server with green badge', () => {
+		test('should render less than 60% occupied server with a soft success badge', () => {
 			const column = columns.find((col) => col.key === 'playerCount');
 			const server = createMockServer({ currentPlayers: 10, maxPlayers: 32 }); // 31%
 			const value = column!.getValue!(server);
 
 			expect(value).toContain('badge');
 			expect(value).toContain('10/32');
-			expect(value).toContain('green');
+			expect(value).toContain('badge-soft badge-success');
 			expect(value).toContain('31% full');
 		});
 
@@ -239,7 +240,8 @@ describe('server-columns', () => {
 			const server = createMockServer({ currentPlayers: 16, maxPlayers: 20 }); // 80%
 			const value = column!.getValue!(server);
 
-			expect(value).toContain('orange');
+			expect(value).toContain('badge-warning');
+			expect(value).not.toContain('badge-soft');
 			expect(value).toContain('80% full');
 		});
 
@@ -248,7 +250,7 @@ describe('server-columns', () => {
 			const server = createMockServer({ currentPlayers: 12, maxPlayers: 20 }); // 60%
 			const value = column!.getValue!(server);
 
-			expect(value).toContain('amber');
+			expect(value).toContain('badge-soft badge-warning');
 			expect(value).toContain('60% full');
 		});
 
@@ -265,7 +267,7 @@ describe('server-columns', () => {
 			const server = createMockServer({ currentPlayers: 35, maxPlayers: 32 });
 			const value = column!.getValue!(server);
 
-			expect(value).toContain('red');
+			expect(value).toContain('badge-error');
 			expect(value).toContain('Full server');
 		});
 
@@ -421,7 +423,7 @@ describe('server-columns', () => {
 			const value = column!.getValue!(server);
 
 			expect(value).toContain('1/32');
-			expect(value).toContain('green');
+			expect(value).toContain('badge-soft badge-success');
 		});
 
 		test('should handle exactly full server at 100%', () => {
@@ -430,7 +432,7 @@ describe('server-columns', () => {
 			const value = column!.getValue!(server);
 
 			expect(value).toContain('64/64');
-			expect(value).toContain('red');
+			expect(value).toContain('badge-error');
 			expect(value).toContain('Full server');
 		});
 	});

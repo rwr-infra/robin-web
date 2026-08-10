@@ -464,12 +464,10 @@ describe('ServerView Component', () => {
 			});
 
 			// Need to expand card first by setting mobileExpandedCards
-			const mapButtons = container.querySelectorAll('.md\\:hidden .btn-success');
-			// Find map preview button (success button with white text)
-			const previewButton = Array.from(mapButtons).find((btn) =>
-				btn.classList.contains('text-white')
-			);
-			expect(previewButton).toBeDefined();
+			// The map preview action is the primary button of its row (importance
+			// pyramid, not semantic colour), so it carries btn-primary.
+			const previewButton = container.querySelector('.md\\:hidden .btn-primary');
+			expect(previewButton).toBeTruthy();
 		});
 
 		it('should call onMapView when map preview button clicked', async () => {

@@ -18,10 +18,7 @@
 	<div tabindex="-1" role="button" class="btn btn-outline flex-shrink-0">
 		<TranslatedText key="app.columns.button" />
 	</div>
-	<ul
-		tabindex="-1"
-		class="dropdown-content menu bg-base-100 rounded-box border-base-300 z-50 w-52 border p-2 shadow-lg"
-	>
+	<ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box shadow-e3 z-50 w-48 p-2">
 		{#each columns as column (column.key)}
 			<li>
 				<button
@@ -41,7 +38,7 @@
 						{#if column.i18n}<TranslatedText key={column.i18n} />{:else}{column.label}{/if}
 					</span>
 					{#if visibleColumns[column.key]}
-						<Check class="h-4 w-4" />
+						<Check class="size-4" />
 					{/if}
 				</button>
 			</li>

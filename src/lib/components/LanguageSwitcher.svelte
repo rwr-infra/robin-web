@@ -19,10 +19,7 @@
 	<div tabindex="-1" role="button" class="btn btn-sm btn-ghost">
 		{languageNames[currentLocale]?.shortName || currentLocale.toUpperCase()}
 	</div>
-	<ul
-		tabindex="-1"
-		class="dropdown-content menu bg-base-100 rounded-box border-base-300 z-50 w-52 border p-2 shadow-lg"
-	>
+	<ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box shadow-e3 z-50 w-48 p-2">
 		{#each locales as locale}
 			<li>
 				<div

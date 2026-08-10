@@ -86,7 +86,7 @@
 
 {#if data.length === 0}
 	<div class="alert alert-info">
-		<Info class="h-6 w-6 shrink-0 stroke-current" />
+		<Info class="size-6 shrink-0 stroke-current" />
 		<span
 			><TranslatedText key="app.server.noDataFound" />{#if searchQuery}
 				<TranslatedText key="app.server.matchingSearch" />{/if}.</span
@@ -95,13 +95,13 @@
 {:else}
 	<!-- Desktop table view (hidden on mobile) -->
 	<div class="server-table-wrapper w-full">
-		<table class="table-pin-rows table-zebra bg-mil-primary mb-0 table border-0">
+		<table class="table-pin-rows table-zebra bg-base-200 mb-0 table border-0">
 			<thead>
-				<tr class="bg-mil-secondary">
+				<tr class="bg-base-100">
 					{#each columns as column (column.key)}
 						{#if visibleColumns[column.key]}
 							<th
-								class="border-mil text-mil-primary sticky top-0 z-10 h-10 px-1 py-1 align-middle {getStickyClass(
+								class="border-base-300 text-base-content sticky top-0 z-10 px-1 py-1 align-middle {getStickyClass(
 									column.key
 								)} {column.headerClass || ''}"
 								class:action-header={column.key === 'action'}
@@ -124,11 +124,11 @@
 												/>{:else}{column.label}{/if}
 										</span>
 										{#if sortColumn !== column.key || !sortDirection}
-											<ArrowDownUp class="h-4 w-4 opacity-30" />
+											<ArrowDownUp class="text-muted size-4" />
 										{:else if sortDirection === 'desc'}
-											<ArrowDown class="text-primary h-4 w-4" />
+											<ArrowDown class="text-primary size-4" />
 										{:else if sortDirection === 'asc'}
-											<ArrowUp class="text-primary h-4 w-4" />
+											<ArrowUp class="text-primary size-4" />
 										{/if}
 									</button>
 								{/if}
@@ -139,11 +139,14 @@
 			</thead>
 			<tbody>
 				{#each data as item (item.id)}
-					<tr class="hover hover:bg-base-300 border-mil min-h-12 border-b">
+					<!-- Row height comes from cell padding (8px top/bottom) rather than a
+					     fixed off-scale height, which keeps the density but stays on the
+					     spacing scale. min-h on a <tr> never did anything. -->
+					<tr class="hover hover:bg-base-300 border-base-300 border-b">
 						{#each columns as column (column.key)}
 							{#if visibleColumns[column.key]}
 								<td
-									class="border-mil text-mil-primary px-4 py-1 {getStickyClass(
+									class="border-base-300 text-base-content px-4 py-2 {getStickyClass(
 										column.key
 									)} {getAlignmentClass(column)} {column.cellClass || ''} {column.key ===
 									'playerList'
@@ -163,10 +166,10 @@
 											{#if onShare}
 												<button
 													type="button"
-													class="btn btn-sm btn-secondary flex-1"
+													class="btn btn-sm btn-outline flex-1"
 													onclick={() => onShare(item)}
 												>
-													<Share class="h-3 w-3" />
+													<Share class="size-4" />
 												</button>
 											{/if}
 										</div>
@@ -180,7 +183,7 @@
 													onclick={() => onMapView(maps.find((m) => m.path === item.mapId)!)}
 													title={m['app.ariaLabel.previewMap']()}
 												>
-													<Eye class="h-4 w-4" />
+													<Eye class="size-4" />
 												</button>
 											{/if}
 										</div>
